@@ -145,7 +145,5 @@ vite.config.ts.timestamp-*
 # Turborepo
 .turbo
 # 
-.agent
-.agents
--p
-skills-lock.json
+# 
+apps/backend/src/generated/prisma
