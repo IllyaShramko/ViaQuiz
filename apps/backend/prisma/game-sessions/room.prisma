@@ -1,0 +1,31 @@
+model Room {
+  id       Int    @id @default(autoincrement())
+  uuid     String @unique @default(uuid())
+  joinCode String @unique
+  status   String @default("AWAITING") // "AWAITING" | "PROGRESS" | "REVIEWING" | "FINISHED"
+
+  currentQuestionIndex Int @default(0)
+
+  quizId Int
+  quiz   Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  courseId Int?
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  hostId Int
+  host   User @relation(fields: [hostId], references: [id], onDelete: Cascade)
+
+  participants Participant[]
+  results      Result[]
+
+  startedAt DateTime?
+  endedAt   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([joinCode])
+  @@index([status])
+  @@index([quizId])
+  @@index([hostId])
+  @@index([courseId])
+}

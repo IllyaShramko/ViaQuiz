@@ -1,5 +1,5 @@
 import type { Server as HttpServer } from "node:http";
-import { logger } from "../tools/index.js";
+import { logger } from "../tools/logger";
 
 export class SocketManager {
 	private server?: HttpServer;

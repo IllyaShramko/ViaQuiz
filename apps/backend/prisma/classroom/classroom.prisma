@@ -1,0 +1,20 @@
+model Classroom {
+  id   Int     @id @default(autoincrement())
+  uuid String  @unique @default(uuid())
+  name String
+  code String? @unique
+
+  isActive   Boolean @default(true)
+  isArchived Boolean @default(false)
+
+  teacherId Int
+  teacher   User      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  courses   Course[]
+  students  Student[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teacherId])
+  @@index([isActive])
+}

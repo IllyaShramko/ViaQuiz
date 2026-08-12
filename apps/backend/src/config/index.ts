@@ -1,2 +1,4 @@
-export * from "./env.js";
-export * from "./database.js";
+export { PRISMA_CLIENT } from "./database";
+export { env } from "./env";
+export { transporter } from "./mail";
+export { CLASSROOM_LIMITS } from "./limits";

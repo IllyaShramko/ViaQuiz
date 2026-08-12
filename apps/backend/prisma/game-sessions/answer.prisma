@@ -1,0 +1,16 @@
+model Answer {
+  id          Int     @id @default(autoincrement())
+  timeSpentMs Int // ms
+  isCorrect   Boolean @default(false)
+
+  variantId Int
+  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  participantId Int
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([participantId])
+  @@index([variantId])
+}

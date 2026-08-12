@@ -1,0 +1,18 @@
+model Student {
+  id        Int    @id @default(autoincrement())
+  uuid      String @unique @default(uuid())
+  login     String
+  firstName String
+  lastName  String
+
+  passedQuizes Participant[]
+
+  classroomId Int
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([classroomId, login])
+  @@index([classroomId])
+}

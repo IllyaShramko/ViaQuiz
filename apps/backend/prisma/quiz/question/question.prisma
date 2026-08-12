@@ -1,0 +1,19 @@
+model Question {
+  id           Int     @id @default(autoincrement())
+  uuid         String  @unique @default(uuid())
+  text         String
+  media        String?
+  type         String // "ONE_ANSWER" | "MANY_ANSWERS" | "TYPE_ANSWER"
+  order        Int     @default(0)
+  timeLimitSec Int     @default(30)
+  points       Int     @default(1000)
+
+  quizId   Int
+  quiz     Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  variants Variant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([quizId])
+}

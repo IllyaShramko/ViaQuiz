@@ -1,33 +1,69 @@
-import type { User } from "@viaquiz/shared-types";
-import { NotFoundError } from "../../errors/index.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../../errors/customErrors";
+import { UserRepository } from "./user.repository";
+import type { UserServiceContract } from "./types/users.contracts";
 
-export class UserService {
-	private users: User[] = [
-		{
-			id: "1",
-			email: "admin@viaquiz.com",
-			name: "Admin User",
-			role: "admin",
-			createdAt: new Date().toISOString(),
-		},
-		{
-			id: "2",
-			email: "user@viaquiz.com",
-			name: "Demo User",
-			role: "user",
-			createdAt: new Date().toISOString(),
-		},
-	];
+const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
 
-	public async getAllUsers(): Promise<User[]> {
-		return this.users;
-	}
+export const UserService: UserServiceContract = {
+	async register(credentials) {
+		const existingUser = await UserRepository.findByEmail(credentials.email);
+		if (existingUser) {
+			throw new ConflictError("User with this email already exists");
+		}
 
-	public async getUserById(id: string): Promise<User> {
-		const user = this.users.find((u) => u.id === id);
+		const hashedPassword = await bcrypt.hash(credentials.password, 10);
+		const user = await UserRepository.create({
+			email: credentials.email,
+			password: hashedPassword,
+			username: credentials.username,
+		});
+
+		const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+			expiresIn: "7d",
+		});
+
+		return { token, user };
+	},
+
+	async login(credentials) {
+		const userWithPassword = await UserRepository.findByEmail(credentials.email);
+		if (!userWithPassword) {
+			throw new UnauthorizedError("Invalid email or password");
+		}
+
+		const isPasswordValid = await bcrypt.compare(
+			credentials.password,
+			userWithPassword.password,
+		);
+		if (!isPasswordValid) {
+			throw new UnauthorizedError("Invalid email or password");
+		}
+
+		const { password: _p, ...user } = userWithPassword;
+
+		const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+			expiresIn: "7d",
+		});
+
+		return { token, user };
+	},
+
+	async me(userId) {
+		const user = await UserRepository.findById(userId);
 		if (!user) {
-			throw new NotFoundError(`User with ID ${id} not found`);
+			throw new NotFoundError("User not found");
 		}
 		return user;
-	}
-}
+	},
+
+	async getUsers(pagination) {
+		const [users, total] = await Promise.all([
+			UserRepository.findUsers(pagination),
+			UserRepository.countUsers(),
+		]);
+
+		return { users, total };
+	},
+};

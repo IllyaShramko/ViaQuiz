@@ -1,0 +1,18 @@
+model Result {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+
+  score               Int @default(0)
+  correctAnswersCount Int @default(0)
+  totalQuestionsCount Int @default(0)
+
+  participantId Int         @unique
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  roomId Int
+  room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([roomId])
+}

@@ -1,6 +1,11 @@
-import { PrismaClient } from "../generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../generated/prisma";
+import { env } from "./env";
 
-// Initialize Prisma client with options
-export const prisma = new (PrismaClient as any)({
-	log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
+
+export const PRISMA_CLIENT = new PrismaClient({
+	adapter,
+	log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
 });
+

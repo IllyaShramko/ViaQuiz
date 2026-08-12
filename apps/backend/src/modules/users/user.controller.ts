@@ -1,30 +1,44 @@
-import type { Request, Response, RequestHandler } from "express";
-import { UserService } from "./user.service.js";
-import { asyncHandler } from "../../tools/index.js";
+import { UserService } from "./user.service";
+import type { UserControllerContract } from "./types/users.contracts";
 
-export class UserController {
-	private userService = new UserService();
-
-	public getUsers: RequestHandler = asyncHandler(async (_req: Request, res: Response): Promise<void> => {
-		const users = await this.userService.getAllUsers();
-		res.json({
-			success: true,
-			data: users,
-			timestamp: new Date().toISOString(),
-		});
-	});
-
-	public getUserById: RequestHandler = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-		const { id } = req.params;
-		if (!id) {
-			res.status(400).json({ success: false, error: "Missing user ID parameter" });
-			return;
+export const UserController: UserControllerContract = {
+	async register(req, res, next) {
+		try {
+			const tokenDTO = await UserService.register(req.body);
+			res.status(201).json(tokenDTO);
+		} catch (error) {
+			next(error);
 		}
-		const user = await this.userService.getUserById(id);
-		res.json({
-			success: true,
-			data: user,
-			timestamp: new Date().toISOString(),
-		});
-	});
-}
+	},
+
+	async login(req, res, next) {
+		try {
+			const tokenDTO = await UserService.login(req.body);
+			res.status(200).json(tokenDTO);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async me(_req, res, next) {
+		try {
+			const user = await UserService.me(res.locals.userId);
+			res.status(200).json(user);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async getUsers(_req, res, next) {
+		try {
+			const { users } = await UserService.getUsers({
+				skip: res.locals.skip,
+				take: res.locals.take,
+			});
+
+			res.status(200).json(users);
+		} catch (error) {
+			next(error);
+		}
+	},
+};

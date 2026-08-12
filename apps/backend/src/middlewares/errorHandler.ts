@@ -1,17 +1,12 @@
-import type {
-	Request,
-	Response,
-	NextFunction,
-	ErrorRequestHandler,
-} from "express";
-import { AppError } from "../errors/index.js";
-import { logger } from "../tools/index.js";
+import type { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import { AppError } from "../errors/AppError";
+import { logger } from "../tools/logger";
 
 export const errorHandler: ErrorRequestHandler = (
 	err: Error,
 	req: Request,
 	res: Response,
-	_next: NextFunction,
+	_next: NextFunction
 ) => {
 	logger.error(`Error processing ${req.method} ${req.url}: ${err.message}`, {
 		stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
@@ -34,10 +29,7 @@ export const errorHandler: ErrorRequestHandler = (
 		success: false,
 		error: {
 			code: "InternalServerError",
-			message:
-				process.env.NODE_ENV === "production"
-					? "Internal Server Error"
-					: err.message,
+			message: process.env.NODE_ENV === "production" ? "Internal Server Error" : err.message,
 		},
 		timestamp: new Date().toISOString(),
 	});

@@ -1,0 +1,18 @@
+model Variant {
+  id        Int     @id @default(autoincrement())
+  uuid      String  @unique @default(uuid())
+  type      String  @default("TEXT") // "TEXT" | "IMAGE"
+  text      String?
+  media     String?
+  isCorrect Boolean @default(false)
+  order     Int     @default(0)
+
+  questionId           Int
+  question             Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answersByParticipant Answer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([questionId])
+}

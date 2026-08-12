@@ -8,7 +8,14 @@ export const env = cleanEnv(process.env, {
 		choices: ["development", "test", "production"],
 		default: "development",
 	}),
+	HOST: str({ default: "http://localhost" }),
 	PORT: port({ default: 3000 }),
-	DATABASE_URL: str({ default: "postgresql://postgres:postgres@localhost:5432/viaquiz" }),
-	JWT_SECRET: str({ default: "super-secret-viaquiz-key-change-in-production" }),
+	DATABASE_URL: str({
+		default: "postgresql://postgres:postgres@localhost:5432/viaquidb",
+	}),
+	JWT_SECRET: str({
+		default: "super-secret-viaquiz-key-change-in-production",
+	}),
+	BREVO_SMTP_KEY: str(),
+	BREVO_SMTP_LOGIN: str(),
 });

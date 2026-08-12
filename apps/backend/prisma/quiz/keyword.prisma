@@ -1,0 +1,9 @@
+model Keyword {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  quizId Int
+  quiz   Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([quizId])
+}

@@ -1,0 +1,21 @@
+model Participant {
+  id   Int    @id @default(autoincrement())
+  uuid String @unique @default(uuid())
+
+  score Int @default(0)
+
+  roomId Int
+  room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  result  Result?
+  answers Answer[]
+
+  joinedAt DateTime @default(now())
+
+  @@unique([roomId, studentId])
+  @@index([roomId])
+  @@index([studentId])
+}

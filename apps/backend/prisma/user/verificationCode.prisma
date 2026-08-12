@@ -1,0 +1,11 @@
+model VerificationCode {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  code      String
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+}

@@ -1,4 +1,4 @@
-import { logger } from "../tools/index.js";
+import { logger } from "../tools/logger";
 
 export async function runSeed(): Promise<void> {
 	logger.info("Starting database seed process...");

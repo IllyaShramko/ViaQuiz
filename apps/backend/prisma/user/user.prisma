@@ -1,0 +1,16 @@
+model User {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  email     String   @unique
+  login     String   @unique
+  firstName String?
+  lastName  String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdQuizes Quiz[]
+  classrooms    Classroom[]
+  courses       Course[]
+  rooms         Room[]
+}

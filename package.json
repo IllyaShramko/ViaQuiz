@@ -9,10 +9,11 @@
 		"dev:web": "pnpm --filter web dev",
 		"build": "pnpm --recursive run build",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"db:generate": "pnpm --filter backend prisma generate",
-		"db:migrate": "pnpm --filter backend prisma migrate dev",
-		"db:init": "pnpm --filter backend prisma generate",
-		"db:studio": "pnpm --filter backend prisma studio"
+		"db:generate": "pnpm --filter backend exec prisma generate",
+		"db:migrate": "pnpm --filter backend exec prisma migrate dev",
+		"db:init": "pnpm --filter backend exec prisma init",
+		"db:format": "pnpm --filter backend exec prisma format",
+		"db:studio": "pnpm --filter backend exec prisma studio"
 	},
 	"keywords": [],
 	"author": "",

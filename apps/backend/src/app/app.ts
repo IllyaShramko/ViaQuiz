@@ -1,7 +1,8 @@
 import express, { type Application } from "express";
-import { requestLogger, errorHandler } from "../middlewares/index.js";
-import { apiRouter } from "../modules/index.js";
-import { NotFoundError } from "../errors/index.js";
+import { requestLogger } from "../middlewares/loggerMiddleware";
+import { errorHandler } from "../middlewares/errorHandler";
+import { apiRouter } from "./routes";
+import { NotFoundError } from "../errors/customErrors";
 
 export function createApp(): Application {
 	const app = express();
