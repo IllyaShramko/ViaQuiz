@@ -1,26 +1,25 @@
-import express from "express";
-import type { User } from "@viaquiz/shared-types";
+import http from "node:http";
+import { createApp } from "./app/index.js";
+import { env } from "./config/index.js";
+import { socketManager } from "./socket/index.js";
+import { logger } from "./tools/index.js";
 
-const app = express();
-app.use(express.json());
+const app = createApp();
+const server = http.createServer(app);
 
-app.get("/users", (req, res) => {
-	const users: User[] = [
-		{
-			id: "1",
-			email: "test@test.com",
-			name: "Test",
-			role: "user",
-			createdAt: new Date().toISOString(),
-		},
-	];
-	res.json(users);
+socketManager.initialize(server);
+
+server.listen(env.PORT, () => {
+	logger.info(`Backend running in ${env.NODE_ENV} mode on http://localhost:${env.PORT}`);
 });
 
-app.get("/health", (req, res) => {
-	res.json({ status: "ok", timestamp: new Date().toISOString() });
-});
+const gracefulShutdown = (signal: string) => {
+	logger.info(`Received ${signal}. Shutting down server gracefully...`);
+	server.close(() => {
+		logger.info("HTTP server closed.");
+		process.exit(0);
+	});
+};
 
-app.listen(3000, () => {
-	console.log("Backend running on http://localhost:3000");
-});
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
