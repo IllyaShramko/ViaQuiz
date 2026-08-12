@@ -1,0 +1,27 @@
+{
+	"name": "ViaQuiz",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "pnpm --parallel --recursive run dev",
+		"dev:backend": "pnpm --filter backend dev",
+		"dev:web": "pnpm --filter web dev",
+		"build": "pnpm --recursive run build",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "^11.18.0",
+			"onFail": "download"
+		}
+	},
+	"type": "module",
+	"devDependencies": {
+		"turbo": "^2.10.9"
+	}
+}
