@@ -1,3 +1,1 @@
-import { apiRouter } from "../app/routes";
-
-export { apiRouter };
+export { apiRouter } from "../app/routes";

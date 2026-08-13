@@ -1,8 +1,7 @@
 import { env } from "./env";
+import { createTransport } from "nodemailer";
 
-const nodemailer = require("nodemailer");
-
-export const transporter = nodemailer.createTransport({
+export const transporter = createTransport({
 	host: "smtp-relay.brevo.com",
 	port: 587,
 	secure: false,

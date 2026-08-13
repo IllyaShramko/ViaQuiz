@@ -1,15 +1,37 @@
 import { Router } from "express";
 import { UserController } from "./user.controller";
-import { registerSchema, loginSchema } from "./user.schema";
+import {
+	checkUniqueSchema,
+	sendCodeSchema,
+	registerSchema,
+	loginSchema,
+} from "./user.schema";
 import { validateBody } from "../../middlewares/validateMiddleware";
 import { authenticate } from "../../middlewares/authMiddleware";
 import { paginationMiddleware } from "../../middlewares/paginationMiddleware";
 
-const router: Router = Router();
+export const userRouter: Router = Router();
 
-router.post("/register", validateBody(registerSchema), UserController.register);
-router.post("/login", validateBody(loginSchema), UserController.login);
-router.get("/me", authenticate, UserController.me);
-router.get("/", authenticate, paginationMiddleware, UserController.getUsers);
-
-export const userRoutes: Router = router;
+userRouter.post(
+	"/check-unique",
+	validateBody(checkUniqueSchema),
+	UserController.checkUnique,
+);
+userRouter.post(
+	"/send-code",
+	validateBody(sendCodeSchema),
+	UserController.sendCode,
+);
+userRouter.post(
+	"/register",
+	validateBody(registerSchema),
+	UserController.register,
+);
+userRouter.post("/login", validateBody(loginSchema), UserController.login);
+userRouter.get("/me", authenticate, UserController.me);
+userRouter.get(
+	"/",
+	authenticate,
+	paginationMiddleware,
+	UserController.getUsers,
+);

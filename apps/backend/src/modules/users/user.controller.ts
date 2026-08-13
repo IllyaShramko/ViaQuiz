@@ -2,6 +2,24 @@ import { UserService } from "./user.service";
 import type { UserControllerContract } from "./types/users.contracts";
 
 export const UserController: UserControllerContract = {
+	async checkUnique(req, res, next) {
+		try {
+			const result = await UserService.checkUnique(req.body);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async sendCode(req, res, next) {
+		try {
+			const result = await UserService.sendCode(req.body);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
 	async register(req, res, next) {
 		try {
 			const tokenDTO = await UserService.register(req.body);
