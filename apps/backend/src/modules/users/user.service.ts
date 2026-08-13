@@ -8,6 +8,8 @@ import {
 } from "../../errors/customErrors";
 import { UserRepository } from "./user.repository";
 import type { UserServiceContract } from "./types/users.contracts";
+import type { UserWithPassword } from "./types/users.types";
+import type { VerificationCode } from "../../generated/prisma";
 import { transporter } from "../../config/mail";
 import { logger } from "../../tools/logger";
 import { env } from "../../config/env";
@@ -18,26 +20,39 @@ const MAX_ATTEMPTS = 5;
 
 export const UserService: UserServiceContract = {
 	async checkUnique({ login, email }) {
-		const [userByLogin, userByEmail] = await Promise.all([
-			UserRepository.findByLogin(login),
-			UserRepository.findByEmail(email),
+		const [loginIsTaken, emailIsTaken] = await Promise.all([
+			UserRepository.findByLogin(login)
+				.then(() => true)
+				.catch(() => false),
+			UserRepository.findByEmail(email)
+				.then(() => true)
+				.catch(() => false),
 		]);
 
 		return {
-			loginIsTaken: !!userByLogin,
-			emailIsTaken: !!userByEmail,
+			loginIsTaken,
+			emailIsTaken,
 		};
 	},
 
 	async sendCode({ email }) {
-		const existingUser = await UserRepository.findByEmail(email);
+		let existingUser = false;
+		try {
+			await UserRepository.findByEmail(email);
+			existingUser = true;
+		} catch (err) {
+			if (!(err instanceof NotFoundError)) {
+				throw err;
+			}
+		}
+
 		if (existingUser) {
 			throw new ConflictError("User with this email already exists");
 		}
 
-		const existingCodeRecord =
-			await UserRepository.findVerificationCodeByEmail(email);
-		if (existingCodeRecord) {
+		try {
+			const existingCodeRecord =
+				await UserRepository.findVerificationCodeByEmail(email);
 			const secondsPassed =
 				(Date.now() -
 					new Date(existingCodeRecord.createdAt).getTime()) /
@@ -52,6 +67,13 @@ export const UserService: UserServiceContract = {
 						cooldownSeconds: remainingCooldown,
 					},
 				);
+			}
+		} catch (err) {
+			if (err instanceof BadRequestError) {
+				throw err;
+			}
+			if (!(err instanceof NotFoundError)) {
+				throw err;
 			}
 		}
 
@@ -97,12 +119,17 @@ export const UserService: UserServiceContract = {
 	},
 
 	async register(credentials) {
-		const verificationRecord =
-			await UserRepository.findVerificationCodeByEmail(credentials.email);
-		if (!verificationRecord) {
-			throw new BadRequestError(
-				"Verification code not found. Please request a new code",
-			);
+		let verificationRecord: VerificationCode;
+		try {
+			verificationRecord =
+				await UserRepository.findVerificationCodeByEmail(credentials.email);
+		} catch (err) {
+			if (err instanceof NotFoundError) {
+				throw new BadRequestError(
+					"Verification code not found. Please request a new code",
+				);
+			}
+			throw err;
 		}
 
 		if (new Date(verificationRecord.expiresAt) < new Date()) {
@@ -145,15 +172,25 @@ export const UserService: UserServiceContract = {
 			);
 		}
 
-		const [userByLogin, userByEmail] = await Promise.all([
-			UserRepository.findByLogin(credentials.login),
-			UserRepository.findByEmail(credentials.email),
+		const [loginExists, emailExists] = await Promise.all([
+			UserRepository.findByLogin(credentials.login)
+				.then(() => true)
+				.catch((err) => {
+					if (err instanceof NotFoundError) return false;
+					throw err;
+				}),
+			UserRepository.findByEmail(credentials.email)
+				.then(() => true)
+				.catch((err) => {
+					if (err instanceof NotFoundError) return false;
+					throw err;
+				}),
 		]);
 
-		if (userByLogin) {
+		if (loginExists) {
 			throw new ConflictError("User with this login already exists");
 		}
-		if (userByEmail) {
+		if (emailExists) {
 			throw new ConflictError("User with this email already exists");
 		}
 
@@ -180,11 +217,22 @@ export const UserService: UserServiceContract = {
 	},
 
 	async login(credentials) {
-		const userWithPassword =
-			(await UserRepository.findByEmail(credentials.email)) ||
-			(await UserRepository.findByLogin(credentials.email));
-		if (!userWithPassword) {
-			throw new UnauthorizedError("Invalid email or password");
+		let userWithPassword: UserWithPassword;
+		try {
+			userWithPassword = await UserRepository.findByEmail(credentials.email);
+		} catch (err) {
+			if (err instanceof NotFoundError) {
+				try {
+					userWithPassword = await UserRepository.findByLogin(credentials.email);
+				} catch (loginErr) {
+					if (loginErr instanceof NotFoundError) {
+						throw new UnauthorizedError("Invalid email or password");
+					}
+					throw loginErr;
+				}
+			} else {
+				throw err;
+			}
 		}
 
 		const isPasswordValid = await bcrypt.compare(
@@ -209,11 +257,7 @@ export const UserService: UserServiceContract = {
 	},
 
 	async me(userId) {
-		const user = await UserRepository.findById(userId);
-		if (!user) {
-			throw new NotFoundError("User not found");
-		}
-		return user;
+		return await UserRepository.findById(userId);
 	},
 
 	async getUsers(pagination) {

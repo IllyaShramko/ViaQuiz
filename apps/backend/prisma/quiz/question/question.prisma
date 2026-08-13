@@ -3,10 +3,11 @@ model Question {
   uuid         String  @unique @default(uuid())
   text         String
   media        String?
-  type         String // "ONE_ANSWER" | "MANY_ANSWERS" | "TYPE_ANSWER"
+  type         String // "ONE_ANSWER" | "MANY_ANSWERS" | "TYPE_ANSWER_V1" | "TYPE_ANSWER_V2"
   order        Int     @default(0)
   timeLimitSec Int     @default(30)
   points       Int     @default(1000)
+  timeLimit Int     @default(30000) // ms
 
   quizId   Int
   quiz     Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)

@@ -8,3 +8,4 @@ export {
 	validateRequest,
 } from "./validateMiddleware";
 export { paginationMiddleware } from "./paginationMiddleware";
+export { uploadImage } from "./uploadMiddleware";

@@ -5,7 +5,7 @@ import type { UserRepositoryContract } from "./types/users.contracts";
 export const UserRepository: UserRepositoryContract = {
 	async findByEmail(email) {
 		try {
-			return await PRISMA_CLIENT.user.findUnique({
+			return await PRISMA_CLIENT.user.findUniqueOrThrow({
 				where: { email },
 			});
 		} catch (e) {
@@ -15,7 +15,7 @@ export const UserRepository: UserRepositoryContract = {
 
 	async findByLogin(login) {
 		try {
-			return await PRISMA_CLIENT.user.findUnique({
+			return await PRISMA_CLIENT.user.findUniqueOrThrow({
 				where: { login },
 			});
 		} catch (e) {
@@ -25,18 +25,9 @@ export const UserRepository: UserRepositoryContract = {
 
 	async findById(id) {
 		try {
-			return await PRISMA_CLIENT.user.findUnique({
+			return await PRISMA_CLIENT.user.findUniqueOrThrow({
 				where: { id },
-				select: {
-					id: true,
-					uuid: true,
-					email: true,
-					login: true,
-					firstName: true,
-					lastName: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				omit: { password: true },
 			});
 		} catch (e) {
 			errorValidator(e);
@@ -53,16 +44,7 @@ export const UserRepository: UserRepositoryContract = {
 					firstName: data.firstName || null,
 					lastName: data.lastName || null,
 				},
-				select: {
-					id: true,
-					uuid: true,
-					email: true,
-					login: true,
-					firstName: true,
-					lastName: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				omit: { password: true },
 			});
 		} catch (e) {
 			errorValidator(e);
@@ -74,16 +56,7 @@ export const UserRepository: UserRepositoryContract = {
 			return await PRISMA_CLIENT.user.findMany({
 				skip,
 				take,
-				select: {
-					id: true,
-					uuid: true,
-					email: true,
-					login: true,
-					firstName: true,
-					lastName: true,
-					createdAt: true,
-					updatedAt: true,
-				},
+				omit: { password: true },
 				orderBy: { createdAt: "desc" },
 			});
 		} catch (e) {
@@ -123,7 +96,7 @@ export const UserRepository: UserRepositoryContract = {
 
 	async findVerificationCodeByEmail(email) {
 		try {
-			return await PRISMA_CLIENT.verificationCode.findUnique({
+			return await PRISMA_CLIENT.verificationCode.findUniqueOrThrow({
 				where: { email },
 			});
 		} catch (e) {

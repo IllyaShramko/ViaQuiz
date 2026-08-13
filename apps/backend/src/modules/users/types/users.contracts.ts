@@ -16,9 +16,9 @@ import type {
 import type { VerificationCode } from "../../../generated/prisma";
 
 export type UserRepositoryContract = {
-	findByEmail: (email: string) => Promise<UserWithPassword | null>;
-	findByLogin: (login: string) => Promise<UserWithPassword | null>;
-	findById: (id: number) => Promise<User | null>;
+	findByEmail: (email: string) => Promise<UserWithPassword>;
+	findByLogin: (login: string) => Promise<UserWithPassword>;
+	findById: (id: number) => Promise<User>;
 	create: (data: CreateUserDTO) => Promise<User>;
 	findUsers: (pagination: { skip: number; take: number }) => Promise<User[]>;
 	countUsers: () => Promise<number>;
@@ -27,13 +27,11 @@ export type UserRepositoryContract = {
 		code: string;
 		expiresAt: Date;
 	}) => Promise<VerificationCode>;
-	findVerificationCodeByEmail: (
-		email: string,
-	) => Promise<VerificationCode | null>;
+	findVerificationCodeByEmail: (email: string) => Promise<VerificationCode>;
 	incrementVerificationCodeAttempts: (
 		email: string,
 	) => Promise<VerificationCode>;
-	deleteVerificationCode: (email: string) => Promise<VerificationCode | null>;
+	deleteVerificationCode: (email: string) => Promise<VerificationCode>;
 };
 
 export type UserServiceContract = {
