@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Question" ADD COLUMN     "timeLimit" INTEGER NOT NULL DEFAULT 30000;

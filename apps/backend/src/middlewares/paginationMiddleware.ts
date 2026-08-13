@@ -33,7 +33,7 @@ function parsePositiveInteger(
 
 export function paginationMiddleware(
 	req: Request,
-	res: Response<object, PaginationLocals>,
+	res: Response,
 	next: NextFunction,
 ): void {
 	try {
