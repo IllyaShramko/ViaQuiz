@@ -1,0 +1,196 @@
+{
+  "nav": {
+    "home": "Головна",
+    "login": "Увійти",
+    "register": "Зареєструватися",
+    "logout": "Вийти",
+    "enterCode": "Введіть код",
+    "language": "Мова",
+    "user": "Користувач",
+    "toggleMenu": "Відкрити меню"
+  },
+  "hero": {
+    "title": "Освітній комплекс",
+    "titleAccent": "ViaQuiz",
+    "subtitle": "ViaQuiz — твій зручний помічник у навчанні та роботі. Платформа для створення, проходження та аналізу вікторин",
+    "cta": "Почати безкоштовно",
+    "ctaSecondary": "Дізнатися більше",
+    "enterCode": "Введіть код",
+    "codePlaceholder": "Код вікторини (напр. 123456)",
+    "submitCode": "Перейти"
+  },
+  "quizzes": {
+    "title": "Популярні вікторини",
+    "subtitle": "Приєднуйтесь до проходження відкритих вікторин від нашої спільноти",
+    "questions": "запитань",
+    "views": "переглядів",
+    "author": "Автор",
+    "startQuiz": "Пройти вікторину",
+    "loading": "Завантаження вікторин...",
+    "error": "Не вдалося завантажити вікторини",
+    "empty": "Поки що немає опублікованих вікторин",
+    "samples": {
+      "math": {
+        "title": "Математика & Логіка",
+        "description": "Цікаві задачі на кмітливість, базову алгебру та логічне мислення",
+        "category": "Точні науки",
+        "author": "ViaQuiz Team"
+      },
+      "history": {
+        "title": "Історія України",
+        "description": "Перевір свої знання ключових дат, постатей та подій української історії",
+        "category": "Історія",
+        "author": "Олександр М."
+      },
+      "science": {
+        "title": "Природничі науки & Всесвіт",
+        "description": "Фізика, хімія, астрономія — захопливі питання про будову світу",
+        "category": "Наука",
+        "author": "Олена К."
+      },
+      "it": {
+        "title": "Основи веброзробки",
+        "description": "HTML, CSS, JavaScript та основи роботи сучасного вебу",
+        "category": "IT & Код",
+        "author": "DevCommunity"
+      },
+      "geo": {
+        "title": "Географія та столиці світу",
+        "description": "Країни, прапори, столиці та географічні рекорди нашої планети",
+        "category": "Географія",
+        "author": "GeoMaster"
+      },
+      "english": {
+        "title": "Англійська граматика (B1-B2)",
+        "description": "Тест на володіння основними часами та ідіомами англійської мови",
+        "category": "Мови",
+        "author": "EnglishClub"
+      }
+    }
+  },
+  "features": {
+    "title": "Можливості",
+    "subtitle": "Все необхідне для ефективного навчання та інтерактивних занять",
+    "create": {
+      "title": "Створюйте",
+      "description": "Створюйте вікторини з різними типами питань: тести, відкриті питання, відповідність"
+    },
+    "share": {
+      "title": "Діліться",
+      "description": "Поширюйте вікторини за 6-значним кодом або прямим посиланням серед студентів та колег"
+    },
+    "analyze": {
+      "title": "Аналізуйте",
+      "description": "Отримуйте детальну статистику та аналітику результатів кожного учасника в реальному часі"
+    },
+    "ai": {
+      "title": "AI-генерація",
+      "description": "Використовуйте штучний інтелект для автоматичного створення питань на будь-яку тему за лічені секунди"
+    }
+  },
+  "howItWorks": {
+    "title": "Як це працює",
+    "step1": {
+      "title": "Створіть вікторину",
+      "description": "Додайте питання власноруч або згенеруйте готову вікторину за допомогою AI"
+    },
+    "step2": {
+      "title": "Поділіться кодом",
+      "description": "Отримайте унікальний 6-значний PIN-код та надішліть його учасникам"
+    },
+    "step3": {
+      "title": "Аналізуйте результати",
+      "description": "Переглядайте відповіді, бали та рейтингову таблицю в реальному часі"
+    }
+  },
+  "cta": {
+    "title": "Готові розпочати?",
+    "subtitle": "Приєднуйтесь до ViaQuiz уже сьогодні та створюйте свої перші вікторини безкоштовно",
+    "button": "Створити акаунт"
+  },
+  "footer": {
+    "description": "Сучасна освітня платформа для легкого створення, проведення та аналізу вікторин",
+    "product": "Продукт",
+    "features": "Можливості",
+    "pricing": "Тарифи",
+    "company": "Компанія",
+    "about": "Про нас",
+    "blog": "Блог",
+    "legal": "Правова інформація",
+    "privacy": "Конфіденційність",
+    "terms": "Умови використання",
+    "rights": "© 2026 ViaQuiz. Усі права захищені."
+  },
+  "login": {
+    "title": "Вхід",
+    "subtitle": "Раді бачити вас знову",
+    "email_label": "Email",
+    "email_placeholder": "your@email.com",
+    "password_label": "Пароль",
+    "password_placeholder": "Введіть пароль",
+    "submit": "Увійти",
+    "submitting": "Входимо...",
+    "no_account": "Немає акаунту?",
+    "sign_up_link": "Зареєструватися",
+    "forgot_password": "Забули пароль?",
+    "show_password": "Показати пароль",
+    "hide_password": "Сховати пароль",
+    "error_default": "Щось пішло не так",
+    "error_email_required": "Email обов'язковий",
+    "error_email_invalid": "Невірний формат email",
+    "error_password_required": "Пароль обов'язковий"
+  },
+  "register": {
+    "title": "Реєстрація",
+    "subtitle": "Створіть свій акаунт",
+    "step_credentials": "Дані акаунту",
+    "step_profile": "Профіль",
+    "step_verification": "Підтвердження",
+    "login_label": "Логін",
+    "login_placeholder": "your_login",
+    "email_label": "Email",
+    "email_placeholder": "your@email.com",
+    "password_label": "Пароль",
+    "password_placeholder": "Мінімум 6 символів",
+    "confirm_password_label": "Підтвердіть пароль",
+    "confirm_password_placeholder": "Повторіть пароль",
+    "first_name_label": "Ім'я",
+    "first_name_placeholder": "Ваше ім'я",
+    "last_name_label": "Прізвище",
+    "last_name_placeholder": "Ваше прізвище",
+    "optional": "(необов'язково)",
+    "skip": "Пропустити",
+    "next": "Далі",
+    "back": "Назад",
+    "checking": "Перевіряємо...",
+    "sending_code": "Надсилаємо код...",
+    "registering": "Реєстрація...",
+    "show_password": "Показати пароль",
+    "hide_password": "Сховати пароль",
+    "code_sent_to": "Код відправлено на",
+    "verification_code_label": "Код підтвердження",
+    "verification_code_placeholder": "000000",
+    "resend_code": "Надіслати код повторно",
+    "resend_in": "Повторно через",
+    "resend_cooldown": "с",
+    "submit": "Зареєструватися",
+    "have_account": "Вже є акаунт?",
+    "log_in_link": "Увійти",
+    "error_default": "Щось пішло не так",
+    "error_login_required": "Логін обов'язковий",
+    "error_login_min": "Логін мінімум 3 символи",
+    "error_login_max": "Логін максимум 20 символів",
+    "error_login_pattern": "Тільки латинські літери, цифри, дефіс та підкреслення",
+    "error_login_taken": "Цей логін вже зайнятий",
+    "error_email_required": "Email обов'язковий",
+    "error_email_invalid": "Невірний формат email",
+    "error_email_taken": "Цей email вже зайнятий",
+    "error_password_required": "Пароль обов'язковий",
+    "error_password_min": "Пароль мінімум 6 символів",
+    "error_password_max": "Пароль максимум 64 символи",
+    "error_confirm_password_required": "Підтвердіть пароль",
+    "error_passwords_match": "Паролі не збігаються",
+    "error_code_required": "Код підтвердження обов'язковий",
+    "error_code_length": "Код має містити 6 цифр"
+  }
+}

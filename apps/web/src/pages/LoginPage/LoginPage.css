@@ -8,14 +8,22 @@
 }
 
 .auth-card {
+  position: relative;
   width: 100%;
   max-width: 420px;
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
-  padding: var(--space-10) var(--space-8);
+  padding: var(--space-8) var(--space-8) var(--space-10);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
+
+.auth-header-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
+}
+
 
 .auth-logo {
   display: flex;

@@ -6,7 +6,7 @@ import '../ui/ui.css';
 import './Layout.css';
 
 export function Layout() {
-  const { t, locale, toggleLocale } = useLocale();
+  const { t, locale, setLocale } = useLocale();
   const { isAuthenticated, user, logout } = useUserContext();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,9 +36,26 @@ export function Layout() {
           </Link>
 
           <nav className={`layout-nav ${isMobileMenuOpen ? 'is-open' : ''}`}>
-            <button className="layout-lang-toggle" onClick={toggleLocale}>
-              {locale === 'uk' ? 'UA' : 'EN'}
-            </button>
+            <div className="layout-lang-switcher" role="group" aria-label={t('nav.language')}>
+              <button
+                type="button"
+                className={`layout-lang-btn ${locale === 'uk' ? 'is-active' : ''}`}
+                onClick={() => setLocale('uk')}
+                title="Українська"
+              >
+                UA
+              </button>
+              <span className="layout-lang-divider" aria-hidden="true">|</span>
+              <button
+                type="button"
+                className={`layout-lang-btn ${locale === 'en' ? 'is-active' : ''}`}
+                onClick={() => setLocale('en')}
+                title="English"
+              >
+                EN
+              </button>
+            </div>
+
             <Link to="/#enter-code" className="btn btn--ghost btn--sm">
               {t('nav.enterCode')}
             </Link>
@@ -53,10 +70,10 @@ export function Layout() {
                     padding: '0 var(--space-2)',
                   }}
                 >
-                  {user?.firstName || user?.login || 'User'}
+                  {user?.firstName || user?.login || t('nav.user')}
                 </span>
                 <button className="btn btn--secondary btn--sm" onClick={logout}>
-                  {locale === 'uk' ? 'Вийти' : 'Logout'}
+                  {t('nav.logout')}
                 </button>
               </>
             ) : (
@@ -74,7 +91,7 @@ export function Layout() {
           <button
             className="layout-hamburger"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={t('nav.toggleMenu')}
           >
             <span></span>
             <span></span>

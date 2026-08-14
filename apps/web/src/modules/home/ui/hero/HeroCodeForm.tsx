@@ -24,12 +24,13 @@ export function HeroCodeForm({ onSubmitCode }: HeroCodeFormProps) {
     <form id="enter-code" className="hero__code-form" onSubmit={handleCodeSubmit}>
       <input
         type="text"
-        placeholder={t('hero.enterCode')}
+        placeholder={t('hero.codePlaceholder')}
         value={code}
         onChange={(e) => setCode(e.target.value)}
         className="hero__code-input"
+        maxLength={12}
       />
-      <button type="submit" className="btn btn--secondary" aria-label={t('hero.enterCode')}>
+      <button type="submit" className="btn btn--secondary" aria-label={t('hero.submitCode')}>
         →
       </button>
     </form>

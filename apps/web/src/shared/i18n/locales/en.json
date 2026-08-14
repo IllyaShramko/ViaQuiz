@@ -1,0 +1,196 @@
+{
+  "nav": {
+    "home": "Home",
+    "login": "Sign In",
+    "register": "Sign Up",
+    "logout": "Log Out",
+    "enterCode": "Enter Code",
+    "language": "Language",
+    "user": "User",
+    "toggleMenu": "Toggle menu"
+  },
+  "hero": {
+    "title": "Educational Platform",
+    "titleAccent": "ViaQuiz",
+    "subtitle": "ViaQuiz — your smart companion for learning and work. A platform for creating, taking, and analyzing quizzes",
+    "cta": "Get Started Free",
+    "ctaSecondary": "Learn More",
+    "enterCode": "Enter Code",
+    "codePlaceholder": "Quiz code (e.g. 123456)",
+    "submitCode": "Go"
+  },
+  "quizzes": {
+    "title": "Popular Quizzes",
+    "subtitle": "Join and solve open quizzes from our active community",
+    "questions": "questions",
+    "views": "views",
+    "author": "Author",
+    "startQuiz": "Start Quiz",
+    "loading": "Loading quizzes...",
+    "error": "Failed to load quizzes",
+    "empty": "No published quizzes yet",
+    "samples": {
+      "math": {
+        "title": "Math & Logic",
+        "description": "Engaging puzzles, basic algebra, and logical reasoning challenges",
+        "category": "Exact Sciences",
+        "author": "ViaQuiz Team"
+      },
+      "history": {
+        "title": "World History",
+        "description": "Test your knowledge of key milestones, historical figures, and civilisations",
+        "category": "History",
+        "author": "Alexander M."
+      },
+      "science": {
+        "title": "Natural Sciences & Universe",
+        "description": "Physics, chemistry, astronomy — fascinating insights into how the cosmos works",
+        "category": "Science",
+        "author": "Elena K."
+      },
+      "it": {
+        "title": "Web Development Basics",
+        "description": "HTML, CSS, JavaScript, and fundamentals of modern web architecture",
+        "category": "IT & Code",
+        "author": "DevCommunity"
+      },
+      "geo": {
+        "title": "World Geography & Capitals",
+        "description": "Countries, flags, capitals, and geographical landmarks across continents",
+        "category": "Geography",
+        "author": "GeoMaster"
+      },
+      "english": {
+        "title": "English Grammar (B1-B2)",
+        "description": "Test your mastery of verb tenses, idioms, and colloquial expressions",
+        "category": "Languages",
+        "author": "EnglishClub"
+      }
+    }
+  },
+  "features": {
+    "title": "Features",
+    "subtitle": "Everything you need for effective learning and interactive sessions",
+    "create": {
+      "title": "Create",
+      "description": "Build quizzes with various question types: multiple choice, open-ended, and matching"
+    },
+    "share": {
+      "title": "Share",
+      "description": "Distribute quizzes via 6-digit game PIN or direct link to students and colleagues"
+    },
+    "analyze": {
+      "title": "Analyze",
+      "description": "Get in-depth analytics, response breakdowns, and participant progress in real time"
+    },
+    "ai": {
+      "title": "AI Generation",
+      "description": "Use artificial intelligence to automatically generate questions on any topic in seconds"
+    }
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": {
+      "title": "Create a Quiz",
+      "description": "Add questions manually or generate an entire quiz instantly using AI"
+    },
+    "step2": {
+      "title": "Share the Code",
+      "description": "Get a unique 6-digit PIN code and share it with your audience"
+    },
+    "step3": {
+      "title": "Analyze Results",
+      "description": "Track answers, leaderboard positions, and comprehensive metrics live"
+    }
+  },
+  "cta": {
+    "title": "Ready to Start?",
+    "subtitle": "Join ViaQuiz today and create your first interactive quizzes for free",
+    "button": "Create Account"
+  },
+  "footer": {
+    "description": "Modern educational platform for creating, hosting, and analyzing quizzes",
+    "product": "Product",
+    "features": "Features",
+    "pricing": "Pricing",
+    "company": "Company",
+    "about": "About",
+    "blog": "Blog",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "terms": "Terms of Service",
+    "rights": "© 2026 ViaQuiz. All rights reserved."
+  },
+  "login": {
+    "title": "Sign In",
+    "subtitle": "Welcome back",
+    "email_label": "Email",
+    "email_placeholder": "your@email.com",
+    "password_label": "Password",
+    "password_placeholder": "Enter password",
+    "submit": "Sign In",
+    "submitting": "Signing in...",
+    "no_account": "Don't have an account?",
+    "sign_up_link": "Sign Up",
+    "forgot_password": "Forgot password?",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "error_default": "Something went wrong",
+    "error_email_required": "Email is required",
+    "error_email_invalid": "Invalid email format",
+    "error_password_required": "Password is required"
+  },
+  "register": {
+    "title": "Sign Up",
+    "subtitle": "Create your account",
+    "step_credentials": "Account Details",
+    "step_profile": "Profile",
+    "step_verification": "Verification",
+    "login_label": "Username",
+    "login_placeholder": "your_login",
+    "email_label": "Email",
+    "email_placeholder": "your@email.com",
+    "password_label": "Password",
+    "password_placeholder": "Minimum 6 characters",
+    "confirm_password_label": "Confirm Password",
+    "confirm_password_placeholder": "Repeat password",
+    "first_name_label": "First Name",
+    "first_name_placeholder": "Your first name",
+    "last_name_label": "Last Name",
+    "last_name_placeholder": "Your last name",
+    "optional": "(optional)",
+    "skip": "Skip",
+    "next": "Next",
+    "back": "Back",
+    "checking": "Checking...",
+    "sending_code": "Sending code...",
+    "registering": "Creating account...",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "code_sent_to": "Code sent to",
+    "verification_code_label": "Verification Code",
+    "verification_code_placeholder": "000000",
+    "resend_code": "Resend Code",
+    "resend_in": "Resend in",
+    "resend_cooldown": "s",
+    "submit": "Create Account",
+    "have_account": "Already have an account?",
+    "log_in_link": "Sign In",
+    "error_default": "Something went wrong",
+    "error_login_required": "Username is required",
+    "error_login_min": "Username must be at least 3 characters",
+    "error_login_max": "Username cannot exceed 20 characters",
+    "error_login_pattern": "Only Latin letters, numbers, hyphens, and underscores",
+    "error_login_taken": "This username is already taken",
+    "error_email_required": "Email is required",
+    "error_email_invalid": "Invalid email format",
+    "error_email_taken": "This email is already taken",
+    "error_password_required": "Password is required",
+    "error_password_min": "Password must be at least 6 characters",
+    "error_password_max": "Password cannot exceed 64 characters",
+    "error_confirm_password_required": "Please confirm your password",
+    "error_passwords_match": "Passwords do not match",
+    "error_code_required": "Verification code is required",
+    "error_code_length": "Code must be 6 digits"
+  }
+}
