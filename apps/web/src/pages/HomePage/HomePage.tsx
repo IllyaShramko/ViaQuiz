@@ -1,104 +1,27 @@
 import { useState, type FormEvent } from "react";
 import { useLocale } from "../../shared/i18n/useLocale";
 import { Link } from "react-router-dom";
+import { useGetPublishedQuizzesQuery } from "../../modules/home/api/quizApi";
 import "./HomePage.css";
 
-interface QuizPreview {
-	id: string;
-	titleKey: string;
-	author: string;
-	descriptionUk: string;
-	descriptionEn: string;
-	questionsCount: number;
-	viewsCount: number;
-	previewEquation?: string;
-	category: string;
-	gradient: string;
-}
-
-const SAMPLE_QUIZZES: QuizPreview[] = [
-	{
-		id: "1",
-		titleKey: "quizzes.mathSample",
-		author: "Олександр Шевченко",
-		descriptionUk: "Дроби, рівняння та базові алгебраїчні задачі для перевірки логічного мислення.",
-		descriptionEn: "Fractions, equations and basic algebraic problems to test logical reasoning.",
-		questionsCount: 12,
-		viewsCount: 284,
-		previewEquation: "2/3 + 1/6 = ?",
-		category: "Math",
-		gradient: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-	},
-	{
-		id: "2",
-		titleKey: "quizzes.itSample",
-		author: "Ілля Шрамко",
-		descriptionUk: "HTML, CSS, базовий JavaScript та сучасні принципи веброзробки.",
-		descriptionEn: "HTML, CSS, core JavaScript, and modern web application development principles.",
-		questionsCount: 15,
-		viewsCount: 412,
-		previewEquation: "const [state] = useState()",
-		category: "Code",
-		gradient: "linear-gradient(135deg, #8b5cf6, #ec4899)",
-	},
-	{
-		id: "3",
-		titleKey: "quizzes.historySample",
-		author: "Марія Ковальчук",
-		descriptionUk: "Ключові історичні події, видатні постаті та знакові дати України.",
-		descriptionEn: "Key historical milestones, prominent figures, and landmark events.",
-		questionsCount: 10,
-		viewsCount: 195,
-		previewEquation: "1991 • 1918 • 1648",
-		category: "History",
-		gradient: "linear-gradient(135deg, #f59e0b, #ef4444)",
-	},
-	{
-		id: "4",
-		titleKey: "quizzes.scienceSample",
-		author: "Дмитро Мельник",
-		descriptionUk: "Фізика, хімія та закони природи у простих і захопливих запитаннях.",
-		descriptionEn: "Physics, chemistry, and laws of nature presented in engaging questions.",
-		questionsCount: 14,
-		viewsCount: 167,
-		previewEquation: "E = mc² • H₂O",
-		category: "Science",
-		gradient: "linear-gradient(135deg, #10b981, #06b6d4)",
-	},
-	{
-		id: "5",
-		titleKey: "quizzes.geoSample",
-		author: "Олена Бондар",
-		descriptionUk: "Столиці країн, прапори, гірські системи та визначні географічні об'єкти.",
-		descriptionEn: "World capitals, flags, mountain ranges, and prominent geographical landmarks.",
-		questionsCount: 16,
-		viewsCount: 220,
-		previewEquation: "48°51'N 2°21'E",
-		category: "Geo",
-		gradient: "linear-gradient(135deg, #06b6d4, #3b82f6)",
-	},
-	{
-		id: "6",
-		titleKey: "quizzes.langSample",
-		author: "Анна Кравченко",
-		descriptionUk: "Граматичні конструкції, фразові дієслова та розширена лексика.",
-		descriptionEn: "Grammar structures, phrasal verbs, idioms, and advanced vocabulary.",
-		questionsCount: 20,
-		viewsCount: 389,
-		previewEquation: "Present Perfect vs Past",
-		category: "English",
-		gradient: "linear-gradient(135deg, #ec4899, #f43f5e)",
-	},
-];
+const DEFAULT_QUIZ_COVER = "https://res.cloudinary.com/demo/image/upload/v1/samples/landscapes/nature-mountains";
 
 export function HomePage() {
-	const { t, locale } = useLocale();
+	const { t, locale, pluralize } = useLocale();
 	const [code, setCode] = useState("");
+
+	const { data, isLoading, error } = useGetPublishedQuizzesQuery({
+		page: 1,
+		limit: 6,
+		sortBy: "createdAt",
+		sortOrder: "desc",
+	});
+
+	const quizzes = data?.quizzes ?? [];
 
 	const handleCodeSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		if (code.trim()) {
-			// Code entry handler
 			alert(`${t("hero.enterCode")}: ${code}`);
 		}
 	};
@@ -125,15 +48,19 @@ export function HomePage() {
 		</svg>,
 	];
 
+	const getAuthorName = (author: { login: string; firstName: string | null; lastName: string | null }) => {
+		if (author.firstName || author.lastName) {
+			return [author.firstName, author.lastName].filter(Boolean).join(" ");
+		}
+		return author.login;
+	};
+
 	return (
 		<div className="homepage">
 			{/* Hero Section */}
 			<section className="hero">
 				<div className="hero__orb"></div>
 				<div className="hero__content">
-					<div className="hero__badge">
-						<span>⚡ {t("hero.title")}</span>
-					</div>
 					<h1 className="hero__title">
 						<span className="hero__accent">
 							{t("hero.titleAccent")}
@@ -180,33 +107,74 @@ export function HomePage() {
 							{t("quizzes.subtitle")}
 						</p>
 					</div>
-					<div className="quizzes-grid">
-						{SAMPLE_QUIZZES.map((quiz) => (
-							<div key={quiz.id} className="quiz-card card card--interactive">
-								<div className="quiz-card__header" style={{ background: quiz.gradient }}>
-									<span className="quiz-card__category-badge">{quiz.category}</span>
-									<span className="quiz-card__equation">{quiz.previewEquation}</span>
-								</div>
-								<div className="quiz-card__body">
-									<h3 className="quiz-card__title">{t(quiz.titleKey)}</h3>
-									<p className="quiz-card__author">
-										{t("quizzes.author")}: <span>{quiz.author}</span>
-									</p>
-									<p className="quiz-card__desc">
-										{locale === "uk" ? quiz.descriptionUk : quiz.descriptionEn}
-									</p>
-									<div className="quiz-card__footer">
-										<span className="quiz-card__stat">
-											📝 {quiz.questionsCount} {t("quizzes.questions")}
-										</span>
-										<span className="quiz-card__stat">
-											👁️ {quiz.viewsCount} {t("quizzes.views")}
-										</span>
+
+					{isLoading && (
+						<div className="quizzes-loading">
+							<div className="quizzes-grid">
+								{[1, 2, 3, 4, 5, 6].map((i) => (
+									<div key={i} className="quiz-card quiz-card--skeleton">
+										<div className="quiz-card__header quiz-card__header--skeleton" />
+										<div className="quiz-card__body">
+											<div className="skeleton-line skeleton-line--title" />
+											<div className="skeleton-line skeleton-line--author" />
+											<div className="skeleton-line skeleton-line--desc" />
+											<div className="skeleton-line skeleton-line--desc-short" />
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+
+					{error && (
+						<div className="quizzes-error">
+							<p>{locale === "uk" ? "Не вдалося завантажити вікторини" : "Failed to load quizzes"}</p>
+						</div>
+					)}
+
+					{!isLoading && !error && quizzes.length === 0 && (
+						<div className="quizzes-empty">
+							<p>{locale === "uk" ? "Поки що немає опублікованих вікторин" : "No published quizzes yet"}</p>
+						</div>
+					)}
+
+					{!isLoading && !error && quizzes.length > 0 && (
+						<div className="quizzes-grid">
+							{quizzes.map((quiz) => (
+								<div key={quiz.id} className="quiz-card card card--interactive">
+									<div className="quiz-card__header">
+										<img
+											src={quiz.coverImg || DEFAULT_QUIZ_COVER}
+											alt={quiz.name}
+											className="quiz-card__cover-img"
+											loading="lazy"
+										/>
+										{quiz.keywords.length > 0 && (
+											<span className="quiz-card__category-badge">
+												{quiz.keywords[0].name}
+											</span>
+										)}
+									</div>
+									<div className="quiz-card__body">
+										<h3 className="quiz-card__title">{quiz.name}</h3>
+										<p className="quiz-card__author">
+											{t("quizzes.author")}: <span>{getAuthorName(quiz.author)}</span>
+										</p>
+										{quiz.description && (
+											<p className="quiz-card__desc">
+												{quiz.description}
+											</p>
+										)}
+										<div className="quiz-card__footer">
+											<span className="quiz-card__stat">
+												📝 {quiz._count?.questions ?? 0} {pluralize(quiz._count?.questions ?? 0, { uk: ['запитання', 'запитання', 'запитань'], en: ['question', 'questions'] })}
+											</span>
+										</div>
 									</div>
 								</div>
-							</div>
-						))}
-					</div>
+							))}
+						</div>
+					)}
 				</div>
 			</section>
 
@@ -283,14 +251,10 @@ export function HomePage() {
 					<div className="footer-top">
 						<div className="footer-brand">
 							<Link to="/" className="layout-logo">
-								<svg
-									viewBox="0 0 48 46"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										fill="currentColor"
-										d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z"
-									/>
+								<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+									<g transform="translate(-164, -2239)">
+										<path fill="currentColor" d="M180.408,2250.776 C178.985,2252.601 177.497,2254.062 175.774,2255.404 C177.201,2256.228 180.549,2257.722 181.634,2256.637 C182.375,2255.897 182.034,2253.581 180.408,2250.776 M174.002,2254.251 C175.984,2252.802 177.798,2250.988 179.247,2249.006 C177.804,2247.032 175.991,2245.216 174.002,2243.761 C172.005,2245.22 170.195,2247.038 168.755,2249.006 C170.204,2250.989 172.019,2252.802 174.002,2254.251 M172.228,2255.404 C170.501,2254.058 169.013,2252.597 167.594,2250.776 C165.968,2253.581 165.627,2255.897 166.368,2256.637 C167.443,2257.711 170.762,2256.252 172.228,2255.404 M167.594,2247.236 C169.016,2245.411 170.504,2243.952 172.228,2242.609 C170.803,2241.784 167.454,2240.29 166.368,2241.375 C165.627,2242.116 165.968,2244.431 167.594,2247.236 M175.774,2242.609 C177.501,2243.954 178.988,2245.414 180.408,2247.236 C184.018,2241.009 181.288,2239.422 175.774,2242.609 M181.664,2249.006 C187.098,2257.497 182.428,2262.065 174.002,2256.674 C165.595,2262.052 160.886,2257.525 166.339,2249.006 C160.942,2240.574 165.492,2235.895 174.002,2241.338 C182.425,2235.95 187.103,2240.508 181.664,2249.006 M175.065,2247.946 C175.649,2248.53 175.649,2249.478 175.065,2250.062 C174.481,2250.646 173.532,2250.646 172.948,2250.062 C172.363,2249.478 172.363,2248.53 172.948,2247.946 C173.532,2247.361 174.481,2247.361 175.065,2247.946" />
+									</g>
 								</svg>
 								ViaQuiz
 							</Link>

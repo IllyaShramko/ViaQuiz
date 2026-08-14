@@ -1,5 +1,5 @@
 import { useSyncExternalStore, useCallback } from 'react';
-import { getLocale, setLocale, subscribe, t as translate } from './index';
+import { getLocale, setLocale, subscribe, t as translate, pluralize } from './index';
 
 export function useLocale() {
   const locale = useSyncExternalStore(subscribe, getLocale);
@@ -12,5 +12,5 @@ export function useLocale() {
     return translate(key);
   }, [locale]); // locale dependency ensures re-render on change
 
-  return { locale, setLocale, toggleLocale, t };
+  return { locale, setLocale, toggleLocale, t, pluralize };
 }

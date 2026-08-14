@@ -3,11 +3,10 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocale } from "../../shared/i18n/useLocale";
 import {
-	apiRegister,
-	apiCheckUnique,
-	apiSendCode,
-	setToken,
-} from "../../shared/api/client";
+	useRegisterMutation,
+	useCheckUniqueMutation,
+	useSendCodeMutation,
+} from "../../modules/auth/api/authApi";
 import "./RegisterPage.css";
 import "../LoginPage/LoginPage.css"; // Reuse common auth styles
 
@@ -32,6 +31,10 @@ export function RegisterPage() {
 	const [isSendingCode, setIsSendingCode] = useState(false);
 	const [cooldown, setCooldown] = useState(0);
 	const [targetEmail, setTargetEmail] = useState("");
+
+	const [registerApi] = useRegisterMutation();
+	const [checkUnique] = useCheckUniqueMutation();
+	const [sendCode] = useSendCodeMutation();
 
 	const {
 		register,
@@ -69,10 +72,10 @@ export function RegisterPage() {
 		try {
 			setIsCheckingUnique(true);
 			setServerError(null);
-			const { loginIsTaken, emailIsTaken } = await apiCheckUnique({
+			const { loginIsTaken, emailIsTaken } = await checkUnique({
 				login,
 				email,
-			});
+			}).unwrap();
 
 			let hasError = false;
 			if (loginIsTaken) {
@@ -94,7 +97,7 @@ export function RegisterPage() {
 				setCurrentStep(1);
 			}
 		} catch (err: any) {
-			setServerError(err.message || t("register.error_default"));
+			setServerError(err.data?.message || err.message || t("register.error_default"));
 		} finally {
 			setIsCheckingUnique(false);
 		}
@@ -105,12 +108,12 @@ export function RegisterPage() {
 		try {
 			setIsSendingCode(true);
 			setServerError(null);
-			const response = await apiSendCode({ email });
+			const response = await sendCode({ email }).unwrap();
 			setTargetEmail(email);
 			setCooldown(response.cooldownSeconds || 60);
 			setCurrentStep(2);
 		} catch (err: any) {
-			setServerError(err.message || t("register.error_default"));
+			setServerError(err.data?.message || err.message || t("register.error_default"));
 		} finally {
 			setIsSendingCode(false);
 		}
@@ -132,10 +135,10 @@ export function RegisterPage() {
 		const { email } = getValues();
 		try {
 			setServerError(null);
-			const response = await apiSendCode({ email });
+			const response = await sendCode({ email }).unwrap();
 			setCooldown(response.cooldownSeconds || 60);
 		} catch (err: any) {
-			setServerError(err.message || t("register.error_default"));
+			setServerError(err.data?.message || err.message || t("register.error_default"));
 		}
 	};
 
@@ -143,11 +146,11 @@ export function RegisterPage() {
 		if (currentStep !== 2) return;
 		try {
 			setServerError(null);
-			const response = await apiRegister(data);
-			setToken(response.token);
+			const response = await registerApi(data).unwrap();
+			localStorage.setItem("viaquiz-token", response.token);
 			navigate("/");
 		} catch (err: any) {
-			setServerError(err.message || t("register.error_default"));
+			setServerError(err.data?.message || err.message || t("register.error_default"));
 		}
 	};
 
@@ -199,11 +202,10 @@ export function RegisterPage() {
 		<div className="auth-page">
 			<div className="auth-card">
 				<Link to="/" className="auth-logo">
-					<svg viewBox="0 0 48 46">
-						<path
-							fill="currentColor"
-							d="M25.946 44.938c-.664.845-2.021.375-2.021-.698V33.937a2.26 2.26 0 0 0-2.262-2.262H10.287c-.92 0-1.456-1.04-.92-1.788l7.48-10.471c1.07-1.497 0-3.578-1.842-3.578H1.237c-.92 0-1.456-1.04-.92-1.788L10.013.474c.214-.297.556-.474.92-.474h28.894c.92 0 1.456 1.04.92 1.788l-7.48 10.471c-1.07 1.498 0 3.579 1.842 3.579h11.377c.943 0 1.473 1.088.89 1.83L25.947 44.94z"
-						/>
+					<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+						<g transform="translate(-164, -2239)">
+							<path fill="currentColor" d="M180.408,2250.776 C178.985,2252.601 177.497,2254.062 175.774,2255.404 C177.201,2256.228 180.549,2257.722 181.634,2256.637 C182.375,2255.897 182.034,2253.581 180.408,2250.776 M174.002,2254.251 C175.984,2252.802 177.798,2250.988 179.247,2249.006 C177.804,2247.032 175.991,2245.216 174.002,2243.761 C172.005,2245.22 170.195,2247.038 168.755,2249.006 C170.204,2250.989 172.019,2252.802 174.002,2254.251 M172.228,2255.404 C170.501,2254.058 169.013,2252.597 167.594,2250.776 C165.968,2253.581 165.627,2255.897 166.368,2256.637 C167.443,2257.711 170.762,2256.252 172.228,2255.404 M167.594,2247.236 C169.016,2245.411 170.504,2243.952 172.228,2242.609 C170.803,2241.784 167.454,2240.29 166.368,2241.375 C165.627,2242.116 165.968,2244.431 167.594,2247.236 M175.774,2242.609 C177.501,2243.954 178.988,2245.414 180.408,2247.236 C184.018,2241.009 181.288,2239.422 175.774,2242.609 M181.664,2249.006 C187.098,2257.497 182.428,2262.065 174.002,2256.674 C165.595,2262.052 160.886,2257.525 166.339,2249.006 C160.942,2240.574 165.492,2235.895 174.002,2241.338 C182.425,2235.95 187.103,2240.508 181.664,2249.006 M175.065,2247.946 C175.649,2248.53 175.649,2249.478 175.065,2250.062 C174.481,2250.646 173.532,2250.646 172.948,2250.062 C172.363,2249.478 172.363,2248.53 172.948,2247.946 C173.532,2247.361 174.481,2247.361 175.065,2247.946" />
+						</g>
 					</svg>
 					ViaQuiz
 				</Link>
@@ -329,7 +331,11 @@ export function RegisterPage() {
 											: t("register.show_password")
 									}
 								>
-									{showPassword ? "🙈" : "👁️"}
+									{showPassword ? (
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
+									) : (
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+									)}
 								</button>
 							</div>
 							{errors.password && (
@@ -381,7 +387,11 @@ export function RegisterPage() {
 											: t("register.show_password")
 									}
 								>
-									{showConfirmPassword ? "🙈" : "👁️"}
+									{showConfirmPassword ? (
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
+									) : (
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+									)}
 								</button>
 							</div>
 							{errors.confirmPassword && (
@@ -454,14 +464,6 @@ export function RegisterPage() {
 							</button>
 							<button
 								type="button"
-								className="btn btn--ghost"
-								onClick={handleSkipStep2}
-								disabled={isSendingCode}
-							>
-								{t("register.skip")}
-							</button>
-							<button
-								type="button"
 								className="btn btn--primary"
 								onClick={handleNextStep2}
 								disabled={isSendingCode}
@@ -469,6 +471,17 @@ export function RegisterPage() {
 								{isSendingCode
 									? t("register.sending_code")
 									: t("register.next")}
+							</button>
+						</div>
+						<div style={{ display: "flex", justifyContent: "center", marginTop: "8px" }}>
+							<button
+								type="button"
+								className="btn btn--ghost"
+								onClick={handleSkipStep2}
+								disabled={isSendingCode}
+								style={{ height: "auto", padding: "8px 16px" }}
+							>
+								{t("register.skip")}
 							</button>
 						</div>
 					</div>

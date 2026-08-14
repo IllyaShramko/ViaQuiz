@@ -185,37 +185,92 @@ section {
 }
 
 .quiz-card__header {
-  height: 110px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  height: 160px;
   position: relative;
-  color: white;
+  overflow: hidden;
+  background: var(--color-bg-surface);
+}
+
+.quiz-card__cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.quiz-card:hover .quiz-card__cover-img {
+  transform: scale(1.05);
 }
 
 .quiz-card__category-badge {
-  align-self: flex-start;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(6px);
-  font-size: 0.75rem;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 6px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: #fff;
+  z-index: 1;
 }
 
-.quiz-card__equation {
-  font-family: monospace, sans-serif;
+/* Skeleton Loading */
+.quiz-card--skeleton {
+  pointer-events: none;
+}
+
+.quiz-card__header--skeleton {
+  height: 160px;
+  background: linear-gradient(110deg, var(--color-bg-surface) 30%, var(--color-bg-hover) 50%, var(--color-bg-surface) 70%);
+  background-size: 300% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(110deg, var(--color-bg-surface) 30%, var(--color-bg-hover) 50%, var(--color-bg-surface) 70%);
+  background-size: 300% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+.skeleton-line--title {
+  width: 70%;
+  height: 18px;
+}
+
+.skeleton-line--author {
+  width: 50%;
+  height: 12px;
+  margin-bottom: 14px;
+}
+
+.skeleton-line--desc {
+  width: 100%;
+}
+
+.skeleton-line--desc-short {
+  width: 60%;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Error / Empty states */
+.quizzes-error,
+.quizzes-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secondary);
   font-size: 1.1rem;
-  font-weight: 700;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(4px);
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  align-self: center;
-  letter-spacing: 0.02em;
 }
 
 .quiz-card__body {
