@@ -1,54 +1,25 @@
-import { baseApi } from '../../../shared/api/baseApi';
+import { baseApi } from '../../../shared/api/base-api';
+import type {
+  User,
+  AuthResult,
+  LoginData,
+  RegisterData,
+  CheckUniqueData,
+  CheckUniqueResult,
+  SendCodeData,
+  SendCodeResult,
+} from '../models';
 
-export interface User {
-  id: number;
-  uuid: string;
-  email: string;
-  login: string;
-  firstName: string | null;
-  lastName: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface AuthResult {
-  token: string;
-  user: User;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  login: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  firstName?: string;
-  lastName?: string;
-  code: string;
-}
-
-export interface CheckUniqueData {
-  login: string;
-  email: string;
-}
-
-export interface CheckUniqueResult {
-  loginIsTaken: boolean;
-  emailIsTaken: boolean;
-}
-
-export interface SendCodeData {
-  email: string;
-}
-
-export interface SendCodeResult {
-  message: string;
-  cooldownSeconds: number;
-}
+export type {
+  User,
+  AuthResult,
+  LoginData,
+  RegisterData,
+  CheckUniqueData,
+  CheckUniqueResult,
+  SendCodeData,
+  SendCodeResult,
+};
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

@@ -1,35 +1,43 @@
-import { User } from "@shared/api/types";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
-
-interface UserContextContract {
-	token: string | null;
-	user: User | null;
-	isAuth: boolean;
-	setToken: (token: string | null) => void;
-	setUser: (user: User | null) => void;
+export interface QuizAuthor {
+  id: number;
+  uuid: string;
+  login: string;
+  firstName: string | null;
+  lastName: string | null;
 }
 
-export const UserContext = createContext<null | UserContextContract>(null);
-
-export function useUserContext() {
-	const ctx = useContext(UserContext);
-	if (!ctx) throw new Error("UserContext is not inside provider");
-	return ctx;
+export interface Keyword {
+  id: number;
+  name: string;
+  quizId: number;
 }
 
-export function UserContextProvider(props: PropsWithChildren) {
-	const [token, setToken] = useState<string | null>(null);
-	const [user, setUser] = useState<User | null>(null);
-	return (
-		<UserContext
-			value={{
-				token,
-				user,
-				isAuth: !!user,
-				setToken,
-				setUser,
-			}}
-			{...props}
-		></UserContext>
-	);
+export interface PublicQuizSummary {
+  id: number;
+  uuid: string;
+  name: string;
+  description: string | null;
+  coverImg: string | null;
+  isDraft: boolean;
+  authorId: number;
+  createdAt: string;
+  updatedAt: string;
+  author: QuizAuthor;
+  keywords: Keyword[];
+  _count?: {
+    questions: number;
+  };
+}
+
+export interface QuizzesResponse {
+  quizzes: PublicQuizSummary[];
+  total: number;
+}
+
+export interface QuizzesParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: 'createdAt' | 'name';
+  sortOrder?: 'asc' | 'desc';
 }
