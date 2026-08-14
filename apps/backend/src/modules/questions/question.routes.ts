@@ -35,7 +35,11 @@ questionRouter.put(
 );
 
 // Duplicate question: POST /api/questions/:id/duplicate
-questionRouter.post("/:id/duplicate", authenticate, QuestionController.duplicate);
+questionRouter.post(
+	"/:id/duplicate",
+	authenticate,
+	QuestionController.duplicate,
+);
 
 // Delete question: DELETE /api/questions/:id
 questionRouter.delete("/:id", authenticate, QuestionController.delete);

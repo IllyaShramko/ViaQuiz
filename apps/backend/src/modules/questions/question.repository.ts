@@ -21,7 +21,8 @@ export const QuestionRepository: QuestionRepositoryContract = {
 				orderBy: { order: "desc" },
 				select: { order: true },
 			});
-			const nextOrder = lastQuestion !== null ? lastQuestion.order + 1 : 0;
+			const nextOrder =
+				lastQuestion !== null ? lastQuestion.order + 1 : 0;
 
 			let defaultVariants = data.variants;
 			if (!defaultVariants || defaultVariants.length === 0) {
@@ -90,7 +91,8 @@ export const QuestionRepository: QuestionRepositoryContract = {
 				if (data.text !== undefined) updatePayload.text = data.text;
 				if (data.media !== undefined) updatePayload.media = data.media;
 				if (data.type !== undefined) updatePayload.type = data.type;
-				if (data.points !== undefined) updatePayload.points = data.points;
+				if (data.points !== undefined)
+					updatePayload.points = data.points;
 				if (data.timeLimitSec !== undefined) {
 					updatePayload.timeLimitSec = data.timeLimitSec;
 				}
@@ -99,7 +101,9 @@ export const QuestionRepository: QuestionRepositoryContract = {
 				if (data.variants !== undefined) {
 					const incomingIds = data.variants
 						.map((v) => v.id)
-						.filter((vId): vId is number => typeof vId === "number");
+						.filter(
+							(vId): vId is number => typeof vId === "number",
+						);
 
 					// Delete variants that are no longer in incoming payload
 					await tx.variant.deleteMany({
@@ -119,9 +123,12 @@ export const QuestionRepository: QuestionRepositoryContract = {
 								isCorrect: Boolean(v.isCorrect),
 								order,
 							};
-							if (v.text !== undefined) variantUpdateData.text = v.text;
-							if (v.media !== undefined) variantUpdateData.media = v.media;
-							if (v.type !== undefined) variantUpdateData.type = v.type;
+							if (v.text !== undefined)
+								variantUpdateData.text = v.text;
+							if (v.media !== undefined)
+								variantUpdateData.media = v.media;
+							if (v.type !== undefined)
+								variantUpdateData.type = v.type;
 
 							await tx.variant.update({
 								where: { id: v.id },

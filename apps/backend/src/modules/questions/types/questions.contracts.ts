@@ -7,10 +7,18 @@ import type {
 } from "./questions.types";
 
 export interface QuestionRepositoryContract {
-	create(quizId: number, data: CreateQuestionDTO): Promise<QuestionWithVariants>;
-	findById(id: number): Promise<QuestionWithVariants & { quiz: { authorId: number } }>;
+	create(
+		quizId: number,
+		data: CreateQuestionDTO,
+	): Promise<QuestionWithVariants>;
+	findById(
+		id: number,
+	): Promise<QuestionWithVariants & { quiz: { authorId: number } }>;
 	update(id: number, data: UpdateQuestionDTO): Promise<QuestionWithVariants>;
-	reorder(quizId: number, questionIds: number[]): Promise<QuestionWithVariants[]>;
+	reorder(
+		quizId: number,
+		questionIds: number[],
+	): Promise<QuestionWithVariants[]>;
 	delete(id: number): Promise<Question>;
 	duplicate(id: number): Promise<QuestionWithVariants>;
 }
@@ -32,7 +40,10 @@ export interface QuestionServiceContract {
 		questionIds: number[],
 	): Promise<QuestionWithVariants[]>;
 	deleteQuestion(id: number, userId: number): Promise<Question>;
-	duplicateQuestion(id: number, userId: number): Promise<QuestionWithVariants>;
+	duplicateQuestion(
+		id: number,
+		userId: number,
+	): Promise<QuestionWithVariants>;
 }
 
 export interface QuestionControllerContract {

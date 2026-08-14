@@ -7,7 +7,9 @@ export const QuestionService: QuestionServiceContract = {
 	async createQuestion(quizId, userId, data) {
 		const quiz = await QuizRepository.findById(quizId);
 		if (quiz.authorId !== userId) {
-			throw new ForbiddenError("You are not authorized to add questions to this quiz");
+			throw new ForbiddenError(
+				"You are not authorized to add questions to this quiz",
+			);
 		}
 
 		return await QuestionRepository.create(quizId, data);
@@ -16,7 +18,9 @@ export const QuestionService: QuestionServiceContract = {
 	async updateQuestion(id, userId, data) {
 		const question = await QuestionRepository.findById(id);
 		if (question.quiz.authorId !== userId) {
-			throw new ForbiddenError("You are not authorized to edit this question");
+			throw new ForbiddenError(
+				"You are not authorized to edit this question",
+			);
 		}
 
 		return await QuestionRepository.update(id, data);
@@ -25,7 +29,9 @@ export const QuestionService: QuestionServiceContract = {
 	async reorderQuestions(quizId, userId, questionIds) {
 		const quiz = await QuizRepository.findById(quizId);
 		if (quiz.authorId !== userId) {
-			throw new ForbiddenError("You are not authorized to reorder questions in this quiz");
+			throw new ForbiddenError(
+				"You are not authorized to reorder questions in this quiz",
+			);
 		}
 
 		return await QuestionRepository.reorder(quizId, questionIds);
@@ -34,7 +40,9 @@ export const QuestionService: QuestionServiceContract = {
 	async deleteQuestion(id, userId) {
 		const question = await QuestionRepository.findById(id);
 		if (question.quiz.authorId !== userId) {
-			throw new ForbiddenError("You are not authorized to delete this question");
+			throw new ForbiddenError(
+				"You are not authorized to delete this question",
+			);
 		}
 
 		return await QuestionRepository.delete(id);
@@ -43,7 +51,9 @@ export const QuestionService: QuestionServiceContract = {
 	async duplicateQuestion(id, userId) {
 		const question = await QuestionRepository.findById(id);
 		if (question.quiz.authorId !== userId) {
-			throw new ForbiddenError("You are not authorized to duplicate this question");
+			throw new ForbiddenError(
+				"You are not authorized to duplicate this question",
+			);
 		}
 
 		return await QuestionRepository.duplicate(id);

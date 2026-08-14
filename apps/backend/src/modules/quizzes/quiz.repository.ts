@@ -47,25 +47,6 @@ export const QuizRepository: QuizRepositoryContract = {
 				description: description || null,
 				coverImg: coverImg || null,
 				isDraft: true,
-				questions: {
-					create: [
-						{
-							text: "",
-							type: "ONE_ANSWER",
-							order: 0,
-							timeLimitSec: 30,
-							points: 1000,
-							variants: {
-								create: [
-									{ text: "", isCorrect: false, order: 0, type: "TEXT" },
-									{ text: "", isCorrect: false, order: 1, type: "TEXT" },
-									{ text: "", isCorrect: false, order: 2, type: "TEXT" },
-									{ text: "", isCorrect: false, order: 3, type: "TEXT" },
-								],
-							},
-						},
-					],
-				},
 			};
 
 			if (keywords && keywords.length > 0) {

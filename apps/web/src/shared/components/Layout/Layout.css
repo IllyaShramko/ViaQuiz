@@ -1,0 +1,116 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: transparent;
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-bottom 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.layout-header.is-scrolled {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(10, 10, 15, 0.8);
+  border-bottom: 1px solid var(--color-border, #333);
+}
+
+.layout-header__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4, 1rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.layout-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-text-primary, #fff);
+  text-decoration: none;
+}
+
+.layout-logo svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-accent, #863bff);
+}
+
+.layout-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 1rem);
+}
+
+.layout-lang-toggle {
+  background: transparent;
+  border: 1px solid var(--color-border, #444);
+  color: var(--color-text-primary, #fff);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.layout-lang-toggle:hover {
+  background: var(--color-bg-elevated, #222);
+}
+
+.layout-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.layout-hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--color-text-primary, #fff);
+  margin-bottom: 5px;
+  transition: 0.3s;
+}
+
+.layout-hamburger span:last-child {
+  margin-bottom: 0;
+}
+
+.layout-main {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .layout-nav {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: var(--color-bg, #0a0a0f);
+    flex-direction: column;
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border, #333);
+  }
+  
+  .layout-nav.is-open {
+    display: flex;
+  }
+  
+  .layout-hamburger {
+    display: block;
+  }
+}
