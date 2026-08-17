@@ -32,3 +32,24 @@
 ## 4. NO .js in imports
   - ❌ `import { apiRouter, authRouter } from "./routes.js";`
   - ✅ `import { apiRouter, authRouter } from "./routes";`
+
+## 5. No Default Exports (`export default`)
+- **NEVER use `export default`**. Always use named exports (`export const ...`, `export function ...`, `export type ...`, etc.).
+- Always use named imports (`import { ... } from "..."`).
+  - ❌
+    ```ts
+    // myService.ts
+    const myService = { ... };
+    export default myService;
+
+    // consumer.ts
+    import myService from "./myService";
+    ```
+  - ✅
+    ```ts
+    // myService.ts
+    export const myService = { ... };
+
+    // consumer.ts
+    import { myService } from "./myService";
+    ```

@@ -1,8 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Layout } from '../../shared/ui/Layout/Layout';
-import { HomePage } from '../../pages/HomePage/HomePage';
-import { LoginPage } from '../../pages/LoginPage/LoginPage';
-import { RegisterPage } from '../../pages/RegisterPage/RegisterPage';
+import { Layout, TeacherLayout, ProtectedRoute } from '../../shared';
+import {
+  HomePage,
+  LoginPage,
+  RegisterPage,
+  TeacherMainPage,
+  ProfilePage,
+  QuizDetailsPage,
+} from '../../pages';
 
 export const router = createBrowserRouter([
   {
@@ -13,4 +18,17 @@ export const router = createBrowserRouter([
   },
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <TeacherLayout />,
+        children: [
+          { path: '/dashboard', element: <TeacherMainPage /> },
+          { path: '/profile', element: <ProfilePage /> },
+          { path: '/quiz/:uuid', element: <QuizDetailsPage /> },
+        ],
+      },
+    ],
+  },
 ]);

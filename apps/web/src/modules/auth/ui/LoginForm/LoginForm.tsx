@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { useLoginMutation } from '../../api/authApi';
 import { useUserContext } from '../../context';
@@ -15,6 +15,7 @@ export interface LoginFormProps {
 export function LoginForm({ onSuccess, onError }: LoginFormProps) {
   const { t } = useLocale();
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: setAuthContext } = useUserContext();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -34,10 +35,15 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate('/');
+        const from = (location.state as any)?.from?.pathname || '/dashboard';
+        navigate(from, { replace: true });
       }
     } catch (err: any) {
-      const message = err.data?.message || err.message || t('login.error_default');
+      const message =
+        err.data?.error?.message ||
+        err.data?.message ||
+        err.message ||
+        t('login.error_default');
       setServerError(message);
       if (onError) onError(message);
     }

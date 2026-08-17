@@ -12,6 +12,24 @@ export interface Keyword {
   quizId: number;
 }
 
+export interface QuestionVariant {
+  id: number;
+  text: string;
+  isCorrect?: boolean;
+  order: number;
+}
+
+export interface QuizQuestion {
+  id: number;
+  title: string;
+  type: string;
+  timeLimit: number;
+  points: number;
+  order: number;
+  img?: string | null;
+  variants?: QuestionVariant[];
+}
+
 export interface PublicQuizSummary {
   id: number;
   uuid: string;
@@ -23,7 +41,24 @@ export interface PublicQuizSummary {
   createdAt: string;
   updatedAt: string;
   author: QuizAuthor;
-  keywords: Keyword[];
+  keywords?: Keyword[];
+  _count?: {
+    questions: number;
+  };
+}
+
+export interface QuizDetail {
+  id: number;
+  uuid: string;
+  name: string;
+  description: string | null;
+  coverImg: string | null;
+  isDraft: boolean;
+  authorId: number;
+  author?: QuizAuthor;
+  createdAt: string;
+  updatedAt: string;
+  questions?: QuizQuestion[];
   _count?: {
     questions: number;
   };

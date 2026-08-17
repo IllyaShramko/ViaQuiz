@@ -5,7 +5,7 @@ import {
   HowItWorksSection,
   CtaSection,
   Footer,
-} from '../../modules/home/ui';
+} from '../../../modules/home/ui';
 import './HomePage.css';
 
 export function HomePage() {

@@ -62,16 +62,18 @@ export function Layout() {
 
             {isAuthenticated ? (
               <>
-                <span
+                <Link
+                  to="/dashboard"
                   className="layout-user-name"
                   style={{
                     fontSize: 'var(--text-sm)',
-                    color: 'var(--color-text-secondary)',
+                    color: 'var(--color-text-primary)',
+                    fontWeight: 600,
                     padding: '0 var(--space-2)',
                   }}
                 >
                   {user?.firstName || user?.login || t('nav.user')}
-                </span>
+                </Link>
                 <button className="btn btn--secondary btn--sm" onClick={logout}>
                   {t('nav.logout')}
                 </button>

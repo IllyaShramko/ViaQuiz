@@ -1,8 +1,16 @@
-export { quizApi, useGetPublishedQuizzesQuery } from './api/quizApi';
+export {
+  quizApi,
+  useGetPublishedQuizzesQuery,
+  useGetMyQuizzesQuery,
+  useGetQuizByIdQuery,
+  useGetQuizByUuidQuery,
+} from './api/quizApi';
 export type {
   QuizAuthor,
-  Keyword,
   PublicQuizSummary,
+  QuizDetail,
+  QuizQuestion,
+  QuestionVariant,
   QuizzesResponse,
   QuizzesParams,
 } from './models';

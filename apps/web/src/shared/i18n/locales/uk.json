@@ -175,6 +175,7 @@
     "resend_cooldown": "с",
     "submit": "Зареєструватися",
     "have_account": "Вже є акаунт?",
+    "login_link": "Увійти",
     "log_in_link": "Увійти",
     "error_default": "Щось пішло не так",
     "error_login_required": "Логін обов'язковий",

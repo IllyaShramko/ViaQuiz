@@ -96,7 +96,11 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
         setCurrentStep(1);
       }
     } catch (err: any) {
-      const message = err.data?.message || err.message || t('register.error_default');
+      const message =
+        err.data?.error?.message ||
+        err.data?.message ||
+        err.message ||
+        t('register.error_default');
       setServerError(message);
       if (onError) onError(message);
     } finally {
@@ -114,7 +118,11 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
       setCooldown(response.cooldownSeconds || 60);
       setCurrentStep(2);
     } catch (err: any) {
-      const message = err.data?.message || err.message || t('register.error_default');
+      const message =
+        err.data?.error?.message ||
+        err.data?.message ||
+        err.message ||
+        t('register.error_default');
       setServerError(message);
       if (onError) onError(message);
     } finally {
@@ -141,7 +149,11 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
       const response = await sendCode({ email }).unwrap();
       setCooldown(response.cooldownSeconds || 60);
     } catch (err: any) {
-      const message = err.data?.message || err.message || t('register.error_default');
+      const message =
+        err.data?.error?.message ||
+        err.data?.message ||
+        err.message ||
+        t('register.error_default');
       setServerError(message);
       if (onError) onError(message);
     }
@@ -156,10 +168,14 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate('/');
+        navigate('/dashboard', { replace: true });
       }
     } catch (err: any) {
-      const message = err.data?.message || err.message || t('register.error_default');
+      const message =
+        err.data?.error?.message ||
+        err.data?.message ||
+        err.message ||
+        t('register.error_default');
       setServerError(message);
       if (onError) onError(message);
     }

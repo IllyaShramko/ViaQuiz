@@ -175,6 +175,7 @@
     "resend_cooldown": "s",
     "submit": "Create Account",
     "have_account": "Already have an account?",
+    "login_link": "Sign In",
     "log_in_link": "Sign In",
     "error_default": "Something went wrong",
     "error_login_required": "Username is required",

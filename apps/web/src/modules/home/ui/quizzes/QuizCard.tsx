@@ -37,7 +37,7 @@ export function QuizCard({ quiz, onClick }: QuizCardProps) {
           className="quiz-card__cover-img"
           loading="lazy"
         />
-        {quiz.keywords.length > 0 && (
+        {quiz.keywords && quiz.keywords.length > 0 && (
           <span className="quiz-card__category-badge">
             {quiz.keywords[0].name}
           </span>
