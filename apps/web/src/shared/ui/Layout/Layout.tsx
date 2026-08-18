@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useLocale } from '../../i18n/useLocale';
-import { useUserContext } from '../../../modules/auth/context';
 import '../ui/ui.css';
 import './Layout.css';
 
 export function Layout() {
   const { t, locale, setLocale } = useLocale();
-  const { isAuthenticated, user, logout } = useUserContext();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -60,34 +58,12 @@ export function Layout() {
               {t('nav.enterCode')}
             </Link>
 
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  className="layout-user-name"
-                  style={{
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--color-text-primary)',
-                    fontWeight: 600,
-                    padding: '0 var(--space-2)',
-                  }}
-                >
-                  {user?.firstName || user?.login || t('nav.user')}
-                </Link>
-                <button className="btn btn--secondary btn--sm" onClick={logout}>
-                  {t('nav.logout')}
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="btn btn--ghost btn--sm">
-                  {t('nav.login')}
-                </Link>
-                <Link to="/register" className="btn btn--primary btn--sm">
-                  {t('nav.register')}
-                </Link>
-              </>
-            )}
+            <Link to="/login" className="btn btn--ghost btn--sm">
+              {t('nav.login')}
+            </Link>
+            <Link to="/register" className="btn btn--primary btn--sm">
+              {t('nav.register')}
+            </Link>
           </nav>
 
           <button

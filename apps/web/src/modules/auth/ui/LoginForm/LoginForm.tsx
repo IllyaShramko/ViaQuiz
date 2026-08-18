@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { useLoginMutation } from '../../api/authApi';
 import { useUserContext } from '../../context';
+import { getUserDashboardPath } from '../../utils';
 import type { LoginFormInputs } from '../../models';
 import { PasswordInput } from './PasswordInput';
 
@@ -35,7 +36,7 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        const from = (location.state as any)?.from?.pathname || '/dashboard';
+        const from = (location.state as any)?.from?.pathname || getUserDashboardPath(response.user);
         navigate(from, { replace: true });
       }
     } catch (err: any) {

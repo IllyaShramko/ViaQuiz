@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Layout, TeacherLayout, ProtectedRoute } from '../../shared';
+import { Layout, TeacherLayout, ProtectedRoute, PublicRoute } from '../../shared';
 import {
   HomePage,
   LoginPage,
@@ -11,13 +11,18 @@ import {
 
 export const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <PublicRoute />,
     children: [
-      { path: '/', element: <HomePage /> },
+      {
+        element: <Layout />,
+        children: [
+          { path: '/', element: <HomePage /> },
+        ],
+      },
+      { path: '/login', element: <LoginPage /> },
+      { path: '/register', element: <RegisterPage /> },
     ],
   },
-  { path: '/login', element: <LoginPage /> },
-  { path: '/register', element: <RegisterPage /> },
   {
     element: <ProtectedRoute />,
     children: [

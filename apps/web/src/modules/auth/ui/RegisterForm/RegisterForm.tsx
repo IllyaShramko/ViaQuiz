@@ -8,6 +8,7 @@ import {
   useSendCodeMutation,
 } from '../../api/authApi';
 import { useUserContext } from '../../context';
+import { getUserDashboardPath } from '../../utils';
 import type { RegisterFormInputs } from '../../models';
 import { RegisterSteps } from './RegisterSteps';
 import { StepCredentials } from './StepCredentials';
@@ -168,7 +169,7 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate('/dashboard', { replace: true });
+        navigate(getUserDashboardPath(response.user), { replace: true });
       }
     } catch (err: any) {
       const message =
