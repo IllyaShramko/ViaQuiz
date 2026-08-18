@@ -1,8 +1,12 @@
 import { useUserContext } from '../../../modules/auth/context';
+import { useGetMyQuizzesQuery } from '../../../modules/home';
 import './ProfilePage.css';
 
 export function ProfilePage() {
   const { user } = useUserContext();
+  const { data: myQuizzesData, isLoading: isLoadingQuizzes } = useGetMyQuizzesQuery({ isDraft: false });
+
+  const totalQuizzes = myQuizzesData?.total ?? myQuizzesData?.quizzes?.length ?? 0;
 
   const fullName =
     user?.firstName && user?.lastName
@@ -45,7 +49,9 @@ export function ProfilePage() {
             </svg>
           </div>
           <div className="profile-stat-card__content">
-            <span className="profile-stat-number">0</span>
+            <span className="profile-stat-number">
+              {isLoadingQuizzes ? '...' : totalQuizzes}
+            </span>
             <span className="profile-stat-label">Створених вікторин</span>
           </div>
         </div>

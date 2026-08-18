@@ -4,7 +4,10 @@ import { QuizService } from "./quiz.service";
 export const QuizController: QuizControllerContract = {
 	async create(req, res, next) {
 		try {
-			const quiz = await QuizService.createQuiz(res.locals.userId, req.body);
+			const quiz = await QuizService.createQuiz(
+				res.locals.userId,
+				req.body,
+			);
 			res.status(201).json(quiz);
 		} catch (error) {
 			next(error);
@@ -39,8 +42,12 @@ export const QuizController: QuizControllerContract = {
 
 	async getAllPublished(req, res, next) {
 		try {
-			const search = req.query.search ? String(req.query.search) : undefined;
-			const sortBy = req.query.sortBy ? String(req.query.sortBy) : undefined;
+			const search = req.query.search
+				? String(req.query.search)
+				: undefined;
+			const sortBy = req.query.sortBy
+				? String(req.query.sortBy)
+				: undefined;
 			const sortOrder = req.query.sortOrder === "asc" ? "asc" : "desc";
 
 			const params: {
@@ -72,13 +79,20 @@ export const QuizController: QuizControllerContract = {
 			if (isDraftQuery === "true") isDraft = true;
 			if (isDraftQuery === "false") isDraft = false;
 
-			const search = req.query.search ? String(req.query.search) : undefined;
+			const search = req.query.search
+				? String(req.query.search)
+				: undefined;
+			const sortBy = req.query.sortBy as
+				"createdAt" | "updatedAt" | undefined;
+			const sortOrder = req.query.sortOrder as "asc" | "desc" | undefined;
 
 			const params: {
 				isDraft?: boolean;
 				search?: string;
 				skip: number;
 				take: number;
+				sortBy?: "createdAt" | "updatedAt";
+				sortOrder?: "asc" | "desc";
 			} = {
 				skip: res.locals.skip,
 				take: res.locals.take,
@@ -86,8 +100,13 @@ export const QuizController: QuizControllerContract = {
 
 			if (isDraft !== undefined) params.isDraft = isDraft;
 			if (search !== undefined) params.search = search;
+			if (sortBy !== undefined) params.sortBy = sortBy;
+			if (sortOrder !== undefined) params.sortOrder = sortOrder;
 
-			const result = await QuizService.getUserQuizzes(res.locals.userId, params);
+			const result = await QuizService.getUserQuizzes(
+				res.locals.userId,
+				params,
+			);
 
 			res.status(200).json(result);
 		} catch (error) {

@@ -1,0 +1,29 @@
+.quiz-editor-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  overflow: hidden;
+}
+
+.quiz-editor-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.quiz-editor-main {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+}
+
+@media (max-width: 900px) {
+  .quiz-editor-body {
+    flex-direction: column;
+  }
+}

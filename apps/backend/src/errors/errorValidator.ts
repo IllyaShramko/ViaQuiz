@@ -22,7 +22,9 @@ export function errorValidator(e: unknown): never {
 				const targets = Array.isArray(e.meta?.target)
 					? e.meta.target.join(", ")
 					: (e.meta?.target as string) || "field";
-				throw new ConflictError(`Unique constraint failed on field(s): ${targets}`);
+				throw new ConflictError(
+					`Unique constraint failed on field(s): ${targets}`,
+				);
 			}
 			case "P2025": {
 				throw new NotFoundError("Requested record was not found");
@@ -31,12 +33,16 @@ export function errorValidator(e: unknown): never {
 				throw new BadRequestError("Foreign key constraint failed");
 			}
 			case "P2014": {
-				throw new BadRequestError("Required relation constraint violated");
+				throw new BadRequestError(
+					"Required relation constraint violated",
+				);
 			}
 			case "P2000":
 			case "P2011":
 			case "P2023": {
-				throw new BadRequestError("Invalid data provided or database constraint violation");
+				throw new BadRequestError(
+					"Invalid data provided or database constraint violation",
+				);
 			}
 			default:
 				throw e;

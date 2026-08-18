@@ -11,6 +11,14 @@ export function TeacherLayout() {
   const { user, logout } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
+  const handleCreateQuiz = () => {
+    navigate('/quiz/drafts');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/', { replace: true });
+  };
 
   const isProfile = location.pathname.includes('/profile');
   const isQuizDetails = location.pathname.startsWith('/quiz');
@@ -120,7 +128,11 @@ export function TeacherLayout() {
             </div>
 
           <div className="teacher-topbar__actions">
-            <button type="button" className="btn-teacher-create">
+            <button
+              type="button"
+              className="btn-teacher-create"
+              onClick={handleCreateQuiz}
+            >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -139,7 +151,7 @@ export function TeacherLayout() {
             <button
               type="button"
               className="teacher-logout-btn"
-              onClick={logout}
+              onClick={handleLogout}
               title="Вийти з акаунту"
               aria-label="Вийти"
             >

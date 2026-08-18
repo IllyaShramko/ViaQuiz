@@ -13,16 +13,10 @@ export const variantSchema = z.object({
 	id: z.number().int().positive().optional(),
 	text: z
 		.string()
-		.trim()
 		.max(300, "Variant text cannot exceed 300 characters")
 		.nullable()
 		.optional(),
-	media: z
-		.string()
-		.url("Invalid media URL")
-		.nullable()
-		.optional()
-		.or(z.literal("")),
+	media: z.url("Invalid media URL").nullable().optional().or(z.literal("")),
 	type: variantTypeEnum.default("TEXT"),
 	isCorrect: z.boolean().default(false),
 	order: z.number().int().min(0).default(0),
@@ -32,17 +26,11 @@ export const createQuestionSchema = z.object({
 	type: questionTypeEnum.default("ONE_ANSWER"),
 	text: z
 		.string()
-		.trim()
 		.max(1000, "Question text cannot exceed 1000 characters")
 		.optional()
 		.default(""),
-	media: z
-		.string()
-		.url("Invalid media URL")
-		.nullable()
-		.optional()
-		.or(z.literal("")),
-	timeLimitSec: z.number().int().min(5).max(300).default(30),
+	media: z.url("Invalid media URL").nullable().optional().or(z.literal("")),
+	timeLimit: z.number().int().min(1000).max(600000).default(30000),
 	points: z.number().int().min(0).max(5000).default(1000),
 	variants: z
 		.array(variantSchema)
@@ -53,17 +41,11 @@ export const createQuestionSchema = z.object({
 export const updateQuestionSchema = z.object({
 	text: z
 		.string()
-		.trim()
 		.max(1000, "Question text cannot exceed 1000 characters")
 		.optional(),
-	media: z
-		.string()
-		.url("Invalid media URL")
-		.nullable()
-		.optional()
-		.or(z.literal("")),
+	media: z.url("Invalid media URL").nullable().optional().or(z.literal("")),
 	type: questionTypeEnum.optional(),
-	timeLimitSec: z.number().int().min(5).max(300).optional(),
+	timeLimit: z.number().int().min(1000).max(600000).optional(),
 	points: z.number().int().min(0).max(5000).optional(),
 	variants: z
 		.array(variantSchema)

@@ -1,0 +1,83 @@
+.question-settings {
+  width: 260px;
+  background-color: var(--color-bg-elevated);
+  border-left: 1px solid var(--color-border);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settings-label {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.settings-select {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.settings-select:focus {
+  border-color: var(--color-border-focus);
+}
+
+.settings-select option {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-primary);
+}
+
+.settings-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.settings-save-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(134, 59, 255, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.settings-save-btn:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-1px);
+}
+
+.settings-save-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  .question-settings {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    height: auto;
+  }
+}

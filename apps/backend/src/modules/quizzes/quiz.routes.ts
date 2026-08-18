@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { QuizController } from "./quiz.controller";
 import { createQuizSchema, updateQuizSchema } from "./quiz.schema";
-import { authenticate, optionalAuthenticate } from "../../middlewares/authMiddleware";
+import {
+	authenticate,
+	optionalAuthenticate,
+} from "../../middlewares/authMiddleware";
 import { validateBody } from "../../middlewares/validateMiddleware";
 import { paginationMiddleware } from "../../middlewares/paginationMiddleware";
 
@@ -19,7 +22,12 @@ quizRouter.post(
 quizRouter.get("/", paginationMiddleware, QuizController.getAllPublished);
 
 // User's own quizzes: GET /api/quizzes/my?isDraft=true
-quizRouter.get("/my", authenticate, paginationMiddleware, QuizController.getMyQuizzes);
+quizRouter.get(
+	"/my",
+	authenticate,
+	paginationMiddleware,
+	QuizController.getMyQuizzes,
+);
 
 // Public/shared quiz by UUID: GET /api/quizzes/uuid/:uuid
 quizRouter.get("/uuid/:uuid", optionalAuthenticate, QuizController.getByUuid);

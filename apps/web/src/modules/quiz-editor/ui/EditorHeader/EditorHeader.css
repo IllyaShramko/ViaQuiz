@@ -1,0 +1,125 @@
+.editor-header {
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+}
+
+.editor-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.editor-back-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color var(--transition-fast);
+}
+
+.editor-back-btn:hover {
+  color: var(--color-text-primary);
+}
+
+.editor-quiz-name-input {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  outline: none;
+  width: 100%;
+  max-width: 400px;
+  transition: border-color var(--transition-fast);
+}
+
+.editor-quiz-name-input:hover {
+  border-color: var(--color-border);
+}
+
+.editor-quiz-name-input:focus {
+  border-color: var(--color-border-focus);
+  background-color: var(--color-bg-surface);
+}
+
+.editor-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.save-status {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.save-status.saving {
+  color: var(--color-text-muted);
+}
+
+.save-status.saved {
+  color: var(--color-success);
+}
+
+.save-status.error {
+  color: var(--color-error);
+}
+
+.editor-publish-btn {
+  background-color: var(--color-success);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity var(--transition-fast);
+}
+
+.editor-publish-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.editor-publish-btn:disabled {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  border: 1px solid var(--color-border);
+}
+
+@media (max-width: 600px) {
+  .editor-header {
+    padding: 0 1rem;
+  }
+  
+  .editor-quiz-name-input {
+    font-size: 1rem;
+    max-width: 150px;
+  }
+  
+  .save-status {
+    display: none;
+  }
+}

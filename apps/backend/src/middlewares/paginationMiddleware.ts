@@ -37,10 +37,18 @@ export function paginationMiddleware(
 	next: NextFunction,
 ): void {
 	try {
-		const pageRaw = getSingleQueryParam(req.query.pageNumber ?? req.query.page);
-		const limitRaw = getSingleQueryParam(req.query.limit ?? req.query.pageSize);
-		const sortByRaw = getSingleQueryParam(req.query.sortBy ?? req.query.sort);
-		const sortOrderRaw = getSingleQueryParam(req.query.sortOrder ?? req.query.order);
+		const pageRaw = getSingleQueryParam(
+			req.query.pageNumber ?? req.query.page,
+		);
+		const limitRaw = getSingleQueryParam(
+			req.query.limit ?? req.query.pageSize,
+		);
+		const sortByRaw = getSingleQueryParam(
+			req.query.sortBy ?? req.query.sort,
+		);
+		const sortOrderRaw = getSingleQueryParam(
+			req.query.sortOrder ?? req.query.order,
+		);
 		const searchRaw = getSingleQueryParam(req.query.search ?? req.query.q);
 
 		const page = parsePositiveInteger(pageRaw, "pageNumber", 1);

@@ -9,6 +9,17 @@ import type { QuizValidationError } from "./types/quizzes.types";
 
 export const QuizService: QuizServiceContract = {
 	async createQuiz(authorId, data) {
+		const draftCount = await QuizRepository.countUserQuizzes({
+			authorId,
+			isDraft: true,
+		});
+
+		if (draftCount >= 3) {
+			throw new BadRequestError(
+				"Досягнуто ліміт у 3 чернетки. Опублікуйте або видаліть існуючу чернетку перед створенням нової.",
+			);
+		}
+
 		const createPayload: {
 			authorId: number;
 			name?: string;
@@ -18,7 +29,8 @@ export const QuizService: QuizServiceContract = {
 		} = { authorId };
 
 		if (data.name !== undefined) createPayload.name = data.name;
-		if (data.description !== undefined) createPayload.description = data.description;
+		if (data.description !== undefined)
+			createPayload.description = data.description;
 		if (data.coverImg !== undefined) createPayload.coverImg = data.coverImg;
 		if (data.keywords !== undefined) createPayload.keywords = data.keywords;
 
@@ -30,7 +42,9 @@ export const QuizService: QuizServiceContract = {
 
 		// If quiz is a draft, only the author can access it
 		if (quiz.isDraft && currentUserId && quiz.authorId !== currentUserId) {
-			throw new ForbiddenError("You do not have access to this draft quiz");
+			throw new ForbiddenError(
+				"You do not have access to this draft quiz",
+			);
 		}
 
 		return quiz;
@@ -40,8 +54,13 @@ export const QuizService: QuizServiceContract = {
 		const quiz = await QuizRepository.findByUuid(uuid);
 
 		// If quiz is a draft, only the author can access it
-		if (quiz.isDraft && (!currentUserId || quiz.authorId !== currentUserId)) {
-			throw new ForbiddenError("Цей квіз є чернеткою і наразі недоступний для перегляду");
+		if (
+			quiz.isDraft &&
+			(!currentUserId || quiz.authorId !== currentUserId)
+		) {
+			throw new ForbiddenError(
+				"Цей квіз є чернеткою і наразі недоступний для перегляду",
+			);
 		}
 
 		return quiz;
@@ -68,7 +87,9 @@ export const QuizService: QuizServiceContract = {
 	async updateQuiz(id, authorId, data) {
 		const existing = await QuizRepository.findById(id);
 		if (existing.authorId !== authorId) {
-			throw new ForbiddenError("You are not authorized to edit this quiz");
+			throw new ForbiddenError(
+				"You are not authorized to edit this quiz",
+			);
 		}
 
 		return await QuizRepository.update(id, data);
@@ -77,7 +98,9 @@ export const QuizService: QuizServiceContract = {
 	async publishQuiz(id, authorId) {
 		const quiz = await QuizRepository.findById(id);
 		if (quiz.authorId !== authorId) {
-			throw new ForbiddenError("You are not authorized to publish this quiz");
+			throw new ForbiddenError(
+				"You are not authorized to publish this quiz",
+			);
 		}
 
 		const errors: QuizValidationError[] = [];
@@ -154,7 +177,10 @@ export const QuizService: QuizServiceContract = {
 					q.type === "TYPE_ANSWER_V1" ||
 					q.type === "TYPE_ANSWER_V2"
 				) {
-					if (correctVariants.length === 0 && filledVariants.length === 0) {
+					if (
+						correctVariants.length === 0 &&
+						filledVariants.length === 0
+					) {
 						errors.push({
 							questionIndex: qIndex,
 							questionId: q.id,
@@ -167,9 +193,12 @@ export const QuizService: QuizServiceContract = {
 		}
 
 		if (errors.length > 0) {
-			throw new BadRequestError("Квіз не пройшов перевірку перед публікацією", {
-				errors,
-			});
+			throw new BadRequestError(
+				"Квіз не пройшов перевірку перед публікацією",
+				{
+					errors,
+				},
+			);
 		}
 
 		return await QuizRepository.publish(id);
@@ -178,7 +207,9 @@ export const QuizService: QuizServiceContract = {
 	async deleteQuiz(id, authorId) {
 		const existing = await QuizRepository.findById(id);
 		if (existing.authorId !== authorId) {
-			throw new ForbiddenError("You are not authorized to delete this quiz");
+			throw new ForbiddenError(
+				"You are not authorized to delete this quiz",
+			);
 		}
 
 		return await QuizRepository.delete(id);

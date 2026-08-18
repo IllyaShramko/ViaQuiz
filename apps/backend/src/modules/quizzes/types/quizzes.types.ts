@@ -1,4 +1,9 @@
-import type { Quiz, Question, Variant, Keyword } from "../../../generated/prisma";
+import type {
+	Quiz,
+	Question,
+	Variant,
+	Keyword,
+} from "../../../generated/prisma";
 
 export type QuestionWithVariants = Question & {
 	variants: Variant[];

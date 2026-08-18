@@ -6,7 +6,9 @@ export class SocketManager {
 
 	public initialize(server: HttpServer): void {
 		this.server = server;
-		logger.info("Socket manager initialized (WebSocket/real-time layer ready)");
+		logger.info(
+			"Socket manager initialized (WebSocket/real-time layer ready)",
+		);
 	}
 
 	public emit(event: string, payload: unknown): void {

@@ -164,7 +164,15 @@ export const QuizRepository: QuizRepositoryContract = {
 		}
 	},
 
-	async findUserQuizzes({ authorId, isDraft, search, skip, take }) {
+	async findUserQuizzes({
+		authorId,
+		isDraft,
+		search,
+		skip,
+		take,
+		sortBy,
+		sortOrder,
+	}) {
 		try {
 			const whereClause: Record<string, unknown> = { authorId };
 
@@ -186,11 +194,15 @@ export const QuizRepository: QuizRepositoryContract = {
 				];
 			}
 
+			const orderByKey =
+				sortBy === "createdAt" ? "createdAt" : "updatedAt";
+			const orderDirection = sortOrder === "asc" ? "asc" : "desc";
+
 			return await PRISMA_CLIENT.quiz.findMany({
 				where: whereClause,
 				skip,
 				take,
-				orderBy: { updatedAt: "desc" },
+				orderBy: { [orderByKey]: orderDirection },
 				include: {
 					keywords: true,
 					_count: {

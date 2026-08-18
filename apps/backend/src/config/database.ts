@@ -8,4 +8,3 @@ export const PRISMA_CLIENT = new PrismaClient({
 	adapter,
 	log: env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
 });
-

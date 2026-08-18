@@ -12,8 +12,9 @@ export const QuestionRepository: QuestionRepositoryContract = {
 	async create(quizId, data) {
 		try {
 			const type = data.type || "ONE_ANSWER";
-			const timeLimitSec = data.timeLimitSec || 30;
 			const points = data.points !== undefined ? data.points : 1000;
+			const timeLimit =
+				data.timeLimit !== undefined ? data.timeLimit : 30000;
 
 			// Find current max order
 			const lastQuestion = await PRISMA_CLIENT.question.findFirst({
@@ -47,7 +48,7 @@ export const QuestionRepository: QuestionRepositoryContract = {
 					type,
 					text: data.text || "",
 					media: data.media || null,
-					timeLimitSec,
+					timeLimit,
 					points,
 					order: nextOrder,
 					variants: {
@@ -93,8 +94,8 @@ export const QuestionRepository: QuestionRepositoryContract = {
 				if (data.type !== undefined) updatePayload.type = data.type;
 				if (data.points !== undefined)
 					updatePayload.points = data.points;
-				if (data.timeLimitSec !== undefined) {
-					updatePayload.timeLimitSec = data.timeLimitSec;
+				if (data.timeLimit !== undefined) {
+					updatePayload.timeLimit = data.timeLimit;
 				}
 
 				// If variants are provided in the payload, synchronize them atomically
@@ -220,7 +221,7 @@ export const QuestionRepository: QuestionRepositoryContract = {
 						type: original.type,
 						order: original.order + 1,
 						points: original.points,
-						timeLimitSec: original.timeLimitSec,
+						timeLimit: original.timeLimit,
 						variants: {
 							create: original.variants.map((v) => ({
 								text: v.text,

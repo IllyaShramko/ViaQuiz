@@ -53,7 +53,10 @@ export async function processAndUploadImage(
 			(error, result) => {
 				if (error || !result) {
 					logger.error("Cloudinary upload failed", { error });
-					return reject(error || new Error("Failed to upload image to Cloudinary"));
+					return reject(
+						error ||
+							new Error("Failed to upload image to Cloudinary"),
+					);
 				}
 				resolve(result);
 			},

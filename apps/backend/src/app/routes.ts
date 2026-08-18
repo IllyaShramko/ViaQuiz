@@ -12,4 +12,3 @@ apiRouter.use("/users", userRouter);
 apiRouter.use("/upload", uploadRouter);
 apiRouter.use("/quizzes", quizRouter);
 apiRouter.use("/questions", questionRouter);
-

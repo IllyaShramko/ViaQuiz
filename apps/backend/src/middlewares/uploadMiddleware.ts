@@ -1,7 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
 import multer, { MulterError } from "multer";
 import { BadRequestError, InternalServerError } from "../errors/customErrors";
-import { processAndUploadImage, type UploadImageOptions } from "../tools/uploader";
+import {
+	processAndUploadImage,
+	type UploadImageOptions,
+} from "../tools/uploader";
 
 export interface UploadMiddlewareOptions extends UploadImageOptions {
 	fieldName?: string;
@@ -67,32 +70,42 @@ export function uploadImage(options: UploadMiddlewareOptions = {}) {
 							),
 						);
 					}
-					return next(new BadRequestError(`File upload error: ${err.message}`));
+					return next(
+						new BadRequestError(
+							`File upload error: ${err.message}`,
+						),
+					);
 				}
 				return next(err);
 			}
 
 			if (!req.file) {
 				if (required) {
-					return next(new BadRequestError(`Field '${fieldName}' is required`));
+					return next(
+						new BadRequestError(`Field '${fieldName}' is required`),
+					);
 				}
 				return next();
 			}
 
 			try {
-				const uploadResult = await processAndUploadImage(req.file.buffer, {
-					folder,
-					maxWidth,
-					maxHeight,
-					quality,
-					format,
-				});
+				const uploadResult = await processAndUploadImage(
+					req.file.buffer,
+					{
+						folder,
+						maxWidth,
+						maxHeight,
+						quality,
+						format,
+					},
+				);
 
 				// Attach Cloudinary URL & metadata to locals and request object
 				res.locals.uploadedUrl = uploadResult.secure_url;
 				res.locals.uploadedPublicId = uploadResult.public_id;
 				req.file.path = uploadResult.secure_url;
-				(req as Request & { uploadedUrl?: string }).uploadedUrl = uploadResult.secure_url;
+				(req as Request & { uploadedUrl?: string }).uploadedUrl =
+					uploadResult.secure_url;
 
 				next();
 			} catch (error) {

@@ -7,6 +7,9 @@ import {
   TeacherMainPage,
   ProfilePage,
   QuizDetailsPage,
+  QuizEditorPage,
+  QuizDraftsPage,
+  NotFoundPage,
 } from '../../pages';
 
 export const router = createBrowserRouter([
@@ -34,6 +37,12 @@ export const router = createBrowserRouter([
           { path: '/quiz/:uuid', element: <QuizDetailsPage /> },
         ],
       },
+      // Drafts Hub — select or create drafts (separate layout)
+      { path: '/quiz/drafts', element: <QuizDraftsPage /> },
+      // Quiz Editor — separate layout (no TeacherLayout sidebar/topbar)
+      { path: '/quiz/:uuid/edit', element: <QuizEditorPage /> },
     ],
   },
+  // 404 Catch-all route
+  { path: '*', element: <NotFoundPage /> },
 ]);

@@ -122,7 +122,9 @@ export const UserService: UserServiceContract = {
 		let verificationRecord: VerificationCode;
 		try {
 			verificationRecord =
-				await UserRepository.findVerificationCodeByEmail(credentials.email);
+				await UserRepository.findVerificationCodeByEmail(
+					credentials.email,
+				);
 		} catch (err) {
 			if (err instanceof NotFoundError) {
 				throw new BadRequestError(
@@ -219,14 +221,20 @@ export const UserService: UserServiceContract = {
 	async login(credentials) {
 		let userWithPassword: UserWithPassword;
 		try {
-			userWithPassword = await UserRepository.findByEmail(credentials.email);
+			userWithPassword = await UserRepository.findByEmail(
+				credentials.email,
+			);
 		} catch (err) {
 			if (err instanceof NotFoundError) {
 				try {
-					userWithPassword = await UserRepository.findByLogin(credentials.email);
+					userWithPassword = await UserRepository.findByLogin(
+						credentials.email,
+					);
 				} catch (loginErr) {
 					if (loginErr instanceof NotFoundError) {
-						throw new UnauthorizedError("Invalid email or password");
+						throw new UnauthorizedError(
+							"Invalid email or password",
+						);
 					}
 					throw loginErr;
 				}

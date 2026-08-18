@@ -1,7 +1,11 @@
 type LogLevel = "info" | "warn" | "error" | "debug";
 
 class Logger {
-	private formatMessage(level: LogLevel, message: string, meta?: unknown): string {
+	private formatMessage(
+		level: LogLevel,
+		message: string,
+		meta?: unknown,
+	): string {
 		const timestamp = new Date().toISOString();
 		const metaString = meta ? ` ${JSON.stringify(meta)}` : "";
 		return `[${timestamp}] [${level.toUpperCase()}]: ${message}${metaString}`;

@@ -11,9 +11,8 @@ export const loginFieldSchema = z
 	);
 
 export const emailFieldSchema = z
-	.string()
-	.trim()
 	.email("Invalid email format")
+	.trim()
 	.toLowerCase();
 
 export const passwordFieldSchema = z

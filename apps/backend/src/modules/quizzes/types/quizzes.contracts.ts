@@ -30,9 +30,7 @@ export interface QuizRepositoryContract {
 		sortOrder?: "asc" | "desc";
 	}): Promise<PublicQuizSummary[]>;
 
-	countPublishedQuizzes(params: {
-		search?: string;
-	}): Promise<number>;
+	countPublishedQuizzes(params: { search?: string }): Promise<number>;
 
 	findUserQuizzes(params: {
 		authorId: number;
@@ -40,6 +38,8 @@ export interface QuizRepositoryContract {
 		search?: string;
 		skip: number;
 		take: number;
+		sortBy?: "updatedAt" | "createdAt";
+		sortOrder?: "asc" | "desc";
 	}): Promise<QuizSummary[]>;
 
 	countUserQuizzes(params: {
@@ -57,8 +57,14 @@ export interface QuizRepositoryContract {
 
 export interface QuizServiceContract {
 	createQuiz(authorId: number, data: CreateQuizDTO): Promise<FullQuiz>;
-	getQuizById(idOrUuid: string | number, currentUserId?: number): Promise<FullQuiz>;
-	getQuizByUuid(uuid: string, currentUserId?: number): Promise<PublicFullQuiz>;
+	getQuizById(
+		idOrUuid: string | number,
+		currentUserId?: number,
+	): Promise<FullQuiz>;
+	getQuizByUuid(
+		uuid: string,
+		currentUserId?: number,
+	): Promise<PublicFullQuiz>;
 	getPublishedQuizzes(params: {
 		search?: string;
 		skip: number;
@@ -68,9 +74,20 @@ export interface QuizServiceContract {
 	}): Promise<{ quizzes: PublicQuizSummary[]; total: number }>;
 	getUserQuizzes(
 		authorId: number,
-		params: { isDraft?: boolean; search?: string; skip: number; take: number },
+		params: {
+			isDraft?: boolean;
+			search?: string;
+			skip: number;
+			take: number;
+			sortBy?: "updatedAt" | "createdAt";
+			sortOrder?: "asc" | "desc";
+		},
 	): Promise<{ quizzes: QuizSummary[]; total: number }>;
-	updateQuiz(id: number, authorId: number, data: UpdateQuizDTO): Promise<FullQuiz>;
+	updateQuiz(
+		id: number,
+		authorId: number,
+		data: UpdateQuizDTO,
+	): Promise<FullQuiz>;
 	publishQuiz(id: number, authorId: number): Promise<FullQuiz>;
 	deleteQuiz(id: number, authorId: number): Promise<Quiz>;
 }
@@ -79,8 +96,16 @@ export interface QuizControllerContract {
 	create(req: Request, res: Response, next: NextFunction): Promise<void>;
 	getOne(req: Request, res: Response, next: NextFunction): Promise<void>;
 	getByUuid(req: Request, res: Response, next: NextFunction): Promise<void>;
-	getAllPublished(req: Request, res: Response, next: NextFunction): Promise<void>;
-	getMyQuizzes(req: Request, res: Response, next: NextFunction): Promise<void>;
+	getAllPublished(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
+	getMyQuizzes(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
 	update(req: Request, res: Response, next: NextFunction): Promise<void>;
 	publish(req: Request, res: Response, next: NextFunction): Promise<void>;
 	delete(req: Request, res: Response, next: NextFunction): Promise<void>;

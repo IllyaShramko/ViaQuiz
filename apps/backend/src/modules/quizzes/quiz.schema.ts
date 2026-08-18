@@ -12,7 +12,7 @@ export const createQuizSchema = z.object({
 		.trim()
 		.max(500, "Description cannot exceed 500 characters")
 		.optional(),
-	coverImg: z.string().url("Invalid image URL").optional().or(z.literal("")),
+	coverImg: z.url("Invalid image URL").optional().or(z.literal("")),
 	keywords: z
 		.array(z.string().trim().min(1).max(50))
 		.max(10, "Cannot have more than 10 tags")
@@ -22,18 +22,14 @@ export const createQuizSchema = z.object({
 export const updateQuizSchema = z.object({
 	name: z
 		.string()
-		.trim()
-		.min(1, "Quiz name cannot be empty")
 		.max(100, "Quiz name cannot exceed 100 characters")
 		.optional(),
 	description: z
 		.string()
-		.trim()
 		.max(500, "Description cannot exceed 500 characters")
 		.nullable()
 		.optional(),
 	coverImg: z
-		.string()
 		.url("Invalid image URL")
 		.nullable()
 		.optional()

@@ -8,8 +8,14 @@ export interface RequestValidationSchemas {
 	params?: z.ZodType;
 }
 
-export const validateRequest = (schemas: RequestValidationSchemas): RequestHandler => {
-	return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+export const validateRequest = (
+	schemas: RequestValidationSchemas,
+): RequestHandler => {
+	return async (
+		req: Request,
+		_res: Response,
+		next: NextFunction,
+	): Promise<void> => {
 		try {
 			const allIssues: z.ZodIssue[] = [];
 
@@ -42,7 +48,8 @@ export const validateRequest = (schemas: RequestValidationSchemas): RequestHandl
 
 			if (allIssues.length > 0) {
 				const formattedErrors = allIssues.map((issue) => ({
-					field: issue.path.length > 0 ? issue.path.join(".") : "root",
+					field:
+						issue.path.length > 0 ? issue.path.join(".") : "root",
 					message: issue.message,
 				}));
 				next(new BadRequestError("Validation failed", formattedErrors));
@@ -53,7 +60,8 @@ export const validateRequest = (schemas: RequestValidationSchemas): RequestHandl
 		} catch (error) {
 			if (error instanceof ZodError) {
 				const formattedErrors = error.issues.map((issue) => ({
-					field: issue.path.length > 0 ? issue.path.join(".") : "root",
+					field:
+						issue.path.length > 0 ? issue.path.join(".") : "root",
 					message: issue.message,
 				}));
 				next(new BadRequestError("Validation failed", formattedErrors));

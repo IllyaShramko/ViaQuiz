@@ -32,7 +32,24 @@ export {
 export { useLocale } from './hooks';
 export { FONTS } from './theme';
 export { pickImage, type PickImageOptions } from './tools';
-export { Layout, TeacherLayout, ProtectedRoute, PublicRoute } from './ui';
+export {
+  Layout,
+  TeacherLayout,
+  ProtectedRoute,
+  PublicRoute,
+  AiIcon,
+  ArrowIcon,
+  BinIcon,
+  CloseIcon,
+  EnterIcon,
+  MultipleIcon,
+  MultuipleIcon,
+  OneAnswerIcon,
+  PlusIcon,
+  PublicIcon,
+  UploadIcon,
+  type IconProps,
+} from './ui';
 export {
   getLocale,
   setLocale,

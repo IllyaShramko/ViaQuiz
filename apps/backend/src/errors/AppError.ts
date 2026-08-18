@@ -3,7 +3,12 @@ export class AppError extends Error {
 	public readonly isOperational: boolean;
 	public readonly details?: unknown;
 
-	constructor(message: string, statusCode = 500, isOperational = true, details?: unknown) {
+	constructor(
+		message: string,
+		statusCode = 500,
+		isOperational = true,
+		details?: unknown,
+	) {
 		super(message);
 		this.statusCode = statusCode;
 		this.isOperational = isOperational;
