@@ -1,17 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import type { EditorQuiz, PublishValidationError } from '../../models/types';
+import type { EditorQuiz } from '../../models/types';
 import { useUpdateQuizMutation, usePublishQuizMutation, useUploadImageMutation } from '../../api/quizEditorApi';
 import { CloseIcon, UploadIcon, BinIcon, PublicIcon } from '../../../../shared';
-import './PublishModal.css';
+import { extractPublishErrors, validateQuiz } from '../../utils/quizValidation';
+import styles from './PublishModal.module.css';
 
-interface PublishModalProps {
+export interface PublishModalProps {
   isOpen: boolean;
   onClose: () => void;
   quiz: EditorQuiz;
   onPublishSuccess: () => void;
 }
-
-const DEFAULT_COVER_GRADIENT = 'linear-gradient(135deg, #863bff 0%, #4f46e5 100%)';
 
 export const PublishModal: React.FC<PublishModalProps> = ({
   isOpen,
@@ -131,6 +130,17 @@ export const PublishModal: React.FC<PublishModalProps> = ({
       return;
     }
 
+    // Pre-validate quiz questions before network requests
+    const preValidationErrors = validateQuiz({
+      ...quiz,
+      name: trimmedName,
+    });
+
+    if (preValidationErrors.length > 0) {
+      setValidationErrors(preValidationErrors);
+      return;
+    }
+
     try {
       // 1. Update quiz details
       await updateQuiz({
@@ -149,42 +159,30 @@ export const PublishModal: React.FC<PublishModalProps> = ({
       onPublishSuccess();
     } catch (err: unknown) {
       console.error('Publish error:', err);
-      const apiError = err as {
-        data?: {
-          message?: string;
-          errors?: PublishValidationError[];
-        };
-      };
-
-      if (apiError.data?.errors && Array.isArray(apiError.data.errors)) {
-        setValidationErrors(apiError.data.errors.map((e) => e.message));
-      } else if (apiError.data?.message) {
-        setValidationErrors([apiError.data.message]);
-      } else {
-        setValidationErrors(['Сталася помилка при публікації вікторини. Перевірте запитання.']);
-      }
+      const errors = extractPublishErrors(err);
+      setValidationErrors(errors);
     }
   };
 
   return (
-    <div className="publish-modal-overlay" onClick={onClose}>
+    <div className={styles['publish-modal-overlay']} onClick={onClose}>
       <div
-        className="publish-modal-card"
+        className={styles['publish-modal-card']}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="publish-modal-header">
-          <div className="publish-modal-title-group">
-            <h2 className="publish-modal-title">Публікація вікторини</h2>
-            <p className="publish-modal-subtitle">
+        <div className={styles['publish-modal-header']}>
+          <div className={styles['publish-modal-title-group']}>
+            <h2 className={styles['publish-modal-title']}>Публікація вікторини</h2>
+            <p className={styles['publish-modal-subtitle']}>
               Заповніть інформацію, щоб гравці могли легко знайти ваш квіз
             </p>
           </div>
           <button
             type="button"
-            className="publish-modal-close-btn"
+            className={styles['publish-modal-close-btn']}
             onClick={onClose}
             disabled={isSubmitting}
             aria-label="Закрити"
@@ -195,7 +193,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
 
         {/* Validation Error Banner */}
         {validationErrors.length > 0 && (
-          <div className="publish-modal-errors">
+          <div className={styles['publish-modal-errors']}>
             <h4>Неможливо опублікувати:</h4>
             <ul>
               {validationErrors.map((errMsg, i) => (
@@ -206,13 +204,13 @@ export const PublishModal: React.FC<PublishModalProps> = ({
         )}
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="publish-modal-form">
-          <div className="publish-modal-scrollable">
+        <form onSubmit={handleSubmit} className={styles['publish-modal-form']}>
+          <div className={styles['publish-modal-scrollable']}>
             {/* Cover Image Upload Area */}
-            <div className="publish-form-group">
-              <label className="publish-form-label">
+            <div className={styles['publish-form-group']}>
+              <label className={styles['publish-form-label']}>
                 Обкладинка вікторини
-                <span className="publish-label-hint">Рекомендовано 16:9 (до 5 МБ)</span>
+                <span className={styles['publish-label-hint']}>Рекомендовано 16:9 (до 5 МБ)</span>
               </label>
 
               <input
@@ -224,7 +222,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
               />
 
               <div
-                className={`publish-cover-box ${isDragOver ? 'is-dragover' : ''} ${isUploading ? 'is-uploading' : ''}`}
+                className={`${styles['publish-cover-box']} ${isDragOver ? styles['is-dragover'] : ''} ${isUploading ? styles['is-uploading'] : ''}`}
                 style={{
                   backgroundImage: coverImg ? `url(${coverImg})` : undefined,
                   backgroundSize: 'cover',
@@ -239,15 +237,15 @@ export const PublishModal: React.FC<PublishModalProps> = ({
                 onDragLeave={() => setIsDragOver(false)}
               >
                 {isUploading ? (
-                  <div className="publish-cover-loading">
-                    <div className="publish-spinner" />
+                  <div className={styles['publish-cover-loading']}>
+                    <div className={styles['publish-spinner']} />
                     <span>Завантаження...</span>
                   </div>
                 ) : coverImg ? (
-                  <div className="publish-cover-overlay">
+                  <div className={styles['publish-cover-overlay']}>
                     <button
                       type="button"
-                      className="publish-cover-remove-btn"
+                      className={styles['publish-cover-remove-btn']}
                       onClick={(e) => {
                         e.stopPropagation();
                         setCoverImg(null);
@@ -259,27 +257,27 @@ export const PublishModal: React.FC<PublishModalProps> = ({
                     </button>
                   </div>
                 ) : (
-                  <div className="publish-cover-placeholder">
+                  <div className={styles['publish-cover-placeholder']}>
                     <UploadIcon width={32} height={32} />
-                    <span className="placeholder-main">Натисніть або перетягніть обкладинку</span>
-                    <span className="placeholder-sub">PNG, JPG, WebP (до 5 МБ)</span>
+                    <span className={styles['placeholder-main']}>Натисніть або перетягніть обкладинку</span>
+                    <span className={styles['placeholder-sub']}>PNG, JPG, WebP (до 5 МБ)</span>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Quiz Name */}
-            <div className="publish-form-group">
-              <div className="publish-label-row">
-                <label htmlFor="quiz-name" className="publish-form-label required">
+            <div className={styles['publish-form-group']}>
+              <div className={styles['publish-label-row']}>
+                <label htmlFor="quiz-name" className={`${styles['publish-form-label']} ${styles['required']}`}>
                   Назва вікторини
                 </label>
-                <span className="publish-char-count">{name.length}/100</span>
+                <span className={styles['publish-char-count']}>{name.length}/100</span>
               </div>
               <input
                 id="quiz-name"
                 type="text"
-                className="publish-form-input"
+                className={styles['publish-form-input']}
                 placeholder="Введіть цікаву назву вікторини..."
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -290,16 +288,16 @@ export const PublishModal: React.FC<PublishModalProps> = ({
             </div>
 
             {/* Quiz Description */}
-            <div className="publish-form-group">
-              <div className="publish-label-row">
-                <label htmlFor="quiz-desc" className="publish-form-label">
+            <div className={styles['publish-form-group']}>
+              <div className={styles['publish-label-row']}>
+                <label htmlFor="quiz-desc" className={styles['publish-form-label']}>
                   Опис
                 </label>
-                <span className="publish-char-count">{description.length}/500</span>
+                <span className={styles['publish-char-count']}>{description.length}/500</span>
               </div>
               <textarea
                 id="quiz-desc"
-                className="publish-form-textarea"
+                className={styles['publish-form-textarea']}
                 placeholder="Коротко розкажіть, про що ця вікторина і для кого вона призначена..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -309,20 +307,20 @@ export const PublishModal: React.FC<PublishModalProps> = ({
             </div>
 
             {/* Keywords / Tags */}
-            <div className="publish-form-group">
-              <label htmlFor="quiz-keywords" className="publish-form-label">
+            <div className={styles['publish-form-group']}>
+              <label htmlFor="quiz-keywords" className={styles['publish-form-label']}>
                 Теги (ключові слова)
-                <span className="publish-label-hint">Натисніть Enter щоб додати тег</span>
+                <span className={styles['publish-label-hint']}>Натисніть Enter щоб додати тег</span>
               </label>
 
-              <div className="publish-tags-container">
+              <div className={styles['publish-tags-container']}>
                 {keywords.map((tag, idx) => (
-                  <span key={idx} className="publish-tag-pill">
+                  <span key={idx} className={styles['publish-tag-pill']}>
                     #{tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveKeyword(idx)}
-                      className="publish-tag-remove"
+                      className={styles['publish-tag-remove']}
                       aria-label={`Видалити тег ${tag}`}
                     >
                       ×
@@ -334,7 +332,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
                   <input
                     id="quiz-keywords"
                     type="text"
-                    className="publish-tags-input"
+                    className={styles['publish-tags-input']}
                     placeholder={keywords.length === 0 ? "наприклад: історія, 9 клас" : "додати тег..."}
                     value={keywordInput}
                     onChange={(e) => setKeywordInput(e.target.value)}
@@ -347,10 +345,10 @@ export const PublishModal: React.FC<PublishModalProps> = ({
           </div>
 
           {/* Footer Actions */}
-          <div className="publish-modal-footer">
+          <div className={styles['publish-modal-footer']}>
             <button
               type="button"
-              className="publish-btn-cancel"
+              className={styles['publish-btn-cancel']}
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -359,7 +357,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
 
             <button
               type="submit"
-              className="publish-btn-submit"
+              className={styles['publish-btn-submit']}
               disabled={isSubmitting || !name.trim()}
             >
               <PublicIcon width={16} height={16} />

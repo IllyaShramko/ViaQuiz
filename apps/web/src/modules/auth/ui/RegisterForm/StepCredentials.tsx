@@ -2,6 +2,7 @@ import type { FieldErrors, UseFormGetValues, UseFormRegister } from 'react-hook-
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import type { RegisterFormInputs } from '../../models';
 import { PasswordInput } from '../LoginForm/PasswordInput';
+import styles from '../Auth.module.css';
 
 export interface StepCredentialsProps {
   register: UseFormRegister<RegisterFormInputs>;
@@ -126,7 +127,7 @@ export function StepCredentials({
 
       <button
         type="button"
-        className="btn btn--primary"
+        className={styles['auth-submit-btn']}
         onClick={onNext}
         disabled={isLoading}
       >

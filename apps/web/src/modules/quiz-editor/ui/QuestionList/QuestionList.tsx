@@ -16,9 +16,10 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import type { EditorQuestion } from '../../models/types';
 import { OneAnswerIcon, MultipleIcon, EnterIcon, BinIcon, PlusIcon } from '../../../../shared';
-import './QuestionList.css';
+import { validateQuestion } from '../../utils/quizValidation';
+import styles from './QuestionList.module.css';
 
-interface QuestionListProps {
+export interface QuestionListProps {
   questions: EditorQuestion[];
   selectedId: number | null;
   onSelect: (id: number) => void;
@@ -80,26 +81,38 @@ const SortableQuestionItem: React.FC<SortableItemProps> = ({
     }
   };
 
+  const questionErrors = validateQuestion(question, index);
+  const isValid = questionErrors.length === 0;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`question-list-item ${isSelected ? 'selected' : ''} ${isDragging ? 'is-dragging' : ''}`}
+      className={`${styles['question-list-item']} ${isSelected ? styles['selected'] : ''} ${isDragging ? styles['is-dragging'] : ''} ${!isValid ? styles['has-warning'] : ''}`}
       onClick={() => onSelect(question.id)}
     >
-      <div className="question-list-item-drag-handle" {...attributes} {...listeners}>
+      <div className={styles['question-list-item-drag-handle']} {...attributes} {...listeners}>
         ≡
       </div>
-      <div className="question-list-item-content">
-        <div className="question-list-item-header">
-          <span className="question-list-item-number">{index + 1}.</span>
-          <span className="question-list-item-icon">{getTypeIcon(question.type)}</span>
+      <div className={styles['question-list-item-content']}>
+        <div className={styles['question-list-item-header']}>
+          <span className={styles['question-list-item-number']}>{index + 1}.</span>
+          <span className={styles['question-list-item-icon']}>{getTypeIcon(question.type)}</span>
+          {!isValid && (
+            <span
+              className={styles['question-list-item-warning-badge']}
+              title={questionErrors.join('\n')}
+              aria-label={questionErrors.join(', ')}
+            >
+              ⚠️
+            </span>
+          )}
         </div>
-        <div className="question-list-item-text">
+        <div className={styles['question-list-item-text']}>
           {question.text ? (question.text.length > 30 ? question.text.substring(0, 30) + '...' : question.text) : 'Нове питання'}
         </div>
       </div>
-      <div className="question-list-item-actions">
+      <div className={styles['question-list-item-actions']}>
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); onDuplicate(question.id); }}
@@ -150,14 +163,14 @@ export const QuestionList: React.FC<QuestionListProps> = ({
   };
 
   return (
-    <aside className="question-list-sidebar">
+    <aside className={styles['question-list-sidebar']}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         modifiers={[restrictToVerticalAxis]}
         onDragEnd={handleDragEnd}
       >
-        <div className="question-list-items">
+        <div className={styles['question-list-items']}>
           <SortableContext
             items={questions.map(q => q.id)}
             strategy={verticalListSortingStrategy}
@@ -176,9 +189,9 @@ export const QuestionList: React.FC<QuestionListProps> = ({
           </SortableContext>
         </div>
       </DndContext>
-      
-      <div className="question-list-footer">
-        <button type="button" className="add-question-btn" onClick={onAdd}>
+
+      <div className={styles['question-list-footer']}>
+        <button type="button" className={styles['add-question-btn']} onClick={onAdd}>
           <PlusIcon width={16} height={16} />
           <span>Додати питання</span>
         </button>

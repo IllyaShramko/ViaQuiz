@@ -1,9 +1,9 @@
 import React from 'react';
 import type { EditorVariant } from '../../models/types';
 import { CloseIcon, PlusIcon } from '../../../../shared';
-import './TypeAnswerEditor.css';
+import styles from './TypeAnswerEditor.module.css';
 
-interface TypeAnswerEditorProps {
+export interface TypeAnswerEditorProps {
   variants: EditorVariant[];
   answerType: 'TYPE_ANSWER_V1' | 'TYPE_ANSWER_V2';
   onChange: (variants: EditorVariant[]) => void;
@@ -34,19 +34,19 @@ export const TypeAnswerEditor: React.FC<TypeAnswerEditorProps> = ({ variants, an
     const activeVariants = variants.length > 0 ? variants : [{ text: '', type: 'TEXT', isCorrect: true, order: 0 } as EditorVariant];
 
     return (
-      <div className="type-answer-editor">
+      <div className={styles['type-answer-editor']}>
         {activeVariants.map((variant, index) => (
-          <div key={variant.id ?? `temp-${index}`} className="type-answer-item">
+          <div key={variant.id ?? `temp-${index}`} className={styles['type-answer-item']}>
             <input
               type="text"
-              className="type-answer-input"
+              className={styles['type-answer-input']}
               placeholder={index === 0 ? "Правильна відповідь" : "Альтернативна відповідь"}
               value={variant.text || ''}
               onChange={(e) => handleUpdate(index, e.target.value)}
             />
             {index > 0 && (
               <button
-                className="type-answer-delete-btn"
+                className={styles['type-answer-delete-btn']}
                 onClick={() => handleDelete(index)}
                 aria-label="Видалити"
                 type="button"
@@ -57,7 +57,7 @@ export const TypeAnswerEditor: React.FC<TypeAnswerEditorProps> = ({ variants, an
           </div>
         ))}
         {activeVariants.length < 3 && (
-          <button className="type-answer-add-btn" onClick={handleAdd} type="button">
+          <button className={styles['type-answer-add-btn']} onClick={handleAdd} type="button">
             <PlusIcon width={16} height={16} />
             <span>Додати альтернативу</span>
           </button>
@@ -75,17 +75,17 @@ export const TypeAnswerEditor: React.FC<TypeAnswerEditorProps> = ({ variants, an
   };
 
   return (
-    <div className="type-answer-editor">
+    <div className={styles['type-answer-editor']}>
       <input
         type="text"
-        className="type-answer-input centered"
+        className={`${styles['type-answer-input']} ${styles['centered']}`}
         placeholder="Введіть слово"
         value={wordText}
         onChange={handleChange}
       />
-      <div className="type-answer-v2-preview">
+      <div className={styles['type-answer-v2-preview']}>
         {wordText.split('').map((letter, i) => (
-          <div key={i} className="type-answer-v2-box">
+          <div key={i} className={styles['type-answer-v2-box']}>
             {letter}
           </div>
         ))}

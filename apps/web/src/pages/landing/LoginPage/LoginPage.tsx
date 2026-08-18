@@ -1,6 +1,5 @@
 import { useLocale } from '../../../shared/i18n/useLocale';
 import { AuthCard, LoginForm } from '../../../modules/auth/ui';
-import './LoginPage.css';
 
 export function LoginPage() {
   const { t } = useLocale();

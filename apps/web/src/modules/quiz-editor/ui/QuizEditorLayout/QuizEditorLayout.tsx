@@ -16,7 +16,7 @@ import {
   usePublishQuizMutation,
 } from '../../api/quizEditorApi';
 import type { EditorQuiz, EditorQuestion, QuestionType, SaveStatus } from '../../models/types';
-import './QuizEditorLayout.css';
+import styles from './QuizEditorLayout.module.css';
 
 interface QuizEditorLayoutProps {
   quiz: EditorQuiz;
@@ -36,7 +36,7 @@ export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
   const [duplicateQuestion] = useDuplicateQuestionMutation();
   const [reorderQuestions] = useReorderQuestionsMutation();
   const [updateQuiz] = useUpdateQuizMutation();
-  const [publishQuiz, { isLoading: isPublishing }] = usePublishQuizMutation();
+  const [, { isLoading: isPublishing }] = usePublishQuizMutation();
 
   // Debounce timers
   const nameDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -132,20 +132,24 @@ export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
     }, 800);
   };
 
-  const handleOpenPublishModal = () => {
+  const handleOpenPublishModal = async () => {
     // Flush any pending auto-saves before opening publish modal
     if (nameDebounceTimerRef.current) {
       clearTimeout(nameDebounceTimerRef.current);
+      nameDebounceTimerRef.current = null;
       try {
-        updateQuiz({ id: localQuiz.id, body: { name: localQuiz.name } });
-      } catch {}
+        await updateQuiz({ id: localQuiz.id, body: { name: localQuiz.name } }).unwrap();
+      } catch (err) {
+        console.error('Failed to save quiz name before publish:', err);
+      }
     }
 
     const currentQ = localQuiz.questions.find((q) => q.id === selectedQuestionId);
     if (questionDebounceTimerRef.current && currentQ && selectedQuestionId) {
       clearTimeout(questionDebounceTimerRef.current);
+      questionDebounceTimerRef.current = null;
       try {
-        updateQuestion({
+        await updateQuestion({
           id: selectedQuestionId,
           quizId: localQuiz.id,
           body: {
@@ -156,8 +160,10 @@ export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
             points: currentQ.points,
             variants: currentQ.variants,
           },
-        });
-      } catch {}
+        }).unwrap();
+      } catch (err) {
+        console.error('Failed to save question before publish:', err);
+      }
     }
 
     setIsPublishModalOpen(true);
@@ -260,7 +266,7 @@ export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
   const hasQuestions = localQuiz.questions.length > 0;
 
   return (
-    <div className="quiz-editor-layout">
+    <div className={styles['quiz-editor-layout']}>
       <EditorHeader
         quizName={localQuiz.name}
         saveStatus={saveStatus}
@@ -272,7 +278,7 @@ export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
         hasQuestions={hasQuestions}
       />
 
-      <div className="quiz-editor-body">
+      <div className={styles['quiz-editor-body']}>
         <QuestionList
           questions={localQuiz.questions}
           selectedId={selectedQuestionId}
@@ -283,7 +289,7 @@ export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
           onReorder={handleReorder}
         />
 
-        <main className="quiz-editor-main">
+        <main className={styles['quiz-editor-main']}>
           {!selectedQuestionId || !selectedQuestion ? (
             <QuestionTypeSelector onSelect={handleAddQuestionType} />
           ) : (

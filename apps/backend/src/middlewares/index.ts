@@ -1,4 +1,10 @@
-export { authenticate, optionalAuthenticate } from "./authMiddleware";
+export {
+	authenticate,
+	optionalAuthenticate,
+	authorizeRoles,
+	requireRoles,
+	checkRole,
+} from "./authMiddleware";
 export { errorHandler } from "./errorHandler";
 export { requestLogger } from "./loggerMiddleware";
 export {

@@ -75,6 +75,24 @@
   color: var(--color-text-muted);
 }
 
+.question-list-item-warning-badge {
+  font-size: 0.75rem;
+  margin-left: auto;
+  cursor: help;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.9;
+  transition: transform var(--transition-fast);
+}
+
+.question-list-item-warning-badge:hover {
+  transform: scale(1.2);
+}
+
+.question-list-item.has-warning:not(.selected) {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
 .question-list-item-icon {
   display: inline-flex;
   align-items: center;

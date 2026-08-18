@@ -1,21 +1,29 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { VariantEditor } from '../VariantEditor/VariantEditor';
 import { TypeAnswerEditor } from '../TypeAnswerEditor/TypeAnswerEditor';
 import { useUploadImageMutation } from '../../api/quizEditorApi';
 import type { EditorQuestion, EditorVariant, QuestionType } from '../../models/types';
 import { UploadIcon, BinIcon } from '../../../../shared';
-import './QuestionEditor.css';
+import styles from './QuestionEditor.module.css';
 
-interface QuestionEditorProps {
+export interface QuestionEditorProps {
   question: EditorQuestion;
   onUpdate: (data: Partial<{ text: string; media: string | null; type: QuestionType; timeLimit: number; points: number; variants: EditorVariant[] }>) => void;
   onSave?: () => void;
 }
 
-export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpdate, onSave }) => {
+export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpdate }) => {
   const [uploadImage, { isLoading: isUploading }] = useUploadImageMutation();
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [question.text]);
 
   const handleFileUpload = async (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -69,16 +77,23 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpda
   };
 
   return (
-    <div className="question-editor">
-      <div className="question-editor-header">
-        <textarea
-          className="question-text-input"
-          placeholder="Введіть текст запитання..."
-          value={question.text}
-          onChange={(e) => onUpdate({ text: e.target.value })}
-        />
-        
-        <div className="question-media-area">
+    <div className={styles['question-editor']}>
+      <div className={styles['question-editor-header']}>
+        <div
+          className={styles['question-text-box']}
+          onClick={() => textareaRef.current?.focus()}
+        >
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            className={styles['question-text-input']}
+            placeholder="Введіть текст запитання..."
+            value={question.text}
+            onChange={(e) => onUpdate({ text: e.target.value })}
+          />
+        </div>
+
+        <div className={styles['question-media-area']}>
           <input
             type="file"
             ref={fileInputRef}
@@ -88,11 +103,11 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpda
           />
 
           {question.media ? (
-            <div className="media-preview">
+            <div className={styles['media-preview']}>
               <img src={question.media} alt="Question media" />
-              <button 
+              <button
                 type="button"
-                className="media-remove-btn"
+                className={styles['media-remove-btn']}
                 onClick={() => onUpdate({ media: null })}
                 title="Видалити зображення"
               >
@@ -102,7 +117,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpda
             </div>
           ) : (
             <div
-              className={`media-placeholder ${isDragOver ? 'is-dragover' : ''} ${isUploading ? 'is-uploading' : ''}`}
+              className={`${styles['media-placeholder']} ${isDragOver ? styles['is-dragover'] : ''} ${isUploading ? styles['is-uploading'] : ''}`}
               onClick={() => !isUploading && fileInputRef.current?.click()}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -110,14 +125,14 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpda
             >
               {isUploading ? (
                 <>
-                  <div className="media-upload-spinner" />
+                  <div className={styles['media-upload-spinner']} />
                   <span>Завантаження зображення...</span>
                 </>
               ) : (
-                <div className="media-placeholder-inner">
+                <div className={styles['media-placeholder-inner']}>
                   <UploadIcon width={28} height={28} />
-                  <span className="placeholder-main">Додати медіа (або перетягніть сюди)</span>
-                  <span className="placeholder-sub">PNG, JPG, WebP (до 5 МБ)</span>
+                  <span className={styles['placeholder-main']}>Додати медіа (або перетягніть сюди)</span>
+                  <span className={styles['placeholder-sub']}>PNG, JPG, WebP (до 5 МБ)</span>
                 </div>
               )}
             </div>
@@ -125,7 +140,7 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpda
         </div>
       </div>
 
-      <div className="question-editor-body">
+      <div className={styles['question-editor-body']}>
         {(question.type === 'ONE_ANSWER' || question.type === 'MANY_ANSWERS') && (
           <VariantEditor
             variants={question.variants}
@@ -142,19 +157,6 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpda
           />
         )}
       </div>
-
-      {onSave && (
-        <div className="question-editor-footer">
-          <button
-            type="button"
-            className="btn-save-question"
-            onClick={onSave}
-            title="Зберегти питання та повернутися до вибору"
-          >
-            Зберегти
-          </button>
-        </div>
-      )}
     </div>
   );
 };

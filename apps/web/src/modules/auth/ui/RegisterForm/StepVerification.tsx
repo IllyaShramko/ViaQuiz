@@ -1,6 +1,7 @@
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import type { RegisterFormInputs } from '../../models';
+import styles from '../Auth.module.css';
 
 export interface StepVerificationProps {
   register: UseFormRegister<RegisterFormInputs>;
@@ -33,7 +34,7 @@ export function StepVerification({
         gap: 'var(--space-4)',
       }}
     >
-      <div className="verification-container">
+      <div className={styles['verification-container']}>
         <p>
           {t('register.code_sent_to')} {targetEmail}
         </p>
@@ -41,7 +42,7 @@ export function StepVerification({
         <div className="input-group" style={{ width: '100%', alignItems: 'center' }}>
           <input
             type="text"
-            className={`input-field verification-input ${errors.code ? 'input--error' : ''}`}
+            className={`input-field ${styles['verification-input']} ${errors.code ? 'input--error' : ''}`}
             placeholder="000000"
             maxLength={6}
             {...register('code', {
@@ -61,7 +62,7 @@ export function StepVerification({
           )}
         </div>
 
-        <div className="resend-container">
+        <div className={styles['resend-container']}>
           <button
             type="button"
             className="btn btn--secondary"
@@ -71,14 +72,14 @@ export function StepVerification({
             {t('register.resend_code')}
           </button>
           {cooldown > 0 && (
-            <span className="resend-timer">
+            <span className={styles['resend-timer']}>
               {cooldown} {t('register.resend_cooldown')}
             </span>
           )}
         </div>
       </div>
 
-      <div className="button-group">
+      <div className={styles['button-group']}>
         <button
           type="button"
           className="btn btn--secondary"

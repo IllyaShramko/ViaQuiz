@@ -1,9 +1,9 @@
 import React from 'react';
 import type { QuestionType } from '../../models/types';
 import { OneAnswerIcon, MultipleIcon, EnterIcon } from '../../../../shared';
-import './QuestionTypeSelector.css';
+import styles from './QuestionTypeSelector.module.css';
 
-interface QuestionTypeSelectorProps {
+export interface QuestionTypeSelectorProps {
   onSelect: (type: QuestionType) => void;
 }
 
@@ -41,19 +41,19 @@ const types: {
 
 export const QuestionTypeSelector: React.FC<QuestionTypeSelectorProps> = ({ onSelect }) => {
   return (
-    <div className="question-type-selector-container">
-      <h2 className="question-type-selector-title">Виберіть тип питання</h2>
-      <div className="question-type-selector-grid">
+    <div className={styles['question-type-selector-container']}>
+      <h2 className={styles['question-type-selector-title']}>Виберіть тип питання</h2>
+      <div className={styles['question-type-selector-grid']}>
         {types.map(({ type, icon, title, description }) => (
           <button
             key={type}
-            className="question-type-card"
+            className={styles['question-type-card']}
             onClick={() => onSelect(type)}
             type="button"
           >
-            <div className="question-type-icon">{icon}</div>
-            <h3 className="question-type-card-title">{title}</h3>
-            <p className="question-type-card-desc">{description}</p>
+            <div className={styles['question-type-icon']}>{icon}</div>
+            <h3 className={styles['question-type-card-title']}>{title}</h3>
+            <p className={styles['question-type-card-desc']}>{description}</p>
           </button>
         ))}
       </div>

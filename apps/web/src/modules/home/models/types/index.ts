@@ -21,11 +21,13 @@ export interface QuestionVariant {
 
 export interface QuizQuestion {
   id: number;
-  title: string;
+  text: string;
+  title?: string;
   type: string;
   timeLimit: number;
   points: number;
   order: number;
+  media?: string | null;
   img?: string | null;
   variants?: QuestionVariant[];
 }

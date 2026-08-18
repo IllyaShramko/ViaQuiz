@@ -14,6 +14,7 @@ export const errorHandler: ErrorRequestHandler = (
 	_next: NextFunction,
 ) => {
 	logger.error(`Error processing ${req.method} ${req.url}: ${err.message}`, {
+		details: err instanceof AppError ? err.details : undefined,
 		stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
 	});
 

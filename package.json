@@ -27,6 +27,7 @@
 	},
 	"type": "module",
 	"devDependencies": {
+		"@repo/ts-config": "workspace:*",
 		"turbo": "^2.10.9"
 	}
 }

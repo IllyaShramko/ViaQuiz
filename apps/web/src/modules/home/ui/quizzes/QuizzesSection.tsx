@@ -3,6 +3,7 @@ import { useGetPublishedQuizzesQuery } from '../../api/quizApi';
 import type { PublicQuizSummary } from '../../models';
 import { QuizCard } from './QuizCard';
 import { QuizSkeletonCard } from './QuizSkeletonCard';
+import styles from '../Home.module.css';
 
 export interface QuizzesSectionProps {
   onSelectQuiz?: (quiz: PublicQuizSummary) => void;
@@ -35,16 +36,16 @@ export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
   const hasRealQuizzes = realQuizzes.length > 0;
 
   return (
-    <section className="quizzes-section">
+    <section className={styles['quizzes-section']}>
       <div className="container">
-        <div className="section-header">
-          <h2 className="section-title">{t('quizzes.title')}</h2>
-          <p className="section-subtitle">{t('quizzes.subtitle')}</p>
+        <div className={styles['section-header']}>
+          <h2 className={styles['section-title']}>{t('quizzes.title')}</h2>
+          <p className={styles['section-subtitle']}>{t('quizzes.subtitle')}</p>
         </div>
 
         {isLoading && !hasRealQuizzes && (
-          <div className="quizzes-loading">
-            <div className="quizzes-grid">
+          <div className={styles['quizzes-loading']}>
+            <div className={styles['quizzes-grid']}>
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <QuizSkeletonCard key={i} />
               ))}
@@ -53,20 +54,20 @@ export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
         )}
 
         {hasRealQuizzes ? (
-          <div className="quizzes-grid">
+          <div className={styles['quizzes-grid']}>
             {realQuizzes.map((quiz) => (
               <QuizCard key={quiz.id} quiz={quiz} onClick={onSelectQuiz} />
             ))}
           </div>
         ) : (
           !isLoading && (
-            <div className="quizzes-grid">
+            <div className={styles['quizzes-grid']}>
               {SAMPLE_QUIZ_KEYS.map((key, index) => {
                 const count = SAMPLE_COUNTS[index];
                 return (
                   <div
                     key={key}
-                    className="quiz-card card card--interactive"
+                    className={`${styles['quiz-card']} card card--interactive`}
                     onClick={() =>
                       onSelectQuiz?.({
                         id: index + 1,
@@ -92,30 +93,30 @@ export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
                       })
                     }
                   >
-                    <div className="quiz-card__header">
+                    <div className={styles['quiz-card__header']}>
                       <img
                         src={SAMPLE_COVERS[index]}
                         alt={t(`quizzes.samples.${key}.title`)}
-                        className="quiz-card__cover-img"
+                        className={styles['quiz-card__cover-img']}
                         loading="lazy"
                       />
-                      <span className="quiz-card__category-badge">
+                      <span className={styles['quiz-card__category-badge']}>
                         {t(`quizzes.samples.${key}.category`)}
                       </span>
                     </div>
-                    <div className="quiz-card__body">
-                      <h3 className="quiz-card__title">
+                    <div className={styles['quiz-card__body']}>
+                      <h3 className={styles['quiz-card__title']}>
                         {t(`quizzes.samples.${key}.title`)}
                       </h3>
-                      <p className="quiz-card__author">
+                      <p className={styles['quiz-card__author']}>
                         {t('quizzes.author')}:{' '}
                         <span>{t(`quizzes.samples.${key}.author`)}</span>
                       </p>
-                      <p className="quiz-card__desc">
+                      <p className={styles['quiz-card__desc']}>
                         {t(`quizzes.samples.${key}.description`)}
                       </p>
-                      <div className="quiz-card__footer">
-                        <span className="quiz-card__stat">
+                      <div className={styles['quiz-card__footer']}>
+                        <span className={styles['quiz-card__stat']}>
                           📝 {count}{' '}
                           {pluralize(count, {
                             uk: ['запитання', 'запитання', 'запитань'],

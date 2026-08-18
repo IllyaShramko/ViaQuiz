@@ -1,9 +1,6 @@
 export {
-  quizApi,
+  homeQuizApi,
   useGetPublishedQuizzesQuery,
-  useGetMyQuizzesQuery,
-  useGetQuizByIdQuery,
-  useGetQuizByUuidQuery,
 } from './api/quizApi';
 export type {
   QuizAuthor,

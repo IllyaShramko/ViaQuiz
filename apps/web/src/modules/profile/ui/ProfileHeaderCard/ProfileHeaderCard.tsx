@@ -1,0 +1,42 @@
+import type { User } from '../../../../modules/auth/models';
+import styles from '../Profile.module.css';
+
+export interface ProfileHeaderCardProps {
+  user: User | null;
+  roleLabel?: string;
+}
+
+export function ProfileHeaderCard({
+  user,
+  roleLabel = 'Викладач',
+}: ProfileHeaderCardProps) {
+  const fullName =
+    user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : user?.firstName || user?.login || 'Користувач';
+
+  const username = user?.login || 'username';
+
+  return (
+    <div className={styles['profile-header-card']}>
+      <div className={styles['profile-avatar-wrapper']}>
+        <div className={styles['profile-avatar']}>
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+        </div>
+      </div>
+
+      <div className={styles['profile-info']}>
+        <div className={styles['profile-info__main']}>
+          <h2 className={styles['profile-name']}>{fullName}</h2>
+          <span className={styles['profile-username']}>@{username}</span>
+        </div>
+
+        <div className={styles['profile-badge']}>
+          <span className={styles['badge-role']}>{roleLabel}</span>
+        </div>
+      </div>
+    </div>
+  );
+}

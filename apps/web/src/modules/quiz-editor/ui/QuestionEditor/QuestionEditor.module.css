@@ -15,22 +15,56 @@
   gap: 1rem;
 }
 
+.question-text-box {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg, 0.5rem);
+  padding: 0.75rem 1.5rem;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast, 150ms ease);
+  cursor: text;
+}
+
+.question-text-box:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.question-text-box:focus-within {
+  border-color: rgba(134, 59, 255, 0.35);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
 .question-text-input {
   background-color: transparent;
-  border: none;
-  color: var(--color-text-primary);
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: var(--color-text-primary, #f0f0f5);
   font-family: var(--font-family);
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
   resize: none;
-  outline: none;
-  min-height: 80px;
   width: 100%;
+  padding: 0;
+  margin: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  height: auto;
+  display: block;
+}
+
+.question-text-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .question-text-input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--color-text-muted, #606078);
 }
 
 .question-media-area {
@@ -40,9 +74,9 @@
 }
 
 .media-placeholder {
-  background-color: var(--color-bg-surface);
-  border: 2px dashed rgba(255, 255, 255, 0.28);
-  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-surface, #1a1a26);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg, 0.5rem);
   width: 100%;
   max-width: 440px;
   height: 135px;
@@ -50,14 +84,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast, 150ms ease);
   user-select: none;
 }
 
 .media-placeholder:hover,
 .media-placeholder.is-dragover {
-  border-color: #38bdf8;
-  background-color: var(--color-bg-hover);
+  border-color: var(--color-accent, #863bff);
+  background-color: var(--color-bg-hover, #22222e);
 }
 
 .media-placeholder.is-uploading {
@@ -71,25 +105,25 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary, #9090a8);
 }
 
 .media-placeholder .placeholder-main {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-text-primary, #f0f0f5);
 }
 
 .media-placeholder .placeholder-sub {
   font-size: 0.75rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-muted, #606078);
 }
 
 .media-upload-spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-accent);
+  border: 3px solid var(--color-border, #2a2a3a);
+  border-top-color: var(--color-accent, #863bff);
   border-radius: 50%;
   animation: editor-media-spin 0.8s linear infinite;
 }
@@ -107,10 +141,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-lg, 0.5rem);
   overflow: hidden;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border, #2a2a3a);
+  background-color: var(--color-bg-surface, #1a1a26);
   padding: 4px;
 }
 
@@ -121,7 +155,7 @@
   height: auto;
   object-fit: contain;
   display: block;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 0.375rem);
 }
 
 .media-remove-btn {
@@ -133,57 +167,22 @@
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 0.35rem 0.65rem;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm, 0.25rem);
   cursor: pointer;
   font-size: 0.75rem;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast, 150ms ease);
   z-index: 5;
 }
 
 .media-remove-btn:hover {
-  background-color: var(--color-error);
-  border-color: var(--color-error);
+  background-color: var(--color-error, #ef4444);
+  border-color: var(--color-error, #ef4444);
 }
 
 .question-editor-body {
   display: flex;
   flex-direction: column;
-}
-
-.question-editor-footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.btn-save-question {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 2rem;
-  background-color: var(--color-accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: var(--font-family);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(134, 59, 255, 0.35);
-  transition: all var(--transition-fast);
-}
-
-.btn-save-question:hover {
-  background-color: var(--color-accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(134, 59, 255, 0.5);
-}
-
-.btn-save-question:active {
-  transform: translateY(0);
 }

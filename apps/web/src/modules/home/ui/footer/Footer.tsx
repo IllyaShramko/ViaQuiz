@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { useLocale } from '../../../../shared/i18n/useLocale';
+import styles from '../Home.module.css';
 
 export function Footer() {
   const { t } = useLocale();
 
   return (
-    <footer className="footer">
+    <footer className={styles['footer']}>
       <div className="container">
-        <div className="footer-top">
-          <div className="footer-brand">
-            <Link to="/" className="layout-logo">
+        <div className={styles['footer-top']}>
+          <div className={styles['footer-brand']}>
+            <Link to="/" className={styles['footer-logo']}>
               <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <g transform="translate(-164, -2239)">
                   <path
@@ -20,26 +21,26 @@ export function Footer() {
               </svg>
               ViaQuiz
             </Link>
-            <p className="footer-desc">{t('footer.description')}</p>
+            <p className={styles['footer-desc']}>{t('footer.description')}</p>
           </div>
-          <div className="footer-links">
-            <div className="footer-col">
+          <div className={styles['footer-links']}>
+            <div className={styles['footer-col']}>
               <h4>{t('footer.product')}</h4>
               <a href="#features">{t('footer.features')}</a>
               <a href="#pricing">{t('footer.pricing')}</a>
             </div>
-            <div className="footer-col">
+            <div className={styles['footer-col']}>
               <h4>{t('footer.company')}</h4>
               <a href="#about">{t('footer.about')}</a>
               <a href="#blog">{t('footer.blog')}</a>
             </div>
-            <div className="footer-col">
+            <div className={styles['footer-col']}>
               <h4>{t('footer.legal')}</h4>
               <a href="#privacy">{t('footer.privacy')}</a>
               <a href="#terms">{t('footer.terms')}</a>
             </div>
           </div>
-          <div className="footer-social">
+          <div className={styles['footer-social']}>
             <a href="#github" aria-label="GitHub">
               <svg width="20" height="20">
                 <use href="/icons.svg#github-icon" />
@@ -62,7 +63,7 @@ export function Footer() {
             </a>
           </div>
         </div>
-        <div className="footer-bottom">
+        <div className={styles['footer-bottom']}>
           <p>{t('footer.rights')}</p>
         </div>
       </div>

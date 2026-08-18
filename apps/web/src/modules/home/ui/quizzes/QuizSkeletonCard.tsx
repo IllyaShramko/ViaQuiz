@@ -1,12 +1,14 @@
+import styles from '../Home.module.css';
+
 export function QuizSkeletonCard() {
   return (
-    <div className="quiz-card quiz-card--skeleton">
-      <div className="quiz-card__header quiz-card__header--skeleton" />
-      <div className="quiz-card__body">
-        <div className="skeleton-line skeleton-line--title" />
-        <div className="skeleton-line skeleton-line--author" />
-        <div className="skeleton-line skeleton-line--desc" />
-        <div className="skeleton-line skeleton-line--desc-short" />
+    <div className={`${styles['quiz-card']} ${styles['quiz-card--skeleton']}`}>
+      <div className={`${styles['quiz-card__header']} ${styles['quiz-card__header--skeleton']}`} />
+      <div className={styles['quiz-card__body']}>
+        <div className={`${styles['skeleton-line']} ${styles['skeleton-line--title']}`} />
+        <div className={`${styles['skeleton-line']} ${styles['skeleton-line--author']}`} />
+        <div className={`${styles['skeleton-line']} ${styles['skeleton-line--desc']}`} />
+        <div className={`${styles['skeleton-line']} ${styles['skeleton-line--desc-short']}`} />
       </div>
     </div>
   );

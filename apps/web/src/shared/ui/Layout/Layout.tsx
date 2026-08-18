@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useLocale } from '../../i18n/useLocale';
 import '../ui/ui.css';
-import './Layout.css';
+import styles from './Layout.module.css';
 
 export function Layout() {
   const { t, locale, setLocale } = useLocale();
@@ -18,10 +18,10 @@ export function Layout() {
   }, []);
 
   return (
-    <div className="layout">
-      <header className={`layout-header ${isScrolled ? 'is-scrolled' : ''}`}>
-        <div className="layout-header__inner">
-          <Link to="/" className="layout-logo">
+    <div className={styles['layout']}>
+      <header className={`${styles['layout-header']} ${isScrolled ? styles['is-scrolled'] : ''}`}>
+        <div className={styles['layout-header__inner']}>
+          <Link to="/" className={styles['layout-logo']}>
             <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
               <g transform="translate(-164, -2239)">
                 <path
@@ -33,20 +33,20 @@ export function Layout() {
             ViaQuiz
           </Link>
 
-          <nav className={`layout-nav ${isMobileMenuOpen ? 'is-open' : ''}`}>
-            <div className="layout-lang-switcher" role="group" aria-label={t('nav.language')}>
+          <nav className={`${styles['layout-nav']} ${isMobileMenuOpen ? styles['is-open'] : ''}`}>
+            <div className={styles['layout-lang-switcher']} role="group" aria-label={t('nav.language')}>
               <button
                 type="button"
-                className={`layout-lang-btn ${locale === 'uk' ? 'is-active' : ''}`}
+                className={`${styles['layout-lang-btn']} ${locale === 'uk' ? styles['is-active'] : ''}`}
                 onClick={() => setLocale('uk')}
                 title="Українська"
               >
                 UA
               </button>
-              <span className="layout-lang-divider" aria-hidden="true">|</span>
+              <span className={styles['layout-lang-divider']} aria-hidden="true">|</span>
               <button
                 type="button"
-                className={`layout-lang-btn ${locale === 'en' ? 'is-active' : ''}`}
+                className={`${styles['layout-lang-btn']} ${locale === 'en' ? styles['is-active'] : ''}`}
                 onClick={() => setLocale('en')}
                 title="English"
               >
@@ -67,7 +67,7 @@ export function Layout() {
           </nav>
 
           <button
-            className="layout-hamburger"
+            className={styles['layout-hamburger']}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={t('nav.toggleMenu')}
           >
@@ -78,7 +78,7 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="layout-main">
+      <main className={styles['layout-main']}>
         <Outlet />
       </main>
     </div>

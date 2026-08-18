@@ -114,7 +114,10 @@
 
 /* 4 0 4 Digits */
 .not-found-glitch-wrapper {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .not-found-code {
@@ -122,12 +125,11 @@
   font-weight: 900;
   line-height: 1;
   color: var(--color-accent, #863bff);
-  letter-spacing: 0.15em;
   margin: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.15em;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
   user-select: none;
   text-shadow: 0 0 45px rgba(134, 59, 255, 0.4);
 }
@@ -136,6 +138,7 @@
   display: inline-block;
   opacity: 0;
   transform: scale(0.3) translateY(30px);
+  text-align: center;
 }
 
 .digit-1 {

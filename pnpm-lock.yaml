@@ -207,6 +207,9 @@ importers:
 
   .:
     devDependencies:
+      '@repo/ts-config':
+        specifier: workspace:*
+        version: link:packages/ts-config
       turbo:
         specifier: ^2.10.9
         version: 2.10.9

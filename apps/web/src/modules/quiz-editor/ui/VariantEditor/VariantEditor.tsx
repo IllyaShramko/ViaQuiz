@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import type { EditorVariant } from '../../models/types';
 import { CloseIcon, PlusIcon } from '../../../../shared';
-import './VariantEditor.css';
+import styles from './VariantEditor.module.css';
 
-interface VariantEditorProps {
+export interface VariantEditorProps {
   variants: EditorVariant[];
   questionType: 'ONE_ANSWER' | 'MANY_ANSWERS';
   onChange: (variants: EditorVariant[]) => void;
@@ -72,8 +72,8 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
   };
 
   return (
-    <div className="variant-editor">
-      <div className="variant-grid">
+    <div className={styles['variant-editor']}>
+      <div className={styles['variant-grid']}>
         {variants.map((variant, index) => {
           const color = COLORS[index % COLORS.length];
           const isCorrect = Boolean(variant.isCorrect);
@@ -81,39 +81,39 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
           return (
             <div
               key={variant.id ?? `temp-var-${index}`}
-              className={`variant-card ${isCorrect ? 'is-correct' : ''}`}
+              className={`${styles['variant-card']} ${isCorrect ? styles['is-correct'] : ''}`}
               style={{ '--variant-color': color } as React.CSSProperties}
             >
-              <div className="variant-color-stripe" />
+              <div className={styles['variant-color-stripe']} />
               <input
                 type="text"
-                className="variant-input"
+                className={styles['variant-input']}
                 placeholder={`Варіант відповіді ${index + 1}`}
                 value={variant.text || ''}
                 onChange={(e) => handleUpdateText(index, e.target.value)}
               />
-              <div className="variant-actions">
+              <div className={styles['variant-actions']}>
                 <button
                   type="button"
-                  className={`variant-correct-toggle ${isCorrect ? 'is-active' : ''}`}
+                  className={`${styles['variant-correct-toggle']} ${isCorrect ? styles['is-active'] : ''}`}
                   onClick={() => handleToggleCorrect(index)}
                   title={isCorrect ? 'Правильна відповідь (клікніть щоб зняти)' : 'Позначити як правильну'}
                   aria-label={isCorrect ? 'Зняти правильну відповідь' : 'Позначити як правильну'}
                 >
                   {questionType === 'ONE_ANSWER' ? (
-                    <div className={`radio-indicator ${isCorrect ? 'active' : ''}`}>
-                      {isCorrect && <span className="indicator-check">✓</span>}
+                    <div className={`${styles['radio-indicator']} ${isCorrect ? styles['active'] : ''}`}>
+                      {isCorrect && <span className={styles['indicator-check']}>✓</span>}
                     </div>
                   ) : (
-                    <div className={`checkbox-indicator ${isCorrect ? 'active' : ''}`}>
-                      {isCorrect && <span className="indicator-check">✓</span>}
+                    <div className={`${styles['checkbox-indicator']} ${isCorrect ? styles['active'] : ''}`}>
+                      {isCorrect && <span className={styles['indicator-check']}>✓</span>}
                     </div>
                   )}
                 </button>
                 {variants.length > 2 && (
                   <button
                     type="button"
-                    className="variant-delete-btn"
+                    className={styles['variant-delete-btn']}
                     onClick={() => handleDelete(index)}
                     title="Видалити варіант"
                     aria-label="Видалити варіант"
@@ -127,7 +127,7 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
         })}
       </div>
       {variants.length < 8 && (
-        <button type="button" className="variant-add-btn" onClick={handleAdd}>
+        <button type="button" className={styles['variant-add-btn']} onClick={handleAdd}>
           <PlusIcon width={16} height={16} />
           <span>Додати варіант</span>
         </button>

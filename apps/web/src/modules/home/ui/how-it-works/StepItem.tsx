@@ -1,3 +1,5 @@
+import styles from '../Home.module.css';
+
 export interface StepItemProps {
   number: number;
   title: string;
@@ -6,10 +8,10 @@ export interface StepItemProps {
 
 export function StepItem({ number, title, description }: StepItemProps) {
   return (
-    <div className="step-item">
-      <div className="step-badge">{number}</div>
-      <h3 className="step-title">{title}</h3>
-      <p className="step-desc">{description}</p>
+    <div className={styles['step-item']}>
+      <div className={styles['step-badge']}>{number}</div>
+      <h3 className={styles['step-title']}>{title}</h3>
+      <p className={styles['step-desc']}>{description}</p>
     </div>
   );
 }

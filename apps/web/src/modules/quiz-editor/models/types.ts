@@ -80,6 +80,8 @@ export interface ReorderPayload {
 
 export interface PublishValidationError {
   questionIndex: number;
+  questionId?: number;
+  field?: string;
   message: string;
 }
 

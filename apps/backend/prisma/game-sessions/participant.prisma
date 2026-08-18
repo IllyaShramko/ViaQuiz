@@ -2,13 +2,15 @@ model Participant {
   id   Int    @id @default(autoincrement())
   uuid String @unique @default(uuid())
 
+  nickname String
+
   score Int @default(0)
 
   roomId Int
   room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
-  studentId Int
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId Int?
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
 
   result  Result?
   answers Answer[]

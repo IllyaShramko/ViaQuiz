@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { UseFormRegisterReturn } from 'react-hook-form';
+import styles from '../Auth.module.css';
 
 export interface PasswordInputProps {
   id: string;
@@ -23,7 +24,7 @@ export function PasswordInput({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="password-container">
+    <div className={styles['password-container']}>
       <input
         id={id}
         type={showPassword ? 'text' : 'password'}
@@ -34,7 +35,7 @@ export function PasswordInput({
       />
       <button
         type="button"
-        className="password-toggle"
+        className={styles['password-toggle']}
         onClick={() => setShowPassword(!showPassword)}
         aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
         disabled={disabled}

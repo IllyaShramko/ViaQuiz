@@ -1,8 +1,8 @@
 import React from 'react';
 import type { EditorQuestion, QuestionType } from '../../models/types';
-import './QuestionSettings.css';
+import styles from './QuestionSettings.module.css';
 
-interface QuestionSettingsProps {
+export interface QuestionSettingsProps {
   question: EditorQuestion;
   onUpdate: (data: Partial<{ type: QuestionType; timeLimit: number; points: number }>) => void;
   onSave?: () => void;
@@ -10,12 +10,12 @@ interface QuestionSettingsProps {
 
 export const QuestionSettings: React.FC<QuestionSettingsProps> = ({ question, onUpdate, onSave }) => {
   return (
-    <aside className="question-settings">
-      <div className="settings-group">
-        <label className="settings-label" htmlFor="questionType">Тип питання</label>
+    <aside className={styles['question-settings']}>
+      <div className={styles['settings-group']}>
+        <label className={styles['settings-label']} htmlFor="questionType">Тип питання</label>
         <select
           id="questionType"
-          className="settings-select"
+          className={styles['settings-select']}
           value={question.type}
           onChange={(e) => onUpdate({ type: e.target.value as QuestionType })}
         >
@@ -26,11 +26,11 @@ export const QuestionSettings: React.FC<QuestionSettingsProps> = ({ question, on
         </select>
       </div>
 
-      <div className="settings-group">
-        <label className="settings-label" htmlFor="timeLimit">Час на відповідь</label>
+      <div className={styles['settings-group']}>
+        <label className={styles['settings-label']} htmlFor="timeLimit">Час на відповідь</label>
         <select
           id="timeLimit"
-          className="settings-select"
+          className={styles['settings-select']}
           value={question.timeLimit}
           onChange={(e) => onUpdate({ timeLimit: Number(e.target.value) })}
         >
@@ -46,11 +46,11 @@ export const QuestionSettings: React.FC<QuestionSettingsProps> = ({ question, on
         </select>
       </div>
 
-      <div className="settings-group">
-        <label className="settings-label" htmlFor="points">Бали</label>
+      <div className={styles['settings-group']}>
+        <label className={styles['settings-label']} htmlFor="points">Бали</label>
         <select
           id="points"
-          className="settings-select"
+          className={styles['settings-select']}
           value={question.points}
           onChange={(e) => onUpdate({ points: Number(e.target.value) })}
         >
@@ -64,10 +64,10 @@ export const QuestionSettings: React.FC<QuestionSettingsProps> = ({ question, on
       </div>
 
       {onSave && (
-        <div className="settings-footer">
+        <div className={styles['settings-footer']}>
           <button
             type="button"
-            className="settings-save-btn"
+            className={styles['settings-save-btn']}
             onClick={onSave}
           >
             Зберегти

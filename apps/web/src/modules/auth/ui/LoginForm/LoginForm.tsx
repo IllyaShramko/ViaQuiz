@@ -7,6 +7,7 @@ import { useUserContext } from '../../context';
 import { getUserDashboardPath } from '../../utils';
 import type { LoginFormInputs } from '../../models';
 import { PasswordInput } from './PasswordInput';
+import styles from '../Auth.module.css';
 
 export interface LoginFormProps {
   onSuccess?: () => void;
@@ -52,9 +53,9 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
 
   return (
     <>
-      {serverError && <div className="auth-error">{serverError}</div>}
+      {serverError && <div className={styles['auth-error']}>{serverError}</div>}
 
-      <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
+      <form className={styles['auth-form']} onSubmit={handleSubmit(onSubmit)}>
         <div className="input-group">
           <label className="input-label" htmlFor="email">
             {t('login.email_label')}
@@ -96,13 +97,13 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
           )}
         </div>
 
-        <Link to="#" className="forgot-password disabled" onClick={(e) => e.preventDefault()}>
+        <Link to="#" className={`${styles['forgot-password']} ${styles['disabled']}`} onClick={(e) => e.preventDefault()}>
           {t('login.forgot_password')}
         </Link>
 
         <button
           type="submit"
-          className="btn btn--primary"
+          className={styles['auth-submit-btn']}
           disabled={isSubmitting}
         >
           {isSubmitting ? t('login.submitting') : t('login.submit')}

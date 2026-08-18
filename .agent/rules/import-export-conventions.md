@@ -53,3 +53,16 @@
     // consumer.ts
     import { myService } from "./myService";
     ```
+
+## 6. CSS Modules & Style Imports
+- **CSS File Naming**: All component/page `.css` files MUST be named using the `.module.css` extension (e.g., `QuizDraftsPage.module.css`, not `QuizDraftsPage.css`).
+- **CSS Imports**: NEVER use direct side-effect imports for component styles (e.g., `import './QuizDraftsPage.css';`). Always import class names as `styles` from the corresponding `.module.css` file:
+  - ❌
+    ```ts
+    import './QuizDraftsPage.css';
+    import './QuizDraftsPage.module.css';
+    ```
+  - ✅
+    ```ts
+    import styles from './QuizDraftsPage.module.css';
+    ```

@@ -25,7 +25,7 @@ export const quizEditorApi = baseApi.injectEndpoints({
         method: 'PATCH',
         body,
       }),
-      async onQueryStarted({ id, body }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           dispatch(
@@ -75,7 +75,7 @@ export const quizEditorApi = baseApi.injectEndpoints({
         method: 'PUT',
         body,
       }),
-      async onQueryStarted({ id, quizId, body }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ id, quizId }, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           dispatch(

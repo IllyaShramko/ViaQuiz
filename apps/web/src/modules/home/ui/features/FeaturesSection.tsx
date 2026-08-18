@@ -1,5 +1,6 @@
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { FeatureCard } from './FeatureCard';
+import styles from '../Home.module.css';
 
 export function FeaturesSection() {
   const { t } = useLocale();
@@ -73,13 +74,13 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section className="features">
+    <section className={styles['features']}>
       <div className="container">
-        <div className="section-header">
-          <h2 className="section-title">{t('features.title')}</h2>
-          <p className="section-subtitle">{t('features.subtitle')}</p>
+        <div className={styles['section-header']}>
+          <h2 className={styles['section-title']}>{t('features.title')}</h2>
+          <p className={styles['section-subtitle']}>{t('features.subtitle')}</p>
         </div>
-        <div className="features-grid">
+        <div className={styles['features-grid']}>
           {featureKeys.map((key, i) => (
             <FeatureCard
               key={key}

@@ -1,6 +1,7 @@
 import type { UseFormRegister } from 'react-hook-form';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import type { RegisterFormInputs } from '../../models';
+import styles from '../Auth.module.css';
 
 export interface StepProfileProps {
   register: UseFormRegister<RegisterFormInputs>;
@@ -55,7 +56,7 @@ export function StepProfile({
         />
       </div>
 
-      <div className="button-group">
+      <div className={styles['button-group']}>
         <button
           type="button"
           className="btn btn--secondary"

@@ -1,7 +1,5 @@
 import { useLocale } from '../../../shared/i18n/useLocale';
 import { AuthCard, RegisterForm } from '../../../modules/auth/ui';
-import '../LoginPage/LoginPage.css';
-import './RegisterPage.css';
 
 export function RegisterPage() {
   const { t } = useLocale();
@@ -13,6 +11,7 @@ export function RegisterPage() {
       footerText={t('register.have_account')}
       footerLinkText={t('register.login_link')}
       footerLinkTo="/login"
+      isWide
     >
       <RegisterForm />
     </AuthCard>

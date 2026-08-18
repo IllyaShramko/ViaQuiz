@@ -1,9 +1,9 @@
 import React from 'react';
 import type { SaveStatus } from '../../models/types';
 import { ArrowIcon, PublicIcon } from '../../../../shared';
-import './EditorHeader.css';
+import styles from './EditorHeader.module.css';
 
-interface EditorHeaderProps {
+export interface EditorHeaderProps {
   quizName: string;
   saveStatus: SaveStatus;
   onNameChange: (name: string) => void;
@@ -27,11 +27,11 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
   const renderSaveStatus = () => {
     switch (saveStatus) {
       case 'saving':
-        return <span className="save-status saving">Зберігається...</span>;
+        return <span className={`${styles['save-status']} ${styles['saving']}`}>Зберігається...</span>;
       case 'saved':
-        return <span className="save-status saved">✓ Збережено</span>;
+        return <span className={`${styles['save-status']} ${styles['saved']}`}>✓ Збережено</span>;
       case 'error':
-        return <span className="save-status error">Помилка збереження</span>;
+        return <span className={`${styles['save-status']} ${styles['error']}`}>Помилка збереження</span>;
       default:
         return null;
     }
@@ -40,27 +40,27 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
   const isButtonDisabled = !isDraft || isPublishing || !hasQuestions;
 
   return (
-    <header className="editor-header">
-      <div className="editor-header-left">
-        <button type="button" className="editor-back-btn" onClick={onBack}>
+    <header className={styles['editor-header']}>
+      <div className={styles['editor-header-left']}>
+        <button type="button" className={styles['editor-back-btn']} onClick={onBack}>
           <ArrowIcon width={16} height={16} />
           <span>Назад</span>
         </button>
         <input
           type="text"
-          className="editor-quiz-name-input"
+          className={styles['editor-quiz-name-input']}
           value={quizName}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder="Назва квізу"
         />
       </div>
-      
-      <div className="editor-header-right">
+
+      <div className={styles['editor-header-right']}>
         {renderSaveStatus()}
-        
+
         <button
           type="button"
-          className="editor-publish-btn"
+          className={styles['editor-publish-btn']}
           onClick={onPublish}
           disabled={isButtonDisabled}
           title={

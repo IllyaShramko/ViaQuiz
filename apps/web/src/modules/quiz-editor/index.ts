@@ -31,5 +31,29 @@ export type {
 } from './models/types';
 
 export { useAutoSave } from './hooks/useAutoSave';
-export { QuizEditorLayout } from './ui/QuizEditorLayout/QuizEditorLayout';
-export { PublishModal } from './ui/PublishModal/PublishModal';
+export {
+  QuizEditorLayout,
+  PublishModal,
+  EditorHeader,
+  QuestionEditor,
+  QuestionList,
+  QuestionSettings,
+  QuestionTypeSelector,
+  TypeAnswerEditor,
+  VariantEditor,
+  DraftsTopbar,
+  DraftsHero,
+  DraftsToolbar,
+  DraftCard,
+  DraftCreateCard,
+  DraftsGrid,
+  DEFAULT_COVER_GRADIENT,
+  type DraftsTopbarProps,
+  type DraftsHeroProps,
+  type DraftsToolbarProps,
+  type DraftSortField,
+  type DraftSortOrder,
+  type DraftCardProps,
+  type DraftCreateCardProps,
+  type DraftsGridProps,
+} from './ui';

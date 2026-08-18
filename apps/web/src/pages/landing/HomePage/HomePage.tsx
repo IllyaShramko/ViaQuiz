@@ -6,7 +6,6 @@ import {
   CtaSection,
   Footer,
 } from '../../../modules/home/ui';
-import './HomePage.css';
 
 export function HomePage() {
   return (
