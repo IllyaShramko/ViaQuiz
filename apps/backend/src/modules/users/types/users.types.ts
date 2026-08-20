@@ -11,7 +11,11 @@ export type User = Prisma.UserGetPayload<{
 	omit: {
 		password: true;
 	};
-}>;
+}> & {
+	role?: string | undefined;
+	classroom?: any | undefined;
+	courses?: any | undefined;
+};
 
 export type UserWithPassword = Prisma.UserGetPayload<{}>;
 

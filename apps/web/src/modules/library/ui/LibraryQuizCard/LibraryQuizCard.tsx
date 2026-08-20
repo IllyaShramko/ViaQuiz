@@ -1,4 +1,5 @@
 import React from 'react';
+import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
 import type { QuizDetail, PublicQuizSummary } from '../../models';
 import styles from '../Library.module.css';
 
@@ -128,10 +129,12 @@ export function LibraryQuizCard({
         <div className={styles['library-card__footer']}>
           <div className={styles['library-card__stats']}>
             <span className={styles['library-card__stat']}>
-              📝 {questionsCount}
+              <OneAnswerIcon size={15} />
+              <span>{questionsCount}</span>
             </span>
             <span className={styles['library-card__stat']}>
-              👁️ {viewsCount}
+              <ViewEyeIcon size={15} />
+              <span>{viewsCount}</span>
             </span>
             {likesCount > 0 && (
               <span className={styles['library-card__stat']}>

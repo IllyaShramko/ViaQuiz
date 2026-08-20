@@ -1,11 +1,13 @@
 model Student {
   id        Int    @id @default(autoincrement())
   uuid      String @unique @default(uuid())
-  login     String
+  login     String @unique
+  password  String
   firstName String
   lastName  String
 
   passedQuizes Participant[]
+  courses      Course[]
 
   classroomId Int
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
@@ -13,6 +15,5 @@ model Student {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([classroomId, login])
   @@index([classroomId])
 }

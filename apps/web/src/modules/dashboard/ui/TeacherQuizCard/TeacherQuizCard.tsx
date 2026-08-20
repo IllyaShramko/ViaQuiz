@@ -1,3 +1,4 @@
+import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
 import type { PublicQuizSummary } from '../../models';
 import styles from '../Dashboard.module.css';
 
@@ -72,10 +73,14 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
         <div className={styles['teacher-quiz-card__footer']}>
           <div className={styles['teacher-quiz-card__stats-row']}>
             <span className={styles['teacher-quiz-card__stat']}>
-              📝 {questionsCount} {questionsCount === 1 ? 'запитання' : questionsCount >= 2 && questionsCount <= 4 ? 'запитання' : 'запитань'}
+              <OneAnswerIcon size={16} />
+              <span>
+                {questionsCount} {questionsCount === 1 ? 'запитання' : questionsCount >= 2 && questionsCount <= 4 ? 'запитання' : 'запитань'}
+              </span>
             </span>
             <span className={styles['teacher-quiz-card__stat']}>
-              👁️ {viewsCount}
+              <ViewEyeIcon size={16} />
+              <span>{viewsCount}</span>
             </span>
           </div>
           <span className={styles['teacher-quiz-card__action-hint']}>Переглянути →</span>

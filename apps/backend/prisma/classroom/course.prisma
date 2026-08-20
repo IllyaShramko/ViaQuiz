@@ -3,7 +3,11 @@ model Course {
   uuid String @unique @default(uuid())
   name String
 
-  rooms Room[]
+  isActive   Boolean @default(true)
+  isArchived Boolean @default(false)
+
+  rooms    Room[]
+  students Student[]
 
   classroomId Int
   classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
@@ -16,4 +20,5 @@ model Course {
 
   @@index([classroomId])
   @@index([teacherId])
+  @@index([isActive])
 }

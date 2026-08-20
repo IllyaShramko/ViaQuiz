@@ -4,3 +4,6 @@ export { QuizDetailsPage } from './QuizDetailsPage';
 export { QuizEditorPage } from './QuizEditorPage/QuizEditorPage';
 export { QuizDraftsPage } from './QuizDraftsPage/QuizDraftsPage';
 export { LibraryPage } from './LibraryPage';
+export { ClassesPage } from './ClassesPage/ClassesPage';
+export { ClassDetailsPage } from './ClassDetailsPage/ClassDetailsPage';
+export { StudentDetailsPage } from './StudentDetailsPage/StudentDetailsPage';

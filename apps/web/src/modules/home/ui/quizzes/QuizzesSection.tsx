@@ -23,7 +23,7 @@ const SAMPLE_COVERS = [
 const SAMPLE_COUNTS = [10, 15, 12, 20, 14, 18];
 
 export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
-  const { t, pluralize } = useLocale();
+  const { t } = useLocale();
 
   const { data, isLoading } = useGetPublishedQuizzesQuery({
     page: 1,
@@ -55,8 +55,13 @@ export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
 
         {hasRealQuizzes ? (
           <div className={styles['quizzes-grid']}>
-            {realQuizzes.map((quiz) => (
-              <QuizCard key={quiz.id} quiz={quiz} onClick={onSelectQuiz} />
+            {realQuizzes.map((quiz, index) => (
+              <QuizCard
+                key={quiz.id}
+                quiz={quiz}
+                index={index}
+                onClick={onSelectQuiz}
+              />
             ))}
           </div>
         ) : (
@@ -64,68 +69,36 @@ export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
             <div className={styles['quizzes-grid']}>
               {SAMPLE_QUIZ_KEYS.map((key, index) => {
                 const count = SAMPLE_COUNTS[index];
+                const sampleQuiz: PublicQuizSummary = {
+                  id: index + 1,
+                  uuid: `sample-${key}`,
+                  name: t(`quizzes.samples.${key}.title`),
+                  description: t(`quizzes.samples.${key}.description`),
+                  coverImg: SAMPLE_COVERS[index],
+                  isDraft: false,
+                  authorId: index + 1,
+                  author: {
+                    id: index + 1,
+                    uuid: `author-${key}`,
+                    login: t(`quizzes.samples.${key}.author`),
+                    firstName: null,
+                    lastName: null,
+                  },
+                  keywords: [
+                    { id: index + 1, quizId: index + 1, name: t(`quizzes.samples.${key}.category`) },
+                  ],
+                  _count: { questions: count },
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                };
+
                 return (
-                  <div
+                  <QuizCard
                     key={key}
-                    className={`${styles['quiz-card']} card card--interactive`}
-                    onClick={() =>
-                      onSelectQuiz?.({
-                        id: index + 1,
-                        uuid: `sample-${key}`,
-                        name: t(`quizzes.samples.${key}.title`),
-                        description: t(`quizzes.samples.${key}.description`),
-                        coverImg: SAMPLE_COVERS[index],
-                        isDraft: false,
-                        authorId: index + 1,
-                        author: {
-                          id: index + 1,
-                          uuid: `author-${key}`,
-                          login: t(`quizzes.samples.${key}.author`),
-                          firstName: null,
-                          lastName: null,
-                        },
-                        keywords: [
-                          { id: index + 1, quizId: index + 1, name: t(`quizzes.samples.${key}.category`) },
-                        ],
-                        _count: { questions: count },
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                      })
-                    }
-                  >
-                    <div className={styles['quiz-card__header']}>
-                      <img
-                        src={SAMPLE_COVERS[index]}
-                        alt={t(`quizzes.samples.${key}.title`)}
-                        className={styles['quiz-card__cover-img']}
-                        loading="lazy"
-                      />
-                      <span className={styles['quiz-card__category-badge']}>
-                        {t(`quizzes.samples.${key}.category`)}
-                      </span>
-                    </div>
-                    <div className={styles['quiz-card__body']}>
-                      <h3 className={styles['quiz-card__title']}>
-                        {t(`quizzes.samples.${key}.title`)}
-                      </h3>
-                      <p className={styles['quiz-card__author']}>
-                        {t('quizzes.author')}:{' '}
-                        <span>{t(`quizzes.samples.${key}.author`)}</span>
-                      </p>
-                      <p className={styles['quiz-card__desc']}>
-                        {t(`quizzes.samples.${key}.description`)}
-                      </p>
-                      <div className={styles['quiz-card__footer']}>
-                        <span className={styles['quiz-card__stat']}>
-                          📝 {count}{' '}
-                          {pluralize(count, {
-                            uk: ['запитання', 'запитання', 'запитань'],
-                            en: ['question', 'questions'],
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                    quiz={sampleQuiz}
+                    index={index}
+                    onClick={onSelectQuiz}
+                  />
                 );
               })}
             </div>

@@ -430,9 +430,21 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.8125rem;
-  color: var(--color-text-muted, #606078);
+  color: var(--color-text-secondary, #9090a8);
   padding-top: 0.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.meta-questions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.meta-questions svg {
+  flex-shrink: 0;
+  color: #b5b5cc;
 }
 
 .draft-card__footer {

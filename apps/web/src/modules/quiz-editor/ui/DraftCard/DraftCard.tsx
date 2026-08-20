@@ -1,5 +1,5 @@
 import React from 'react';
-import { BinIcon } from '../../../../shared';
+import { BinIcon, OneAnswerIcon } from '../../../../shared';
 import type { EditorQuiz } from '../../models/types';
 import type { DraftSortField } from '../DraftsToolbar';
 import styles from '../Drafts.module.css';
@@ -88,12 +88,15 @@ export function DraftCard({
 
         <div className={styles['draft-card__meta']}>
           <span className={styles['meta-questions']}>
-            📝 {questionsCount}{' '}
-            {questionsCount === 1
-              ? 'питання'
-              : questionsCount >= 2 && questionsCount <= 4
-              ? 'питання'
-              : 'питань'}
+            <OneAnswerIcon size={15} />
+            <span>
+              {questionsCount}{' '}
+              {questionsCount === 1
+                ? 'питання'
+                : questionsCount >= 2 && questionsCount <= 4
+                ? 'питання'
+                : 'питань'}
+            </span>
           </span>
           <span className={styles['meta-date']} title={`Створено: ${createdFormatted}`}>
             {sortBy === 'createdAt' ? `📅 ${createdFormatted}` : `🕒 ${updatedFormatted}`}

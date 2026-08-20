@@ -35,6 +35,7 @@ export { pickImage, type PickImageOptions } from './tools';
 export {
   Layout,
   TeacherLayout,
+  StudentLayout,
   ProtectedRoute,
   PublicRoute,
   AiIcon,
@@ -48,6 +49,7 @@ export {
   PlusIcon,
   PublicIcon,
   UploadIcon,
+  ViewEyeIcon,
   type IconProps,
 } from './ui';
 export {

@@ -13,3 +13,11 @@ export type {
 	GetUserQuizzesParams,
 	GetLikedQuizzesParams,
 } from "./quiz";
+export type {
+	ClassroomLimits,
+	StudentDto,
+	CourseDto,
+	ClassroomDto,
+	StudentAnalyticsDto,
+	StudentDashboardDto,
+} from "./classroom";

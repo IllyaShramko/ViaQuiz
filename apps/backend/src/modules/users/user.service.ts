@@ -208,14 +208,14 @@ export const UserService: UserServiceContract = {
 		await UserRepository.deleteVerificationCode(credentials.email);
 
 		const token = jwt.sign(
-			{ userId: user.id, email: user.email },
+			{ userId: user.id, email: user.email, role: "TEACHER" },
 			JWT_SECRET,
 			{
 				expiresIn: "7d",
 			},
 		);
 
-		return { token, user };
+		return { token, user: { ...user, role: "TEACHER" } };
 	},
 
 	async login(credentials) {
@@ -254,14 +254,14 @@ export const UserService: UserServiceContract = {
 		const { password: _p, ...user } = userWithPassword;
 
 		const token = jwt.sign(
-			{ userId: user.id, email: user.email },
+			{ userId: user.id, email: user.email, role: "TEACHER" },
 			JWT_SECRET,
 			{
 				expiresIn: "7d",
 			},
 		);
 
-		return { token, user };
+		return { token, user: { ...user, role: "TEACHER" } };
 	},
 
 	async me(userId) {

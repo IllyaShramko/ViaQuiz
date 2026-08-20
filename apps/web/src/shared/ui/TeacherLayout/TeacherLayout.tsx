@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
 import styles from './TeacherLayout.module.css';
 
@@ -11,6 +11,11 @@ export function TeacherLayout() {
   const { user, logout } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
+
+  if (user && (user as any).role?.toUpperCase() === 'STUDENT') {
+    return <Navigate to="/student/dashboard" replace />;
+  }
+
   const handleCreateQuiz = () => {
     navigate('/quiz/drafts');
   };
@@ -23,6 +28,7 @@ export function TeacherLayout() {
   const isProfile = location.pathname.includes('/profile');
   const isQuizDetails = location.pathname.startsWith('/quiz');
   const isLibrary = location.pathname.startsWith('/library');
+  const isClasses = location.pathname.startsWith('/classes');
   const displayName =
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`
@@ -125,6 +131,10 @@ export function TeacherLayout() {
               </button>
             ) : isLibrary ? (
               <h1 className={styles['teacher-topbar__title']}>Бібліотека</h1>
+            ) : isClasses ? (
+              <h1 className={styles['teacher-topbar__title']}>Мої класи</h1>
+            ) : location.pathname.startsWith('/reports') ? (
+              <h1 className={styles['teacher-topbar__title']}>Звіти</h1>
             ) : (
               <h1 className={styles['teacher-topbar__title']}>Головна</h1>
             )}

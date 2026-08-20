@@ -10,6 +10,6 @@ export const baseApi = createApi({
       return getAuthHeaders(headers);
     },
   }),
-  tagTypes: ['Quiz', 'User'],
+  tagTypes: ['Quiz', 'User', 'Classroom', 'Student'],
   endpoints: () => ({}),
 });

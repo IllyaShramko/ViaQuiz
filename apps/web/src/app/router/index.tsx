@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Layout, TeacherLayout, ProtectedRoute, PublicRoute } from '../../shared';
+import { Layout, TeacherLayout, StudentLayout, ProtectedRoute, PublicRoute } from '../../shared';
 import {
   HomePage,
   LoginPage,
@@ -10,6 +10,15 @@ import {
   QuizEditorPage,
   QuizDraftsPage,
   LibraryPage,
+  ClassesPage,
+  ClassDetailsPage,
+  StudentDetailsPage,
+  StudentDashboardPage,
+  StudentClassPage,
+  StudentPerformancePage,
+  StudentHistoryPage,
+  StudentCoursesPage,
+  StudentProfilePage,
   NotFoundPage,
 } from '../../pages';
 
@@ -30,13 +39,30 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
+      // Teacher Portal routes
       {
         element: <TeacherLayout />,
         children: [
           { path: '/dashboard', element: <TeacherMainPage /> },
+          { path: '/classes', element: <ClassesPage /> },
+          { path: '/classes/:uuid', element: <ClassDetailsPage /> },
+          { path: '/classes/:classUuid/students/:studentUuid', element: <StudentDetailsPage /> },
           { path: '/library', element: <LibraryPage /> },
           { path: '/profile', element: <ProfilePage /> },
           { path: '/quiz/:uuid', element: <QuizDetailsPage /> },
+        ],
+      },
+      // Student Portal routes
+      {
+        element: <StudentLayout />,
+        children: [
+          { path: '/student', element: <StudentDashboardPage /> },
+          { path: '/student/dashboard', element: <StudentDashboardPage /> },
+          { path: '/student/class', element: <StudentClassPage /> },
+          { path: '/student/performance', element: <StudentPerformancePage /> },
+          { path: '/student/history', element: <StudentHistoryPage /> },
+          { path: '/student/courses', element: <StudentCoursesPage /> },
+          { path: '/student/profile', element: <StudentProfilePage /> },
         ],
       },
       // Drafts Hub — select or create drafts (separate layout)

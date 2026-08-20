@@ -374,3 +374,11 @@
     flex-direction: column;
   }
 }
+
+:global(.input-field):-webkit-autofill,
+:global(.input-field):-webkit-autofill:hover, 
+:global(.input-field):-webkit-autofill:focus {
+  -webkit-text-fill-color: #f0f0f5 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1a1a26 inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}

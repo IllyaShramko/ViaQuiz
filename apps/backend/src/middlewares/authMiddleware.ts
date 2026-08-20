@@ -24,14 +24,20 @@ export const authenticate = (
 
 	try {
 		const decoded = jwt.verify(token, env.JWT_SECRET) as {
-			userId: number;
-			email: string;
+			userId?: number;
+			studentId?: number;
+			email?: string;
+			login?: string;
 			role?: string;
+			classroomId?: number;
 		};
 
-		res.locals.userId = Number(decoded.userId);
+		res.locals.userId = decoded.userId ? Number(decoded.userId) : undefined;
+		res.locals.studentId = decoded.studentId ? Number(decoded.studentId) : undefined;
 		res.locals.email = decoded.email;
-		res.locals.role = decoded.role;
+		res.locals.login = decoded.login;
+		res.locals.role = decoded.role || (decoded.studentId ? "STUDENT" : "TEACHER");
+		res.locals.classroomId = decoded.classroomId;
 
 		next();
 	} catch {
@@ -57,14 +63,20 @@ export const optionalAuthenticate = (
 
 	try {
 		const decoded = jwt.verify(token, env.JWT_SECRET) as {
-			userId: number;
-			email: string;
+			userId?: number;
+			studentId?: number;
+			email?: string;
+			login?: string;
 			role?: string;
+			classroomId?: number;
 		};
 
-		res.locals.userId = Number(decoded.userId);
+		res.locals.userId = decoded.userId ? Number(decoded.userId) : undefined;
+		res.locals.studentId = decoded.studentId ? Number(decoded.studentId) : undefined;
 		res.locals.email = decoded.email;
-		res.locals.role = decoded.role;
+		res.locals.login = decoded.login;
+		res.locals.role = decoded.role || (decoded.studentId ? "STUDENT" : "TEACHER");
+		res.locals.classroomId = decoded.classroomId;
 	} catch {
 		// Silently continue for optional auth
 	}
@@ -82,12 +94,12 @@ export const optionalAuthenticate = (
  */
 export const authorizeRoles = (...allowedRoles: string[]) => {
 	return (_req: Request, res: Response, next: NextFunction): void => {
-		if (!res.locals.userId) {
+		if (!res.locals.userId && !res.locals.studentId) {
 			next(new UnauthorizedError("Authentication required"));
 			return;
 		}
 
-		const userRole = res.locals.role as string | undefined;
+		const userRole = (res.locals.role as string | undefined) || (res.locals.studentId ? "STUDENT" : "TEACHER");
 
 		if (!userRole) {
 			next(new ForbiddenError("Access denied: no role assigned to user"));

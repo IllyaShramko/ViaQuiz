@@ -1,4 +1,5 @@
 import { UserService } from "./user.service";
+import { StudentRepository } from "../students/student.repository";
 import type { UserControllerContract } from "./types/users.contracts";
 
 export const UserController: UserControllerContract = {
@@ -40,8 +41,20 @@ export const UserController: UserControllerContract = {
 
 	async me(_req, res, next) {
 		try {
-			const user = await UserService.me(res.locals.userId);
-			res.status(200).json(user);
+			if (res.locals.role === "STUDENT" && res.locals.studentId) {
+				const student = await StudentRepository.findById(res.locals.studentId);
+				res.status(200).json({
+					...(student as any),
+					role: "STUDENT",
+				});
+				return;
+			}
+
+			const user = await UserService.me(res.locals.userId!);
+			res.status(200).json({
+				...user,
+				role: (user as any)?.role || "TEACHER",
+			});
 		} catch (error) {
 			next(error);
 		}
