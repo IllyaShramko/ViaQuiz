@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useGetQuizByUuidQuery,
+  useRecordViewMutation,
   QuizBackButton,
   QuizDetailsHero,
   QuizQuestionsList,
@@ -12,6 +14,14 @@ import styles from '../../../modules/quiz-details/ui/QuizDetails.module.css';
 export function QuizDetailsPage() {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
+
+  const [recordView] = useRecordViewMutation();
+
+  useEffect(() => {
+    if (uuid) {
+      recordView(uuid).unwrap().catch(() => {});
+    }
+  }, [uuid, recordView]);
 
   const {
     data: quiz,

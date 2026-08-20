@@ -38,7 +38,7 @@ export const QuizService: QuizServiceContract = {
 	},
 
 	async getQuizById(idOrUuid, currentUserId) {
-		const quiz = await QuizRepository.findById(idOrUuid);
+		const quiz = await QuizRepository.findById(idOrUuid, currentUserId);
 
 		// If quiz is a draft, only the author can access it
 		if (quiz.isDraft && currentUserId && quiz.authorId !== currentUserId) {
@@ -51,7 +51,7 @@ export const QuizService: QuizServiceContract = {
 	},
 
 	async getQuizByUuid(uuid, currentUserId) {
-		const quiz = await QuizRepository.findByUuid(uuid);
+		const quiz = await QuizRepository.findByUuid(uuid, currentUserId);
 
 		// If quiz is a draft, only the author can access it
 		if (
@@ -82,6 +82,41 @@ export const QuizService: QuizServiceContract = {
 		]);
 
 		return { quizzes, total };
+	},
+
+	async getLikedQuizzes(userId, params) {
+		const [quizzes, total] = await Promise.all([
+			QuizRepository.findLikedQuizzes({ userId, ...params }),
+			QuizRepository.countLikedQuizzes({ userId, ...params }),
+		]);
+
+		return { quizzes, total };
+	},
+
+	async toggleLike(userId, idOrUuid) {
+		const quiz =
+			typeof idOrUuid === "number" || (!isNaN(Number(idOrUuid)) && !String(idOrUuid).includes("-"))
+				? await QuizRepository.findById(Number(idOrUuid))
+				: await QuizRepository.findByUuid(String(idOrUuid));
+
+		if (!quiz) {
+			throw new NotFoundError("Quiz not found");
+		}
+
+		return await QuizRepository.toggleLike(userId, quiz.id);
+	},
+
+	async recordView(userId, idOrUuid) {
+		const quiz =
+			typeof idOrUuid === "number" || (!isNaN(Number(idOrUuid)) && !String(idOrUuid).includes("-"))
+				? await QuizRepository.findById(Number(idOrUuid))
+				: await QuizRepository.findByUuid(String(idOrUuid));
+
+		if (!quiz) {
+			throw new NotFoundError("Quiz not found");
+		}
+
+		await QuizRepository.recordView(userId, quiz.id);
 	},
 
 	async updateQuiz(id, authorId, data) {

@@ -23,6 +23,7 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
       : quiz.author?.firstName || quiz.author?.login || 'Користувач';
 
   const questionsCount = quiz._count?.questions || 0;
+  const viewsCount = quiz._count?.views || 0;
   const gradient = TEACHER_GRADIENTS[index % TEACHER_GRADIENTS.length];
 
   return (
@@ -69,9 +70,14 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
         </p>
 
         <div className={styles['teacher-quiz-card__footer']}>
-          <span className={styles['teacher-quiz-card__stat']}>
-            📝 {questionsCount} {questionsCount === 1 ? 'запитання' : questionsCount >= 2 && questionsCount <= 4 ? 'запитання' : 'запитань'}
-          </span>
+          <div className={styles['teacher-quiz-card__stats-row']}>
+            <span className={styles['teacher-quiz-card__stat']}>
+              📝 {questionsCount} {questionsCount === 1 ? 'запитання' : questionsCount >= 2 && questionsCount <= 4 ? 'запитання' : 'запитань'}
+            </span>
+            <span className={styles['teacher-quiz-card__stat']}>
+              👁️ {viewsCount}
+            </span>
+          </div>
           <span className={styles['teacher-quiz-card__action-hint']}>Переглянути →</span>
         </div>
       </div>

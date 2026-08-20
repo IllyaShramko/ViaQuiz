@@ -23,6 +23,13 @@ const fullQuizInclude = {
 			},
 		},
 	},
+	_count: {
+		select: {
+			questions: true,
+			views: true,
+			likes: true,
+		},
+	},
 };
 
 const publicFullQuizInclude = {
@@ -34,6 +41,13 @@ const publicFullQuizInclude = {
 			variants: {
 				orderBy: { order: "asc" as const },
 			},
+		},
+	},
+	_count: {
+		select: {
+			questions: true,
+			views: true,
+			likes: true,
 		},
 	},
 };
@@ -64,7 +78,7 @@ export const QuizRepository: QuizRepositoryContract = {
 		}
 	},
 
-	async findById(idOrUuid) {
+	async findById(idOrUuid, currentUserId) {
 		try {
 			const isNumeric =
 				typeof idOrUuid === "number" ||
@@ -75,21 +89,57 @@ export const QuizRepository: QuizRepositoryContract = {
 				? { id: Number(idOrUuid) }
 				: { uuid: String(idOrUuid) };
 
-			return await PRISMA_CLIENT.quiz.findUniqueOrThrow({
+			const quiz = await PRISMA_CLIENT.quiz.findUniqueOrThrow({
 				where,
 				include: fullQuizInclude,
 			});
+
+			let isLiked = false;
+			if (currentUserId) {
+				const like = await PRISMA_CLIENT.quizLike.findUnique({
+					where: {
+						userId_quizId: {
+							userId: currentUserId,
+							quizId: quiz.id,
+						},
+					},
+				});
+				isLiked = !!like;
+			}
+
+			return {
+				...quiz,
+				isLiked,
+			};
 		} catch (e) {
 			errorValidator(e);
 		}
 	},
 
-	async findByUuid(uuid) {
+	async findByUuid(uuid, currentUserId) {
 		try {
-			return await PRISMA_CLIENT.quiz.findUniqueOrThrow({
+			const quiz = await PRISMA_CLIENT.quiz.findUniqueOrThrow({
 				where: { uuid },
 				include: publicFullQuizInclude,
 			});
+
+			let isLiked = false;
+			if (currentUserId) {
+				const like = await PRISMA_CLIENT.quizLike.findUnique({
+					where: {
+						userId_quizId: {
+							userId: currentUserId,
+							quizId: quiz.id,
+						},
+					},
+				});
+				isLiked = !!like;
+			}
+
+			return {
+				...quiz,
+				isLiked,
+			};
 		} catch (e) {
 			errorValidator(e);
 		}
@@ -97,7 +147,7 @@ export const QuizRepository: QuizRepositoryContract = {
 
 	async findPublishedQuizzes({ search, skip, take, sortBy, sortOrder }) {
 		try {
-			const whereClause: Record<string, unknown> = {
+			const whereClause: Prisma.QuizWhereInput = {
 				isDraft: false,
 			};
 
@@ -127,7 +177,7 @@ export const QuizRepository: QuizRepositoryContract = {
 					author: authorSelect,
 					keywords: true,
 					_count: {
-						select: { questions: true },
+						select: { questions: true, views: true },
 					},
 				},
 			});
@@ -138,7 +188,7 @@ export const QuizRepository: QuizRepositoryContract = {
 
 	async countPublishedQuizzes({ search }) {
 		try {
-			const whereClause: Record<string, unknown> = {
+			const whereClause: Prisma.QuizWhereInput = {
 				isDraft: false,
 			};
 
@@ -174,7 +224,7 @@ export const QuizRepository: QuizRepositoryContract = {
 		sortOrder,
 	}) {
 		try {
-			const whereClause: Record<string, unknown> = { authorId };
+			const whereClause: Prisma.QuizWhereInput = { authorId };
 
 			if (isDraft !== undefined) {
 				whereClause.isDraft = isDraft;
@@ -195,21 +245,34 @@ export const QuizRepository: QuizRepositoryContract = {
 			}
 
 			const orderByKey =
-				sortBy === "createdAt" ? "createdAt" : "updatedAt";
+				sortBy === "createdAt"
+					? "createdAt"
+					: sortBy === "name"
+						? "name"
+						: "updatedAt";
 			const orderDirection = sortOrder === "asc" ? "asc" : "desc";
 
-			return await PRISMA_CLIENT.quiz.findMany({
+			const quizzes = await PRISMA_CLIENT.quiz.findMany({
 				where: whereClause,
 				skip,
 				take,
 				orderBy: { [orderByKey]: orderDirection },
 				include: {
 					keywords: true,
+					likes: {
+						where: { userId: authorId },
+						select: { id: true },
+					},
 					_count: {
-						select: { questions: true },
+						select: { questions: true, views: true, likes: true },
 					},
 				},
 			});
+
+			return quizzes.map((quiz) => ({
+				...quiz,
+				isLiked: Boolean(quiz.likes && quiz.likes.length > 0),
+			}));
 		} catch (e) {
 			errorValidator(e);
 		}
@@ -217,7 +280,7 @@ export const QuizRepository: QuizRepositoryContract = {
 
 	async countUserQuizzes({ authorId, isDraft, search }) {
 		try {
-			const whereClause: Record<string, unknown> = { authorId };
+			const whereClause: Prisma.QuizWhereInput = { authorId };
 
 			if (isDraft !== undefined) {
 				whereClause.isDraft = isDraft;
@@ -239,6 +302,177 @@ export const QuizRepository: QuizRepositoryContract = {
 
 			return await PRISMA_CLIENT.quiz.count({
 				where: whereClause,
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findLikedQuizzes({
+		userId,
+		search,
+		skip,
+		take,
+		sortBy,
+		sortOrder,
+	}) {
+		try {
+			const whereClause: Prisma.QuizLikeWhereInput = {
+				userId,
+				quiz: {
+					isDraft: false,
+				},
+			};
+
+			if (search) {
+				whereClause.quiz = {
+					isDraft: false,
+					OR: [
+						{ name: { contains: search, mode: "insensitive" } },
+						{ description: { contains: search, mode: "insensitive" } },
+						{
+							keywords: {
+								some: {
+									name: { contains: search, mode: "insensitive" },
+								},
+							},
+						},
+					],
+				};
+			}
+
+			let orderBy: Prisma.QuizLikeOrderByWithRelationInput;
+			const dir = sortOrder === "asc" ? ("asc" as const) : ("desc" as const);
+
+			if (sortBy === "name") {
+				orderBy = { quiz: { name: dir } };
+			} else if (sortBy === "createdAt") {
+				orderBy = { quiz: { createdAt: dir } };
+			} else {
+				// default 'likedAt'
+				orderBy = { createdAt: dir };
+			}
+
+			const likes = await PRISMA_CLIENT.quizLike.findMany({
+				where: whereClause,
+				skip,
+				take,
+				orderBy,
+				include: {
+					quiz: {
+						include: {
+							author: authorSelect,
+							keywords: true,
+							_count: {
+								select: { questions: true, views: true, likes: true },
+							},
+						},
+					},
+				},
+			});
+
+			return likes.map((like) => ({
+				...like.quiz,
+				isLiked: true,
+				likedAt: like.createdAt,
+			}));
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async countLikedQuizzes({ userId, search }) {
+		try {
+			const whereClause: Prisma.QuizLikeWhereInput = {
+				userId,
+				quiz: {
+					isDraft: false,
+				},
+			};
+
+			if (search) {
+				whereClause.quiz = {
+					isDraft: false,
+					OR: [
+						{ name: { contains: search, mode: "insensitive" } },
+						{ description: { contains: search, mode: "insensitive" } },
+						{
+							keywords: {
+								some: {
+									name: { contains: search, mode: "insensitive" },
+								},
+							},
+						},
+					],
+				};
+			}
+
+			return await PRISMA_CLIENT.quizLike.count({
+				where: whereClause,
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async toggleLike(userId, quizId) {
+		try {
+			return await PRISMA_CLIENT.$transaction(async (tx) => {
+				const existingLike = await tx.quizLike.findUnique({
+					where: {
+						userId_quizId: {
+							userId,
+							quizId,
+						},
+					},
+				});
+
+				if (existingLike) {
+					await tx.quizLike.delete({
+						where: {
+							userId_quizId: {
+								userId,
+								quizId,
+							},
+						},
+					});
+				} else {
+					await tx.quizLike.create({
+						data: {
+							userId,
+							quizId,
+						},
+					});
+				}
+
+				const likesCount = await tx.quizLike.count({
+					where: { quizId },
+				});
+
+				return {
+					isLiked: !existingLike,
+					likesCount,
+				};
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async recordView(userId, quizId) {
+		try {
+			await PRISMA_CLIENT.quizView.upsert({
+				where: {
+					userId_quizId: {
+						userId,
+						quizId,
+					},
+				},
+				create: {
+					userId,
+					quizId,
+				},
+				update: {},
 			});
 		} catch (e) {
 			errorValidator(e);

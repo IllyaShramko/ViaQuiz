@@ -9,6 +9,8 @@ model Quiz {
   rooms     Room[]
   questions Question[]
   keywords  Keyword[]
+  likes     QuizLike[]
+  views     QuizView[]
 
   authorId Int
   author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)

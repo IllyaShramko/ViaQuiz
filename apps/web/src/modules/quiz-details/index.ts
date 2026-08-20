@@ -2,6 +2,8 @@ export {
   quizDetailsApi,
   useGetQuizByUuidQuery,
   useGetQuizByIdQuery,
+  useToggleLikeMutation,
+  useRecordViewMutation,
 } from './api';
 
 export type {

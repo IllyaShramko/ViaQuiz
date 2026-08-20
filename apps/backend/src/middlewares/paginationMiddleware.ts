@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import type { SortOrder } from "@viaquiz/shared-types";
 import { BadRequestError } from "../errors/customErrors";
 import type { PaginatedResponse, PaginationParams } from "../types/common";
 
@@ -58,7 +59,7 @@ export function paginationMiddleware(
 			limit = MAX_LIMIT;
 		}
 
-		const sortOrder: "asc" | "desc" =
+		const sortOrder: SortOrder =
 			sortOrderRaw?.toLowerCase() === "asc" ? "asc" : "desc";
 
 		const skip = (page - 1) * limit;

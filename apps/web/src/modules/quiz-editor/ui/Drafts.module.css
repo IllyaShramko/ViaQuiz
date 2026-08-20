@@ -1,21 +1,28 @@
 /* Drafts Page Main Layout */
 .quiz-drafts-page {
+  height: 100vh;
   min-height: 100vh;
   background-color: var(--color-bg, #0a0a0f);
   color: var(--color-text-primary, #f0f0f5);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
   animation: page-fade-in 300ms ease-out;
+}
+
+.quiz-drafts-page::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 @keyframes page-fade-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 

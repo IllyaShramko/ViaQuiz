@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { QuizDetail } from '../../models';
+import { useToggleLikeMutation } from '../../api';
 import styles from '../QuizDetails.module.css';
 
 export const DEFAULT_QUIZ_HERO_GRADIENT = 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)';
@@ -8,6 +10,14 @@ export interface QuizDetailsHeroProps {
 }
 
 export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
+  const [toggleLike, { isLoading: isLiking }] = useToggleLikeMutation();
+  const [optimisticLiked, setOptimisticLiked] = useState<boolean | null>(null);
+  const [optimisticLikesCount, setOptimisticLikesCount] = useState<number | null>(null);
+
+  const isLiked = optimisticLiked !== null ? optimisticLiked : !!quiz.isLiked;
+  const initialLikes = quiz._count?.likes ?? 0;
+  const likesCount = optimisticLikesCount !== null ? optimisticLikesCount : initialLikes;
+
   const authorName =
     quiz.author?.firstName && quiz.author?.lastName
       ? `${quiz.author.firstName} ${quiz.author.lastName}`
@@ -15,6 +25,7 @@ export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
 
   const questions = quiz.questions || [];
   const questionsCount = questions.length || quiz._count?.questions || 0;
+  const viewsCount = quiz._count?.views || 0;
   const formattedDate = quiz.createdAt
     ? new Date(quiz.createdAt).toLocaleDateString('uk-UA', {
         year: 'numeric',
@@ -22,6 +33,23 @@ export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
         day: 'numeric',
       })
     : '';
+
+  const handleToggleLike = async () => {
+    if (isLiking) return;
+    const nextLiked = !isLiked;
+    const nextCount = nextLiked ? likesCount + 1 : Math.max(0, likesCount - 1);
+    setOptimisticLiked(nextLiked);
+    setOptimisticLikesCount(nextCount);
+
+    try {
+      const res = await toggleLike(quiz.uuid).unwrap();
+      setOptimisticLiked(res.isLiked);
+      setOptimisticLikesCount(res.likesCount);
+    } catch {
+      setOptimisticLiked(null);
+      setOptimisticLikesCount(null);
+    }
+  };
 
   return (
     <section className={styles['quiz-hero-card']}>
@@ -53,6 +81,27 @@ export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
           <span className={`${styles['quiz-status-pill']} ${quiz.isDraft ? styles['is-draft'] : styles['is-published']}`}>
             {quiz.isDraft ? 'Чернетка' : 'Опубліковано'}
           </span>
+
+          <button
+            type="button"
+            className={`${styles['quiz-hero-like-btn']} ${isLiked ? styles['is-liked'] : ''}`}
+            onClick={handleToggleLike}
+            title={isLiked ? 'Видалити з вподобаних' : 'Додати у вподобані'}
+            aria-label={isLiked ? 'Видалити з вподобаних' : 'Додати у вподобані'}
+          >
+            <svg
+              className={styles['quiz-hero-like-icon']}
+              viewBox="0 0 24 24"
+              fill={isLiked ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            <span>{likesCount}</span>
+          </button>
         </div>
 
         <h2 className={styles['quiz-hero-title']}>{quiz.name}</h2>
@@ -70,6 +119,11 @@ export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
           <div className={styles['quiz-hero-meta-item']}>
             <span className={styles['quiz-hero-meta-label']}>Запитань</span>
             <span className={styles['quiz-hero-meta-val']}>{questionsCount}</span>
+          </div>
+
+          <div className={styles['quiz-hero-meta-item']}>
+            <span className={styles['quiz-hero-meta-label']}>Переглядів</span>
+            <span className={styles['quiz-hero-meta-val']}>{viewsCount}</span>
           </div>
 
           {formattedDate && (

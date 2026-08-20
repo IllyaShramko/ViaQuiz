@@ -117,6 +117,48 @@
   color: #f59e0b;
 }
 
+.quiz-hero-like-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--color-border, #2a2a3a);
+  background-color: var(--color-bg-surface, #1a1a26);
+  color: var(--color-text-secondary, #a1a1aa);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.quiz-hero-like-btn:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+.quiz-hero-like-btn.is-liked {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+}
+
+.quiz-hero-like-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.quiz-hero-like-btn:hover .quiz-hero-like-icon {
+  transform: scale(1.15);
+}
+
+.quiz-hero-like-btn:active .quiz-hero-like-icon {
+  transform: scale(0.9);
+}
+
 .quiz-hero-title {
   font-size: 1.65rem;
   font-weight: 800;

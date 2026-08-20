@@ -26,7 +26,10 @@ export type QuizSummary = Quiz & {
 	keywords: Keyword[];
 	_count?: {
 		questions: number;
+		views?: number;
+		likes?: number;
 	};
+	isLiked?: boolean;
 };
 
 export type PublicQuizSummary = Quiz & {
@@ -34,14 +37,29 @@ export type PublicQuizSummary = Quiz & {
 	keywords: Keyword[];
 	_count?: {
 		questions: number;
+		views?: number;
+		likes?: number;
 	};
+	isLiked?: boolean;
+	likedAt?: Date | string;
 };
 
 export type PublicFullQuiz = Quiz & {
 	author: PublicAuthor;
 	questions: QuestionWithVariants[];
 	keywords: Keyword[];
+	_count?: {
+		questions: number;
+		views?: number;
+		likes?: number;
+	};
+	isLiked?: boolean;
 };
+
+export interface ToggleLikeResult {
+	isLiked: boolean;
+	likesCount: number;
+}
 
 export interface CreateQuizDTO {
 	name?: string | undefined;

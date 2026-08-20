@@ -57,6 +57,13 @@
   font-size: 1rem;
   font-weight: 500;
   outline: none;
+  box-shadow: none;
+}
+
+.teacher-search-input:focus,
+.teacher-search-input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .teacher-search-input::placeholder {
@@ -206,6 +213,12 @@
   border-top: 1px solid var(--color-border, #2a2a3a);
   font-size: 0.8rem;
   color: var(--color-text-muted, #71717a);
+}
+
+.teacher-quiz-card__stats-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .teacher-quiz-card__stat {

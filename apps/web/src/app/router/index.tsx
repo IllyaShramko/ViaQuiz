@@ -9,6 +9,7 @@ import {
   QuizDetailsPage,
   QuizEditorPage,
   QuizDraftsPage,
+  LibraryPage,
   NotFoundPage,
 } from '../../pages';
 
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
         element: <TeacherLayout />,
         children: [
           { path: '/dashboard', element: <TeacherMainPage /> },
+          { path: '/library', element: <LibraryPage /> },
           { path: '/profile', element: <ProfilePage /> },
           { path: '/quiz/:uuid', element: <QuizDetailsPage /> },
         ],

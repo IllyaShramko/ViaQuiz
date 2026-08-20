@@ -113,7 +113,14 @@
   padding: 0 1.25rem;
   font-size: 0.95rem;
   outline: none;
+  box-shadow: none;
   min-width: 290px;
+}
+
+.hero__code-input:focus,
+.hero__code-input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .hero__code-input::placeholder {

@@ -1,4 +1,10 @@
 import type { Request, Response, NextFunction } from "express";
+import type {
+	SortOrder,
+	UserQuizSortBy,
+	LikedQuizSortBy,
+	PublishedQuizSortBy,
+} from "@viaquiz/shared-types";
 import type { Quiz } from "../../../generated/prisma";
 import type {
 	CreateQuizDTO,
@@ -7,6 +13,7 @@ import type {
 	QuizSummary,
 	PublicQuizSummary,
 	PublicFullQuiz,
+	ToggleLikeResult,
 } from "./quizzes.types";
 
 export interface QuizRepositoryContract {
@@ -18,16 +25,19 @@ export interface QuizRepositoryContract {
 		keywords?: string[];
 	}): Promise<FullQuiz>;
 
-	findById(idOrUuid: string | number): Promise<FullQuiz>;
+	findById(
+		idOrUuid: string | number,
+		currentUserId?: number,
+	): Promise<FullQuiz>;
 
-	findByUuid(uuid: string): Promise<PublicFullQuiz>;
+	findByUuid(uuid: string, currentUserId?: number): Promise<PublicFullQuiz>;
 
 	findPublishedQuizzes(params: {
 		search?: string;
 		skip: number;
 		take: number;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
+		sortBy?: PublishedQuizSortBy | string;
+		sortOrder?: SortOrder;
 	}): Promise<PublicQuizSummary[]>;
 
 	countPublishedQuizzes(params: { search?: string }): Promise<number>;
@@ -38,8 +48,8 @@ export interface QuizRepositoryContract {
 		search?: string;
 		skip: number;
 		take: number;
-		sortBy?: "updatedAt" | "createdAt";
-		sortOrder?: "asc" | "desc";
+		sortBy?: UserQuizSortBy;
+		sortOrder?: SortOrder;
 	}): Promise<QuizSummary[]>;
 
 	countUserQuizzes(params: {
@@ -47,6 +57,24 @@ export interface QuizRepositoryContract {
 		isDraft?: boolean;
 		search?: string;
 	}): Promise<number>;
+
+	findLikedQuizzes(params: {
+		userId: number;
+		search?: string;
+		skip: number;
+		take: number;
+		sortBy?: LikedQuizSortBy;
+		sortOrder?: SortOrder;
+	}): Promise<PublicQuizSummary[]>;
+
+	countLikedQuizzes(params: {
+		userId: number;
+		search?: string;
+	}): Promise<number>;
+
+	toggleLike(userId: number, quizId: number): Promise<ToggleLikeResult>;
+
+	recordView(userId: number, quizId: number): Promise<void>;
 
 	update(id: number, data: UpdateQuizDTO): Promise<FullQuiz>;
 
@@ -69,8 +97,8 @@ export interface QuizServiceContract {
 		search?: string;
 		skip: number;
 		take: number;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
+		sortBy?: PublishedQuizSortBy | string;
+		sortOrder?: SortOrder;
 	}): Promise<{ quizzes: PublicQuizSummary[]; total: number }>;
 	getUserQuizzes(
 		authorId: number,
@@ -79,10 +107,25 @@ export interface QuizServiceContract {
 			search?: string;
 			skip: number;
 			take: number;
-			sortBy?: "updatedAt" | "createdAt";
-			sortOrder?: "asc" | "desc";
+			sortBy?: UserQuizSortBy;
+			sortOrder?: SortOrder;
 		},
 	): Promise<{ quizzes: QuizSummary[]; total: number }>;
+	getLikedQuizzes(
+		userId: number,
+		params: {
+			search?: string;
+			skip: number;
+			take: number;
+			sortBy?: LikedQuizSortBy;
+			sortOrder?: SortOrder;
+		},
+	): Promise<{ quizzes: PublicQuizSummary[]; total: number }>;
+	toggleLike(
+		userId: number,
+		idOrUuid: number | string,
+	): Promise<ToggleLikeResult>;
+	recordView(userId: number, idOrUuid: number | string): Promise<void>;
 	updateQuiz(
 		id: number,
 		authorId: number,
@@ -106,6 +149,13 @@ export interface QuizControllerContract {
 		res: Response,
 		next: NextFunction,
 	): Promise<void>;
+	getLikedQuizzes(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
+	toggleLike(req: Request, res: Response, next: NextFunction): Promise<void>;
+	recordView(req: Request, res: Response, next: NextFunction): Promise<void>;
 	update(req: Request, res: Response, next: NextFunction): Promise<void>;
 	publish(req: Request, res: Response, next: NextFunction): Promise<void>;
 	delete(req: Request, res: Response, next: NextFunction): Promise<void>;

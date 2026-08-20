@@ -1,7 +1,8 @@
+import type { SortOrder } from '@viaquiz/shared-types';
 import styles from '../Drafts.module.css';
 
 export type DraftSortField = 'updatedAt' | 'createdAt';
-export type DraftSortOrder = 'desc' | 'asc';
+export type DraftSortOrder = SortOrder;
 
 export interface DraftsToolbarProps {
   sortBy: DraftSortField;

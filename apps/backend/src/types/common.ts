@@ -1,3 +1,5 @@
+import type { SortOrder } from "@viaquiz/shared-types";
+
 export interface AuthPayload {
 	userId: string;
 	email: string;
@@ -9,7 +11,7 @@ export interface PaginationParams {
 	limit: number;
 	skip: number;
 	sortBy?: string | undefined;
-	sortOrder: "asc" | "desc";
+	sortOrder: SortOrder;
 	search?: string | undefined;
 }
 

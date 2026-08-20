@@ -22,6 +22,7 @@ export function TeacherLayout() {
 
   const isProfile = location.pathname.includes('/profile');
   const isQuizDetails = location.pathname.startsWith('/quiz');
+  const isLibrary = location.pathname.startsWith('/library');
   const displayName =
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`
@@ -122,6 +123,8 @@ export function TeacherLayout() {
                 </svg>
                 <span className={styles['teacher-topbar__title']}>Вікторина</span>
               </button>
+            ) : isLibrary ? (
+              <h1 className={styles['teacher-topbar__title']}>Бібліотека</h1>
             ) : (
               <h1 className={styles['teacher-topbar__title']}>Головна</h1>
             )}

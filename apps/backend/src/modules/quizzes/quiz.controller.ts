@@ -1,5 +1,12 @@
 import type { QuizControllerContract } from "./types/quizzes.contracts";
+import type {
+	SortOrder,
+	UserQuizSortBy,
+	LikedQuizSortBy,
+	PublishedQuizSortBy,
+} from "@viaquiz/shared-types";
 import { QuizService } from "./quiz.service";
+import { BadRequestError } from "../../errors/customErrors";
 
 export const QuizController: QuizControllerContract = {
 	async create(req, res, next) {
@@ -46,16 +53,17 @@ export const QuizController: QuizControllerContract = {
 				? String(req.query.search)
 				: undefined;
 			const sortBy = req.query.sortBy
-				? String(req.query.sortBy)
+				? (String(req.query.sortBy) as PublishedQuizSortBy)
 				: undefined;
-			const sortOrder = req.query.sortOrder === "asc" ? "asc" : "desc";
+			const sortOrder: SortOrder =
+				req.query.sortOrder === "asc" ? "asc" : "desc";
 
 			const params: {
 				search?: string;
 				skip: number;
 				take: number;
-				sortBy?: string;
-				sortOrder?: "asc" | "desc";
+				sortBy?: PublishedQuizSortBy | string;
+				sortOrder?: SortOrder;
 			} = {
 				skip: res.locals.skip,
 				take: res.locals.take,
@@ -82,17 +90,16 @@ export const QuizController: QuizControllerContract = {
 			const search = req.query.search
 				? String(req.query.search)
 				: undefined;
-			const sortBy = req.query.sortBy as
-				"createdAt" | "updatedAt" | undefined;
-			const sortOrder = req.query.sortOrder as "asc" | "desc" | undefined;
+			const sortBy = req.query.sortBy as UserQuizSortBy | undefined;
+			const sortOrder = req.query.sortOrder as SortOrder | undefined;
 
 			const params: {
 				isDraft?: boolean;
 				search?: string;
 				skip: number;
 				take: number;
-				sortBy?: "createdAt" | "updatedAt";
-				sortOrder?: "asc" | "desc";
+				sortBy?: UserQuizSortBy;
+				sortOrder?: SortOrder;
 			} = {
 				skip: res.locals.skip,
 				take: res.locals.take,
@@ -109,6 +116,69 @@ export const QuizController: QuizControllerContract = {
 			);
 
 			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async getLikedQuizzes(req, res, next) {
+		try {
+			const search = req.query.search
+				? String(req.query.search)
+				: undefined;
+			const sortBy = req.query.sortBy as LikedQuizSortBy | undefined;
+			const sortOrder = req.query.sortOrder as SortOrder | undefined;
+
+			const params: {
+				search?: string;
+				skip: number;
+				take: number;
+				sortBy?: LikedQuizSortBy;
+				sortOrder?: SortOrder;
+			} = {
+				skip: res.locals.skip,
+				take: res.locals.take,
+			};
+
+			if (search !== undefined) params.search = search;
+			if (sortBy !== undefined) params.sortBy = sortBy;
+			if (sortOrder !== undefined) params.sortOrder = sortOrder;
+
+			const result = await QuizService.getLikedQuizzes(
+				res.locals.userId,
+				params,
+			);
+
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async toggleLike(req, res, next) {
+		try {
+			const idOrUuid = req.params.uuid || req.params.id;
+			if (!idOrUuid) {
+				throw new BadRequestError("Quiz ID or UUID is required");
+			}
+			const result = await QuizService.toggleLike(
+				res.locals.userId,
+				idOrUuid,
+			);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async recordView(req, res, next) {
+		try {
+			const idOrUuid = req.params.uuid || req.params.id;
+			if (!idOrUuid) {
+				throw new BadRequestError("Quiz ID or UUID is required");
+			}
+			await QuizService.recordView(res.locals.userId, idOrUuid);
+			res.status(200).json({ success: true });
 		} catch (error) {
 			next(error);
 		}

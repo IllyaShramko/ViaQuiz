@@ -13,4 +13,6 @@ model User {
   classrooms    Classroom[]
   courses       Course[]
   rooms         Room[]
+  quizLikes     QuizLike[]
+  quizViews     QuizView[]
 }

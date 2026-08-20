@@ -119,6 +119,12 @@ img {
   outline-offset: 2px;
 }
 
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
 /* Scrollbar styling for dark theme */
 ::-webkit-scrollbar {
   width: 10px;

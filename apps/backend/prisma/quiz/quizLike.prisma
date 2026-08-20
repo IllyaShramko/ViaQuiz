@@ -1,0 +1,13 @@
+model QuizLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  quizId    Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, quizId])
+  @@index([userId, createdAt])
+  @@index([quizId])
+}

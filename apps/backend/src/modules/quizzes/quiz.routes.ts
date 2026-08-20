@@ -29,8 +29,28 @@ quizRouter.get(
 	QuizController.getMyQuizzes,
 );
 
+// User's liked quizzes: GET /api/quizzes/my/liked
+quizRouter.get(
+	"/my/liked",
+	authenticate,
+	paginationMiddleware,
+	QuizController.getLikedQuizzes,
+);
+
 // Public/shared quiz by UUID: GET /api/quizzes/uuid/:uuid
 quizRouter.get("/uuid/:uuid", optionalAuthenticate, QuizController.getByUuid);
+
+// Toggle like by UUID: POST /api/quizzes/uuid/:uuid/like
+quizRouter.post("/uuid/:uuid/like", authenticate, QuizController.toggleLike);
+
+// Record view by UUID: POST /api/quizzes/uuid/:uuid/view
+quizRouter.post("/uuid/:uuid/view", authenticate, QuizController.recordView);
+
+// Toggle like by ID: POST /api/quizzes/:id/like
+quizRouter.post("/:id/like", authenticate, QuizController.toggleLike);
+
+// Record view by ID: POST /api/quizzes/:id/view
+quizRouter.post("/:id/view", authenticate, QuizController.recordView);
 
 // Get quiz by ID (or editor fetch): GET /api/quizzes/:id
 quizRouter.get("/:id", authenticate, QuizController.getOne);

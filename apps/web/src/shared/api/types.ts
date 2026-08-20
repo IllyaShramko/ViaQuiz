@@ -1,3 +1,5 @@
+import type { SortOrder } from '@viaquiz/shared-types';
+
 export interface ApiErrorResponse {
   message?: string;
   statusCode?: number;
@@ -10,7 +12,7 @@ export interface PaginationParams {
   limit?: number;
   search?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: SortOrder;
 }
 
 export interface PaginatedResult<T> {

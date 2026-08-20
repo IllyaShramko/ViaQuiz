@@ -1,3 +1,5 @@
+import type { PublishedQuizSortBy, SortOrder } from '@viaquiz/shared-types';
+
 export interface QuizAuthor {
   id: number;
   uuid: string;
@@ -46,7 +48,11 @@ export interface PublicQuizSummary {
   keywords?: Keyword[];
   _count?: {
     questions: number;
+    views?: number;
+    likes?: number;
   };
+  isLiked?: boolean;
+  likedAt?: string;
 }
 
 export interface QuizDetail {
@@ -61,9 +67,13 @@ export interface QuizDetail {
   createdAt: string;
   updatedAt: string;
   questions?: QuizQuestion[];
+  keywords?: Keyword[];
   _count?: {
     questions: number;
+    views?: number;
+    likes?: number;
   };
+  isLiked?: boolean;
 }
 
 export interface QuizzesResponse {
@@ -75,6 +85,6 @@ export interface QuizzesParams {
   page?: number;
   limit?: number;
   search?: string;
-  sortBy?: 'createdAt' | 'name';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: PublishedQuizSortBy;
+  sortOrder?: SortOrder;
 }

@@ -1,3 +1,4 @@
+import type { SortOrder, UserQuizSortBy } from '@viaquiz/shared-types';
 import { baseApi } from '../../../shared/api/base-api';
 import type {
   EditorQuiz,
@@ -127,7 +128,7 @@ export const quizEditorApi = baseApi.injectEndpoints({
 
     getMyDrafts: builder.query<
       { quizzes: EditorQuiz[]; total: number },
-      { sortBy?: 'updatedAt' | 'createdAt'; sortOrder?: 'asc' | 'desc' } | void
+      { sortBy?: UserQuizSortBy; sortOrder?: SortOrder } | void
     >({
       query: (params) => {
         const searchParams = new URLSearchParams({ isDraft: 'true' });

@@ -1,0 +1,13 @@
+model QuizView {
+  id        Int      @id @default(autoincrement())
+  quizId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, quizId])
+  @@index([quizId])
+  @@index([userId])
+}
