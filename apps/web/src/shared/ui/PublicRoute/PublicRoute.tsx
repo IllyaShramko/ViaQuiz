@@ -2,8 +2,8 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useUserContext, getUserDashboardPath } from '../../../modules/auth';
 
 export function PublicRoute() {
-  const { isAuthenticated, isLoading, user } = useUserContext();
-
+  const { isAuthenticated, isLoading, user, token } = useUserContext();
+  console.log(isAuthenticated, isLoading, token)
   if (isLoading) {
     return (
       <div

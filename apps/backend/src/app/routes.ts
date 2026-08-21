@@ -6,6 +6,7 @@ import { quizRouter } from "../modules/quizzes/quiz.routes";
 import { questionRouter } from "../modules/questions/question.routes";
 import { classroomRouter } from "../modules/classrooms/classroom.routes";
 import { studentRouter } from "../modules/students/student.routes";
+import { gameSessionRouter } from "../modules/game-sessions/game-sessions.routes";
 
 export const apiRouter: Router = Router();
 
@@ -16,3 +17,5 @@ apiRouter.use("/quizzes", quizRouter);
 apiRouter.use("/questions", questionRouter);
 apiRouter.use("/classrooms", classroomRouter);
 apiRouter.use("/students", studentRouter);
+apiRouter.use("/game-sessions", gameSessionRouter);
+

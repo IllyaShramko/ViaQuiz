@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useGetStudentDashboardQuery } from '../../../modules/students/api/studentsApi';
 import styles from '../Student.module.css';
 import classesStyles from '../../../modules/classes/ui/Classes.module.css';
 
 export function StudentDashboardPage() {
+  const navigate = useNavigate();
   const { data, isLoading, error } = useGetStudentDashboardQuery();
 
   if (isLoading) {
@@ -104,24 +105,32 @@ export function StudentDashboardPage() {
           </div>
         ) : (
           <div className={classesStyles['history-list']}>
-            {recentResults.map((item) => (
-              <div key={item.uuid} className={classesStyles['history-item']}>
-                <div className={classesStyles['history-info']}>
-                  <span className={classesStyles['history-quiz-name']}>{item.quizTitle}</span>
-                  <div className={classesStyles['history-meta']}>
-                    <span>Дата: <strong>{item.date}</strong></span>
-                    <span>Час: <strong>{item.joinTime}</strong></span>
-                    <span>Курс: <strong>{item.courseName}</strong></span>
-                    <span>Правильних: <strong>{item.correctAnswersCount} / {item.totalQuestionsCount}</strong></span>
+            {recentResults.map((item) => {
+              const targetUuid = item.resultUuid || item.uuid;
+              return (
+                <div
+                  key={item.uuid}
+                  className={classesStyles['history-item']}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => navigate(`/student/results/${targetUuid}`)}
+                >
+                  <div className={classesStyles['history-info']}>
+                    <span className={classesStyles['history-quiz-name']}>{item.quizTitle}</span>
+                    <div className={classesStyles['history-meta']}>
+                      <span>Дата: <strong>{item.date}</strong></span>
+                      <span>Час: <strong>{item.joinTime}</strong></span>
+                      <span>Курс: <strong>{item.courseName}</strong></span>
+                      <span>Правильних: <strong>{item.correctAnswersCount} / {item.totalQuestionsCount}</strong></span>
+                    </div>
+                  </div>
+
+                  <div className={classesStyles['history-grade-badge']}>
+                    <span>Оцінка:</span>
+                    <span>{item.grade}</span>
                   </div>
                 </div>
-
-                <div className={classesStyles['history-grade-badge']}>
-                  <span>Оцінка:</span>
-                  <span>{item.grade}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

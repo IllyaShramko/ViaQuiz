@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
 import type { QuizDetail, PublicQuizSummary } from '../../models';
 import styles from '../Library.module.css';
@@ -42,14 +43,15 @@ export function LibraryQuizCard({
       ? `${author.firstName} ${author.lastName}`
       : author?.firstName || author?.login || null;
 
+  const toUrl = ('isDraft' in quiz && quiz.isDraft) ? `/quiz/${quiz.uuid}/edit` : `/quiz/${quiz.uuid}`;
+
   return (
-    <article
+    <Link
+      to={toUrl}
       className={styles['library-card']}
-      onClick={() => onClick(quiz.uuid)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+      onClick={(e) => {
+        // Only trigger custom click if it wasn't a modifier click that opened a new tab
+        if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
           e.preventDefault();
           onClick(quiz.uuid);
         }
@@ -184,6 +186,6 @@ export function LibraryQuizCard({
           </div>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

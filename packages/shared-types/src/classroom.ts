@@ -85,6 +85,7 @@ export interface StudentAnalyticsDto {
 	history: Array<{
 		id: number;
 		uuid: string;
+		resultUuid?: string;
 		date: string;
 		fullDate: string;
 		joinTime: string;
@@ -118,6 +119,7 @@ export interface StudentDashboardDto {
 	recentResults: Array<{
 		id: number;
 		uuid: string;
+		resultUuid?: string;
 		date: string;
 		joinTime: string;
 		joinedAt: string;

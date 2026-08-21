@@ -1,8 +1,9 @@
 import { PRISMA_CLIENT } from "../../config/database";
 import { errorValidator } from "../../errors/errorValidator";
+import type { ClassroomRepositoryContract } from "./types/classrooms.contracts";
 
-export const ClassroomRepository = {
-	async findTeacherClassrooms(teacherId: number) {
+export const ClassroomRepository: ClassroomRepositoryContract = {
+	async findTeacherClassrooms(teacherId) {
 		try {
 			return await PRISMA_CLIENT.classroom.findMany({
 				where: {
@@ -10,6 +11,9 @@ export const ClassroomRepository = {
 					isArchived: false,
 				},
 				include: {
+					courses: {
+						where: { isArchived: false },
+					},
 					_count: {
 						select: {
 							students: true,
@@ -26,7 +30,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async countActiveTeacherClassrooms(teacherId: number) {
+	async countActiveTeacherClassrooms(teacherId) {
 		try {
 			return await PRISMA_CLIENT.classroom.count({
 				where: {
@@ -40,7 +44,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async findClassroomByUuid(uuid: string, teacherId?: number) {
+	async findClassroomByUuid(uuid, teacherId) {
 		try {
 			return await PRISMA_CLIENT.classroom.findFirstOrThrow({
 				where: {
@@ -100,7 +104,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async createClassroom(data: { name: string; code: string; teacherId: number }) {
+	async createClassroom(data) {
 		try {
 			return await PRISMA_CLIENT.classroom.create({
 				data: {
@@ -114,18 +118,28 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async updateClassroom(id: number, data: { name?: string; isActive?: boolean; isArchived?: boolean }) {
+	async updateClassroom(id, data) {
 		try {
+			const updateData: {
+				name?: string;
+				isActive?: boolean;
+				isArchived?: boolean;
+			} = {};
+
+			if (data.name !== undefined) updateData.name = data.name;
+			if (data.isActive !== undefined) updateData.isActive = data.isActive;
+			if (data.isArchived !== undefined) updateData.isArchived = data.isArchived;
+
 			return await PRISMA_CLIENT.classroom.update({
 				where: { id },
-				data,
+				data: updateData,
 			});
 		} catch (e) {
 			errorValidator(e);
 		}
 	},
 
-	async deleteClassroom(id: number) {
+	async deleteClassroom(id) {
 		try {
 			return await PRISMA_CLIENT.classroom.delete({
 				where: { id },
@@ -135,7 +149,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async countStudentsInClassroom(classroomId: number) {
+	async countStudentsInClassroom(classroomId) {
 		try {
 			return await PRISMA_CLIENT.student.count({
 				where: { classroomId },
@@ -145,7 +159,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async findStudentByLoginInClassroom(classroomId: number, login: string) {
+	async findStudentByLoginInClassroom(classroomId, login) {
 		try {
 			return await PRISMA_CLIENT.student.findFirst({
 				where: {
@@ -158,7 +172,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async findStudentByGlobalLogin(login: string) {
+	async findStudentByGlobalLogin(login) {
 		try {
 			return await PRISMA_CLIENT.student.findUnique({
 				where: { login },
@@ -179,7 +193,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async findStudentByUuid(uuid: string) {
+	async findStudentByUuid(uuid) {
 		try {
 			return await PRISMA_CLIENT.student.findUniqueOrThrow({
 				where: { uuid },
@@ -215,13 +229,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async createStudent(data: {
-		firstName: string;
-		lastName: string;
-		login: string;
-		password: string;
-		classroomId: number;
-	}) {
+	async createStudent(data) {
 		try {
 			return await PRISMA_CLIENT.student.create({
 				data: {
@@ -238,7 +246,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async updateStudentPassword(studentId: number, hashedPassword: string) {
+	async updateStudentPassword(studentId, hashedPassword) {
 		try {
 			return await PRISMA_CLIENT.student.update({
 				where: { id: studentId },
@@ -250,7 +258,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async deleteStudent(studentId: number) {
+	async deleteStudent(studentId) {
 		try {
 			return await PRISMA_CLIENT.student.delete({
 				where: { id: studentId },
@@ -260,7 +268,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async countTeacherActiveCourses(teacherId: number) {
+	async countTeacherActiveCourses(teacherId) {
 		try {
 			return await PRISMA_CLIENT.course.count({
 				where: {
@@ -274,7 +282,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async countClassroomCourses(classroomId: number) {
+	async countClassroomCourses(classroomId) {
 		try {
 			return await PRISMA_CLIENT.course.count({
 				where: {
@@ -287,7 +295,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async findCourseByUuid(uuid: string) {
+	async findCourseByUuid(uuid) {
 		try {
 			return await PRISMA_CLIENT.course.findUniqueOrThrow({
 				where: { uuid },
@@ -315,12 +323,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async createCourse(data: {
-		name: string;
-		classroomId: number;
-		teacherId: number;
-		studentIds?: number[];
-	}) {
+	async createCourse(data) {
 		try {
 			const createData: {
 				name: string;
@@ -358,15 +361,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async updateCourse(
-		courseId: number,
-		data: {
-			name?: string;
-			isActive?: boolean;
-			isArchived?: boolean;
-			studentIds?: number[];
-		},
-	) {
+	async updateCourse(courseId, data) {
 		try {
 			const updateData: {
 				name?: string;
@@ -404,7 +399,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async deleteCourse(courseId: number) {
+	async deleteCourse(courseId) {
 		try {
 			return await PRISMA_CLIENT.course.delete({
 				where: { id: courseId },
@@ -414,7 +409,7 @@ export const ClassroomRepository = {
 		}
 	},
 
-	async findStudentQuizResults(studentId: number, fromDate?: Date, toDate?: Date) {
+	async findStudentQuizResults(studentId, fromDate, toDate) {
 		try {
 			const dateFilter = {
 				...(fromDate || toDate

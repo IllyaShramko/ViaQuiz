@@ -7,9 +7,11 @@ import {
 	generateStudentLogin,
 } from "../../tools/credentialsGenerator";
 import { ClassroomRepository } from "./classroom.repository";
+import type { ClassroomServiceContract } from "./types/classrooms.contracts";
+import type { StudentAnalyticsHistoryItem } from "./types/classrooms.types";
 
-export const ClassroomService = {
-	async getClassrooms(teacherId: number) {
+export const ClassroomService: ClassroomServiceContract = {
+	async getClassrooms(teacherId) {
 		const [classrooms, activeCount, activeCoursesCount] = await Promise.all([
 			ClassroomRepository.findTeacherClassrooms(teacherId),
 			ClassroomRepository.countActiveTeacherClassrooms(teacherId),
@@ -30,7 +32,7 @@ export const ClassroomService = {
 		};
 	},
 
-	async createClassroom(teacherId: number, data: { name: string; code?: string }) {
+	async createClassroom(teacherId, data) {
 		const activeCount = await ClassroomRepository.countActiveTeacherClassrooms(teacherId);
 		if (activeCount >= CLASSROOM_LIMITS.MAX_ACTIVE_CLASSES_PER_TEACHER) {
 			throw new BadRequestError(
@@ -50,7 +52,7 @@ export const ClassroomService = {
 		});
 	},
 
-	async getClassroom(uuid: string, teacherId: number) {
+	async getClassroom(uuid, teacherId) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(uuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -58,11 +60,7 @@ export const ClassroomService = {
 		return classroom;
 	},
 
-	async updateClassroom(
-		uuid: string,
-		teacherId: number,
-		data: { name?: string; isActive?: boolean; isArchived?: boolean },
-	) {
+	async updateClassroom(uuid, teacherId, data) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(uuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -80,7 +78,7 @@ export const ClassroomService = {
 		return await ClassroomRepository.updateClassroom(classroom.id, data);
 	},
 
-	async deleteClassroom(uuid: string, teacherId: number) {
+	async deleteClassroom(uuid, teacherId) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(uuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -88,16 +86,7 @@ export const ClassroomService = {
 		return await ClassroomRepository.deleteClassroom(classroom.id);
 	},
 
-	async addStudent(
-		classUuid: string,
-		teacherId: number,
-		data: {
-			firstName: string;
-			lastName: string;
-			login?: string;
-			password?: string;
-		},
-	) {
+	async addStudent(classUuid, teacherId, data) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -153,7 +142,7 @@ export const ClassroomService = {
 		};
 	},
 
-	async resetStudentPassword(classUuid: string, studentUuid: string, teacherId: number) {
+	async resetStudentPassword(classUuid, studentUuid, teacherId) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -177,7 +166,7 @@ export const ClassroomService = {
 		};
 	},
 
-	async deleteStudent(classUuid: string, studentUuid: string, teacherId: number) {
+	async deleteStudent(classUuid, studentUuid, teacherId) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -191,12 +180,7 @@ export const ClassroomService = {
 		return await ClassroomRepository.deleteStudent(student.id);
 	},
 
-	async getStudentAnalytics(
-		classUuid: string,
-		studentUuid: string,
-		teacherId: number,
-		filter?: { from?: string; to?: string },
-	) {
+	async getStudentAnalytics(classUuid, studentUuid, teacherId, filter) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -219,7 +203,6 @@ export const ClassroomService = {
 		// Calculate statistics
 		const gradeCounts: Record<string, number> = {};
 		let totalScoreSum = 0;
-		let totalMaxScoreSum = 0;
 		let totalCorrectAnswers = 0;
 		let totalQuestions = 0;
 
@@ -231,7 +214,7 @@ export const ClassroomService = {
 			quizTitle: string;
 		}> = [];
 
-		const history = (quizParticipants || []).map((p: any) => {
+		const history: StudentAnalyticsHistoryItem[] = (quizParticipants || []).map((p) => {
 			const res = p.result || { score: 0, correctAnswersCount: 0, totalQuestionsCount: 0 };
 			const dateObj = new Date(p.joinedAt);
 			const formattedDate = `${String(dateObj.getDate()).padStart(2, "0")}.${String(dateObj.getMonth() + 1).padStart(2, "0")}`;
@@ -328,11 +311,7 @@ export const ClassroomService = {
 		};
 	},
 
-	async createCourse(
-		classUuid: string,
-		teacherId: number,
-		data: { name: string; studentUuids?: string[] },
-	) {
+	async createCourse(classUuid, teacherId, data) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -379,17 +358,7 @@ export const ClassroomService = {
 		});
 	},
 
-	async updateCourse(
-		classUuid: string,
-		courseUuid: string,
-		teacherId: number,
-		data: {
-			name?: string;
-			isActive?: boolean;
-			isArchived?: boolean;
-			studentUuids?: string[];
-		},
-	) {
+	async updateCourse(classUuid, courseUuid, teacherId, data) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
@@ -429,7 +398,7 @@ export const ClassroomService = {
 		return await ClassroomRepository.updateCourse(course.id, updatePayload);
 	},
 
-	async deleteCourse(classUuid: string, courseUuid: string, teacherId: number) {
+	async deleteCourse(classUuid, courseUuid, teacherId) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");

@@ -1,10 +1,14 @@
 model Answer {
   id          Int     @id @default(autoincrement())
   timeSpentMs Int // ms
+  isSkipped  Boolean @default(false)
   isCorrect   Boolean @default(false)
 
-  variantId Int
-  variant   Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  questionId  Int?
+  question    Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  variantId   Int?
+  variant     Variant?  @relation(fields: [variantId], references: [id], onDelete: Cascade)
 
   participantId Int
   participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
@@ -13,4 +17,5 @@ model Answer {
 
   @@index([participantId])
   @@index([variantId])
+  @@index([questionId])
 }

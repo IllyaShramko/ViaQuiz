@@ -1,7 +1,8 @@
 import { PRISMA_CLIENT } from "../../config/database";
 import { errorValidator } from "../../errors/errorValidator";
+import type { StudentRepositoryContract } from "./types/students.contracts";
 
-export const StudentRepository = {
+export const StudentRepository: StudentRepositoryContract = {
 	async findByLogin(login: string, classCode?: string) {
 		try {
 			if (classCode) {

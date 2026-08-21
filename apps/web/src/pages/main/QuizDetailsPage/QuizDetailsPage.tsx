@@ -5,6 +5,7 @@ import {
   useRecordViewMutation,
   QuizBackButton,
   QuizDetailsHero,
+  QuizLaunchCard,
   QuizQuestionsList,
   QuizDetailsSkeleton,
   QuizDetailsError,
@@ -55,7 +56,11 @@ export function QuizDetailsPage() {
     <div className={styles['quiz-details-page']}>
       <QuizBackButton onBack={() => navigate('/dashboard')} />
       <QuizDetailsHero quiz={quiz} />
+      <QuizLaunchCard quiz={quiz} />
+      <hr className={styles['quiz-details-divider']} />
       <QuizQuestionsList questions={quiz.questions || []} />
     </div>
   );
 }
+
+

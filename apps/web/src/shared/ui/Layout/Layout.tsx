@@ -54,7 +54,7 @@ export function Layout() {
               </button>
             </div>
 
-            <Link to="/#enter-code" className="btn btn--ghost btn--sm">
+            <Link to="/join" className="btn btn--ghost btn--sm">
               {t('nav.enterCode')}
             </Link>
 

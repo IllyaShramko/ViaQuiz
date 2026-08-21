@@ -42,7 +42,13 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        const from = (location.state as any)?.from?.pathname || '/dashboard';
+        const fromState = (location.state as any)?.from;
+        let from = '/dashboard';
+        if (typeof fromState === 'string') {
+          from = fromState;
+        } else if (fromState?.pathname) {
+          from = `${fromState.pathname}${fromState.search || ''}${fromState.hash || ''}`;
+        }
         navigate(from, { replace: true });
       }
     } catch (err: any) {

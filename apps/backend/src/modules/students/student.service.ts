@@ -3,11 +3,16 @@ import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
 import { UnauthorizedError } from "../../errors/customErrors";
 import { StudentRepository } from "./student.repository";
+import type { StudentServiceContract } from "./types/students.contracts";
+import type {
+	StudentDetailedResultItem,
+	StudentRecentResultItem,
+} from "./types/students.types";
 
 const JWT_SECRET = env.JWT_SECRET;
 
-export const StudentService = {
-	async login(credentials: { login: string; password: string; classCode?: string }) {
+export const StudentService: StudentServiceContract = {
+	async login(credentials) {
 		const studentWithPassword = await StudentRepository.findByLogin(
 			credentials.login.trim().toLowerCase(),
 			credentials.classCode?.trim().toUpperCase(),
@@ -59,11 +64,11 @@ export const StudentService = {
 		};
 	},
 
-	async getMe(studentId: number) {
+	async getMe(studentId) {
 		return await StudentRepository.findById(studentId);
 	},
 
-	async getDashboard(studentId: number) {
+	async getDashboard(studentId) {
 		const [student, recentQuizzes, totalResultsCount, courses] =
 			await Promise.all([
 				StudentRepository.findById(studentId),
@@ -74,7 +79,7 @@ export const StudentService = {
 
 		// Calculate average grade across results
 		let totalGradeSum = 0;
-		const formattedRecent = (recentQuizzes || []).map((p: any) => {
+		const formattedRecent: StudentRecentResultItem[] = (recentQuizzes || []).map((p) => {
 			const res = p.result || { score: 0, correctAnswersCount: 0, totalQuestionsCount: 0 };
 			const dateObj = new Date(p.joinedAt);
 			const formattedDate = `${String(dateObj.getDate()).padStart(2, "0")}.${String(dateObj.getMonth() + 1).padStart(2, "0")}`;
@@ -89,6 +94,7 @@ export const StudentService = {
 			return {
 				id: p.id,
 				uuid: p.uuid,
+				resultUuid: p.result?.uuid || undefined,
 				date: formattedDate,
 				joinTime: formattedTime,
 				joinedAt: p.joinedAt,
@@ -126,7 +132,7 @@ export const StudentService = {
 				coursesCount: (courses || []).length,
 			},
 			recentResults: formattedRecent,
-			courses: (courses || []).map((c: any) => ({
+			courses: (courses || []).map((c) => ({
 				id: c.id,
 				uuid: c.uuid,
 				name: c.name,
@@ -135,14 +141,14 @@ export const StudentService = {
 		};
 	},
 
-	async getResults(studentId: number, take = 20, skip = 0) {
+	async getResults(studentId, take = 20, skip = 0) {
 		const [quizzes, total] = await Promise.all([
 			StudentRepository.findStudentResults(studentId, take, skip),
 			StudentRepository.countStudentResults(studentId),
 		]);
 
-		const results = (quizzes || []).map((p: any) => {
-			const res = p.result || { score: 0, correctAnswersCount: 0, totalQuestionsCount: 0 };
+		const results: StudentDetailedResultItem[] = (quizzes || []).map((p) => {
+			const res = p.result || { score: 0, correctAnswersCount: 0, totalQuestionsCount: 0, uuid: "" };
 			const dateObj = new Date(p.joinedAt);
 			const formattedDate = `${String(dateObj.getDate()).padStart(2, "0")}.${String(dateObj.getMonth() + 1).padStart(2, "0")}`;
 			const formattedTime = `${String(dateObj.getHours()).padStart(2, "0")}:${String(dateObj.getMinutes()).padStart(2, "0")}`;
@@ -154,8 +160,9 @@ export const StudentService = {
 			return {
 				id: p.id,
 				uuid: p.uuid,
+				resultUuid: p.result?.uuid || undefined,
 				date: formattedDate,
-				fullDate: dateObj.toISOString().split("T")[0],
+				fullDate: dateObj.toISOString().split("T")[0] || "",
 				joinTime: formattedTime,
 				joinedAt: p.joinedAt,
 				score: res.score,
@@ -174,7 +181,7 @@ export const StudentService = {
 		};
 	},
 
-	async getCourses(studentId: number) {
+	async getCourses(studentId) {
 		return await StudentRepository.findStudentCourses(studentId);
 	},
 };

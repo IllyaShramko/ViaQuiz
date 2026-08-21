@@ -25,6 +25,7 @@ export interface StudentResultsResponse {
   results: Array<{
     id: number;
     uuid: string;
+    resultUuid?: string;
     date: string;
     fullDate: string;
     joinTime: string;

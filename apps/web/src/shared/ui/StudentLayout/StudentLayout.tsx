@@ -19,8 +19,10 @@ export function StudentLayout() {
   }
 
   const handleLogout = () => {
-    logout();
     navigate('/', { replace: true });
+    setTimeout(() => {
+      logout();
+    }, 10);
   };
 
   const displayName =
@@ -181,7 +183,7 @@ export function StudentLayout() {
           </div>
 
           <div className={styles['student-topbar__actions']}>
-            <Link to="/#enter-code" className={styles['btn-enter-code']}>
+            <Link to="/join" className={styles['btn-enter-code']}>
               Введіть код
             </Link>
 

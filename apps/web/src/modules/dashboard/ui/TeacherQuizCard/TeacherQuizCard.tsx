@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
 import type { PublicQuizSummary } from '../../models';
 import styles from '../Dashboard.module.css';
@@ -28,13 +29,11 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
   const gradient = TEACHER_GRADIENTS[index % TEACHER_GRADIENTS.length];
 
   return (
-    <article
+    <Link
+      to={`/quiz/${quiz.uuid}`}
       className={styles['teacher-quiz-card']}
-      onClick={() => onClick(quiz.uuid)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+      onClick={(e) => {
+        if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
           e.preventDefault();
           onClick(quiz.uuid);
         }
@@ -86,6 +85,6 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
           <span className={styles['teacher-quiz-card__action-hint']}>Переглянути →</span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
