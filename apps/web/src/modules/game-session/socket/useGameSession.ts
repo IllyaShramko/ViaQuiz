@@ -99,19 +99,26 @@ export function useGameSession({
 					setTotalQuestions(data.roomState.totalQuestions);
 				}
 
-				if (data.roomState.status === 'PROGRESS' && data.roomState.questionStartedAt && data.roomState.timeLimitMs) {
-					const elapsed = Date.now() - data.roomState.questionStartedAt;
-					const left = Math.max(0, data.roomState.timeLimitMs - elapsed);
-					startCountdown(left);
+				if (data.roomState.status === 'PROGRESS') {
+					const timeLimit = data.roomState.timeLimitMs || data.currentQuestion?.timeLimit || 30000;
+					if (data.roomState.questionStartedAt) {
+						const elapsed = Date.now() - data.roomState.questionStartedAt;
+						const left = Math.max(0, timeLimit - elapsed);
+						startCountdown(left);
+					} else {
+						startCountdown(timeLimit);
+					}
 				}
 			}
 
 			if (data.participants) setParticipants(data.participants);
-			if (data.currentParticipantId) setCurrentParticipantId(data.currentParticipantId);
-			if (data.currentQuestion) setCurrentQuestion(data.currentQuestion);
+			if (data.currentParticipantId !== undefined) setCurrentParticipantId(data.currentParticipantId);
+			if (data.currentQuestion !== undefined) setCurrentQuestion(data.currentQuestion);
 			setAlreadyAnswered(!!data.alreadyAnswered);
-			if (data.reviewData) setReviewData(data.reviewData);
-			if (data.resultUuid) setResultUuid(data.resultUuid);
+			if (data.reviewData !== undefined) setReviewData(data.reviewData);
+			if (data.finishedData) setFinishedData(data.finishedData);
+			if (data.answeredCount !== undefined) setAnsweredCount(data.answeredCount);
+			if (data.resultUuid !== undefined) setResultUuid(data.resultUuid);
 			setIsHost(!!data.isHost);
 		};
 
@@ -172,7 +179,25 @@ export function useGameSession({
 		const handleQuestionEnded = (payload: GameReviewDataDto) => {
 			if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 			setStatus('REVIEWING');
-			setReviewData(payload);
+			setReviewData((prev) => ({
+				...prev,
+				...payload,
+				participantResult: payload.participantResult ?? prev?.participantResult,
+				participantAnswers: payload.participantAnswers ?? prev?.participantAnswers,
+			}));
+			if (payload.participantAnswers) {
+				setParticipants((prev) =>
+					prev.map((p) => {
+						const pa = payload.participantAnswers?.find(
+							(item) => item.participantId === p.participantId,
+						);
+						if (pa && pa.totalScore !== undefined) {
+							return { ...p, score: pa.totalScore };
+						}
+						return p;
+					}),
+				);
+			}
 		};
 
 		const handleFinished = (payload: GameFinishedDto) => {
@@ -262,12 +287,13 @@ export function useGameSession({
 	);
 
 	const submitAnswer = useCallback(
-		(rId: number, qIdx: number, vIds: number[]) => {
+		(rId: number, qIdx: number, vIds?: number[], typedAnswer?: string) => {
 			setAlreadyAnswered(true);
 			socketRef.current?.emit('participant:submit_answer', {
 				roomId: rId,
 				questionIndex: qIdx,
 				variantIds: vIds,
+				typedAnswer,
 			});
 		},
 		[],

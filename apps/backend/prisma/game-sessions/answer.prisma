@@ -1,21 +1,34 @@
 model Answer {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   timeSpentMs Int // ms
-  isSkipped  Boolean @default(false)
-  isCorrect   Boolean @default(false)
+  isSkipped   Boolean  @default(false)
+  isCorrect   Boolean  @default(false)
+  scoreEarned Int      @default(0)
 
-  questionId  Int?
-  question    Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  typedAnswer String?
 
-  variantId   Int?
-  variant     Variant?  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  questionId  Int
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  variants    AnswerVariant[]
 
   participantId Int
   participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 
+  @@unique([participantId, questionId])
   @@index([participantId])
-  @@index([variantId])
   @@index([questionId])
+}
+
+model AnswerVariant {
+  answerId  Int
+  variantId Int
+
+  answer  Answer  @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  variant Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@id([answerId, variantId])
+  @@index([variantId])
 }

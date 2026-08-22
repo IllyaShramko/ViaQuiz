@@ -1,9 +1,10 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useUserContext, getUserDashboardPath } from '../../../modules/auth';
+import { Navigate, Outlet, useSearchParams } from 'react-router-dom';
+import { useUserContext, getUserDashboardPath, getSafeRedirectUrl } from '../../../modules/auth';
 
 export function PublicRoute() {
-  const { isAuthenticated, isLoading, user, token } = useUserContext();
-  console.log(isAuthenticated, isLoading, token)
+  const { isAuthenticated, isLoading, user } = useUserContext();
+  const [searchParams] = useSearchParams();
+
   if (isLoading) {
     return (
       <div
@@ -23,7 +24,9 @@ export function PublicRoute() {
   }
 
   if (isAuthenticated) {
-    return <Navigate to={getUserDashboardPath(user)} replace />;
+    const defaultPath = getUserDashboardPath(user);
+    const targetUrl = getSafeRedirectUrl(searchParams, defaultPath);
+    return <Navigate to={targetUrl} replace />;
   }
 
   return <Outlet />;

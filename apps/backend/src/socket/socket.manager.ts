@@ -95,6 +95,11 @@ export class SocketManager {
 						socket.data.role = decoded.role as "STUDENT" | "ANONYMOUS";
 						socket.data.nickname = String(decoded.nickname || "Participant");
 						socket.data.studentId = decoded.studentId ? Number(decoded.studentId) : null;
+					} else if (decoded.studentId) {
+						// Logged-in student auth token
+						socket.data.studentId = Number(decoded.studentId);
+						socket.data.role = "STUDENT";
+						socket.data.nickname = String(decoded.name || "Student");
 					} else if (decoded.id || decoded.userId) {
 						// Standard teacher/user auth token
 						socket.data.userId = Number(decoded.id || decoded.userId);

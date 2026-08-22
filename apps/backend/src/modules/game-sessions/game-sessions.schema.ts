@@ -27,8 +27,16 @@ export const validateJoinCodeSchema = z.object({
 		.regex(/^\d+$/, "PIN code must contain only numbers"),
 });
 
-export const submitAnswerSchema = z.object({
-	roomId: z.number().int().positive(),
-	questionIndex: z.number().int().min(0),
-	variantIds: z.array(z.number().int().positive()).min(1, "Select at least one answer"),
-});
+export const submitAnswerSchema = z
+	.object({
+		roomId: z.number().int().positive(),
+		questionIndex: z.number().int().min(0),
+		variantIds: z.array(z.number().int().positive()).optional(),
+		typedAnswer: z.string().trim().optional(),
+	})
+	.refine(
+		(data) =>
+			(data.variantIds && data.variantIds.length > 0) ||
+			(typeof data.typedAnswer === "string" && data.typedAnswer.length > 0),
+		{ message: "Either variantIds or typedAnswer must be provided" },
+	);

@@ -61,17 +61,32 @@ export function QuestionHostView({
 						)}
 					</div>
 
-					{/* Variants Grid (Host View) */}
-					<div className={styles['variants-grid']}>
-						{question.variants.map((v, idx) => (
-							<div key={v.id} className={styles['teacher-variant-card']}>
-								<div className={styles['variant-badge-corner']}>{idx + 1}</div>
-								<span className={styles['teacher-variant-text']}>
-									{v.text || 'Варіант без тексту'}
+					{/* Variants Grid / Typed Preview (Host View) */}
+					{question.type === 'TYPE_ANSWER_V1' || question.type === 'TYPE_ANSWER_V2' ? (
+						<div className={styles['typed-review-card']}>
+							<div className={styles['typed-review-row']}>
+								<span className={styles['typed-review-label']}>
+									{question.type === 'TYPE_ANSWER_V2'
+										? 'Тип запитання: Слово по буквах'
+										: 'Тип запитання: Ввід тексту'}
 								</span>
+								<div className={`${styles['typed-review-value']} ${styles['is-correct']}`}>
+									Правильна відповідь: {question.variants.map((v) => v.text).filter(Boolean).join(' / ') || '—'}
+								</div>
 							</div>
-						))}
-					</div>
+						</div>
+					) : (
+						<div className={styles['variants-grid']}>
+							{question.variants.map((v, idx) => (
+								<div key={v.id} className={styles['teacher-variant-card']}>
+									<div className={styles['variant-badge-corner']}>{idx + 1}</div>
+									<span className={styles['teacher-variant-text']}>
+										{v.text || 'Варіант без тексту'}
+									</span>
+								</div>
+							))}
+						</div>
+					)}
 				</div>
 
 				{/* Floating Bottom Control Bar (matches old GPTQuiz design) */}

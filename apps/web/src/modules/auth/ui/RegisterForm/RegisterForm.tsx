@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import {
   useRegisterMutation,
@@ -8,7 +8,7 @@ import {
   useSendCodeMutation,
 } from '../../api/authApi';
 import { useUserContext } from '../../context';
-import { getUserDashboardPath } from '../../utils';
+import { getUserDashboardPath, getSafeRedirectUrl } from '../../utils';
 import type { RegisterFormInputs } from '../../models';
 import { RegisterSteps } from './RegisterSteps';
 import { StepCredentials } from './StepCredentials';
@@ -23,6 +23,7 @@ export interface RegisterFormProps {
 export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
   const { t } = useLocale();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login: setAuthContext } = useUserContext();
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -169,7 +170,9 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate(getUserDashboardPath(response.user), { replace: true });
+        const defaultPath = getUserDashboardPath(response.user);
+        const targetUrl = getSafeRedirectUrl(searchParams, defaultPath);
+        navigate(targetUrl, { replace: true });
       }
     } catch (err: any) {
       const message =

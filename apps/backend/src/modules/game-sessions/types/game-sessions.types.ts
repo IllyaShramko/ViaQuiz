@@ -23,7 +23,8 @@ export interface GameJwtPayload {
 export interface SubmitAnswerDto {
 	roomId: number;
 	questionIndex: number;
-	variantIds: number[];
+	variantIds?: number[] | undefined;
+	typedAnswer?: string | undefined;
 }
 
 export interface RoomDetailsDto {

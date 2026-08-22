@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
 	useGetRoomByUuidQuery,
@@ -6,6 +6,7 @@ import {
 	StudentLobby,
 	QuestionStudentView,
 	ReviewStudentView,
+	shuffleArray,
 } from '../../modules/game-session';
 import styles from '../../modules/game-session/ui/GameSession.module.css';
 
@@ -35,6 +36,19 @@ export function GamePlayPage() {
 
 	const currentRoomId = roomId || room?.id || 0;
 	const quizName = room?.quiz?.name || 'Вікторина';
+
+	const questionKey = currentQuestion
+		? `${currentQuestionIndex}-${(currentQuestion as { questionId?: number; id?: number }).questionId ?? (currentQuestion as { questionId?: number; id?: number }).id ?? currentQuestion.text ?? ''}`
+		: '';
+
+	const studentQuestion = useMemo(() => {
+		if (!currentQuestion) return null;
+		return {
+			...currentQuestion,
+			variants: shuffleArray(currentQuestion.variants || []),
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [questionKey]);
 
 	// Automatic redirect to student result report when test finishes
 	useEffect(() => {
@@ -110,19 +124,33 @@ export function GamePlayPage() {
 				/>
 			)}
 
-			{status === 'PROGRESS' && currentQuestion && (
-				<QuestionStudentView
-					question={currentQuestion}
-					alreadyAnswered={alreadyAnswered}
-					onSubmitAnswer={(vIds) => submitAnswer(currentRoomId, currentQuestionIndex, vIds)}
-				/>
+			{status === 'PROGRESS' && (
+				studentQuestion ? (
+					<QuestionStudentView
+						question={studentQuestion}
+						alreadyAnswered={alreadyAnswered}
+						onSubmitAnswer={(vIds, typedAnswer) =>
+							submitAnswer(currentRoomId, currentQuestionIndex, vIds, typedAnswer)
+						}
+					/>
+				) : (
+					<div className={styles['game-main-content']}>
+						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження запитання...</div>
+					</div>
+				)
 			)}
 
-			{status === 'REVIEWING' && currentQuestion && reviewData && (
-				<ReviewStudentView
-					question={currentQuestion}
-					reviewData={reviewData}
-				/>
+			{status === 'REVIEWING' && (
+				studentQuestion && reviewData ? (
+					<ReviewStudentView
+						question={studentQuestion}
+						reviewData={reviewData}
+					/>
+				) : (
+					<div className={styles['game-main-content']}>
+						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження результатів...</div>
+					</div>
+				)
 			)}
 
 			{status === 'FINISHED' && (

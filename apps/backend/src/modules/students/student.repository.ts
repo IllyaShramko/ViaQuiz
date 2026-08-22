@@ -3,7 +3,7 @@ import { errorValidator } from "../../errors/errorValidator";
 import type { StudentRepositoryContract } from "./types/students.contracts";
 
 export const StudentRepository: StudentRepositoryContract = {
-	async findByLogin(login: string, classCode?: string) {
+	async findByLogin(login, classCode) {
 		try {
 			if (classCode) {
 				return await PRISMA_CLIENT.student.findFirst({
@@ -30,7 +30,7 @@ export const StudentRepository: StudentRepositoryContract = {
 		}
 	},
 
-	async findById(id: number) {
+	async findById(id) {
 		try {
 			return await PRISMA_CLIENT.student.findUniqueOrThrow({
 				where: { id },
@@ -67,7 +67,7 @@ export const StudentRepository: StudentRepositoryContract = {
 		}
 	},
 
-	async findStudentResults(studentId: number, take = 20, skip = 0) {
+	async findStudentResults(studentId, take = 20, skip = 0) {
 		try {
 			return await PRISMA_CLIENT.participant.findMany({
 				where: {
@@ -107,7 +107,7 @@ export const StudentRepository: StudentRepositoryContract = {
 		}
 	},
 
-	async countStudentResults(studentId: number) {
+	async countStudentResults(studentId) {
 		try {
 			return await PRISMA_CLIENT.participant.count({
 				where: {
@@ -120,7 +120,7 @@ export const StudentRepository: StudentRepositoryContract = {
 		}
 	},
 
-	async findStudentCourses(studentId: number) {
+	async findStudentCourses(studentId) {
 		try {
 			return await PRISMA_CLIENT.course.findMany({
 				where: {

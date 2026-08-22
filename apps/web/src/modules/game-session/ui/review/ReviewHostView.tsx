@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Chart from 'react-apexcharts';
+import { ImageLightboxModal } from '../modals/ImageLightboxModal';
 import type {
 	GameQuestionDto,
 	GameReviewDataDto,
@@ -30,25 +31,42 @@ export function ReviewHostView({
 	onNextQuestion,
 }: ReviewHostViewProps) {
 	const [activeTab, setActiveTab] = useState<'overview' | 'answers'>('overview');
+	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
 	const distribution = reviewData.answersDistribution || {};
 	const totalParticipants = participants.length || 1;
 
-	// Calculate counts
+	// Calculate counts using participantAnswers if available or distribution
 	const correctIds = reviewData.correctVariantIds;
 	let correctCount = 0;
+	let wrongCount = 0;
+	let skippedCount = 0;
 	let totalAnswered = 0;
 
-	for (const [vIdStr, count] of Object.entries(distribution)) {
-		const vId = Number(vIdStr);
-		totalAnswered += count;
-		if (correctIds.includes(vId)) {
-			correctCount += count;
+	if (reviewData.participantAnswers && reviewData.participantAnswers.length > 0) {
+		for (const pa of reviewData.participantAnswers) {
+			if (!pa.isAnswered) {
+				skippedCount++;
+			} else {
+				totalAnswered++;
+				if (pa.isCorrect) {
+					correctCount++;
+				} else {
+					wrongCount++;
+				}
+			}
 		}
+	} else {
+		for (const [vIdStr, count] of Object.entries(distribution)) {
+			const vId = Number(vIdStr);
+			totalAnswered += count;
+			if (correctIds.includes(vId)) {
+				correctCount += count;
+			}
+		}
+		wrongCount = Math.max(0, totalAnswered - correctCount);
+		skippedCount = Math.max(0, totalParticipants - totalAnswered);
 	}
-
-	const wrongCount = Math.max(0, totalAnswered - correctCount);
-	const skippedCount = Math.max(0, totalParticipants - totalAnswered);
 	const accuracyPct =
 		totalParticipants > 0 ? Math.round((correctCount / totalParticipants) * 100) : 0;
 
@@ -101,6 +119,14 @@ export function ReviewHostView({
 			return `${n} відповідей`;
 		}
 	};
+
+	const isTypeV1 = question.type === 'TYPE_ANSWER_V1';
+	const isTypeV2 = question.type === 'TYPE_ANSWER_V2';
+	const isTyped = isTypeV1 || isTypeV2;
+	const correctAnswersText =
+		reviewData.correctTextAnswers?.join(' / ') ||
+		question.variants.map((v) => v.text).filter(Boolean).join(' / ') ||
+		'—';
 
 	return (
 		<div className={styles['game-layout-body']}>
@@ -161,7 +187,7 @@ export function ReviewHostView({
 								}`}
 								onClick={() => setActiveTab('answers')}
 							>
-								Відповідді
+								Відповіді
 							</button>
 						</div>
 
@@ -172,64 +198,88 @@ export function ReviewHostView({
 									{question.text}
 								</h3>
 
-								<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-									{question.variants.map((v, idx) => {
-										const count = distribution[v.id] || 0;
-										const isCorrect = correctIds.includes(v.id);
+								{question.media && (
+									<img
+										src={question.media}
+										alt="Question media"
+										className={styles['question-media-img']}
+										onClick={() => setLightboxImage(question.media || null)}
+										style={{ maxHeight: '180px', width: 'auto', alignSelf: 'center', margin: '0.5rem auto' }}
+									/>
+								)}
 
-										return (
-											<div
-												key={v.id}
-												className={styles['teacher-review-variant-row']}
-												style={{
-													borderColor: isCorrect ? 'var(--color-success, #22c55e)' : undefined,
-												}}
-											>
-												<div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-													<div className={styles['variant-badge-corner']} style={{ position: 'static' }}>{idx + 1}</div>
-													<span style={{ fontWeight: 600, fontSize: '1.05rem', color: '#fff' }}>
-														{v.text || 'Варіант без тексту'}
-														{isCorrect && (
-															<span
-																style={{
-																	color: 'var(--color-success, #22c55e)',
-																	fontSize: '0.85rem',
-																	marginLeft: '0.5rem',
-																}}
-															>
-																(Правильний)
-															</span>
-														)}
+								{isTyped ? (
+									<div className={styles['typed-review-card']} style={{ margin: 0, maxWidth: '100%' }}>
+										<div className={styles['typed-review-row']}>
+											<span className={styles['typed-review-label']}>
+												{isTypeV2 ? 'Тип: Слово по буквах' : 'Тип: Ввід тексту'}
+											</span>
+											<div className={`${styles['typed-review-value']} ${styles['is-correct']}`}>
+												Правильна відповідь: {correctAnswersText}
+											</div>
+										</div>
+									</div>
+								) : (
+									<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+										{question.variants.map((v, idx) => {
+											const count = distribution[v.id] || 0;
+											const isCorrect = correctIds.includes(v.id);
+
+											return (
+												<div
+													key={v.id}
+													className={styles['teacher-review-variant-row']}
+													style={{
+														borderColor: isCorrect ? 'var(--color-success, #22c55e)' : undefined,
+													}}
+												>
+													<div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+														<div className={styles['variant-badge-corner']} style={{ position: 'static' }}>{idx + 1}</div>
+														<span style={{ fontWeight: 600, fontSize: '1.05rem', color: '#fff' }}>
+															{v.text || 'Варіант без тексту'}
+															{isCorrect && (
+																<span
+																	style={{
+																		color: 'var(--color-success, #22c55e)',
+																		fontSize: '0.85rem',
+																		marginLeft: '0.5rem',
+																	}}
+																>
+																	(Правильний)
+																</span>
+															)}
+														</span>
+													</div>
+
+													<span
+														className={`${styles['teacher-variant-badge-count']} ${
+															count > 0 ? styles['has-answers'] : ''
+														}`}
+													>
+														{getAnswerText(count)}
 													</span>
 												</div>
-
-												<span
-													className={`${styles['teacher-variant-badge-count']} ${
-														count > 0 ? styles['has-answers'] : ''
-													}`}
-												>
-													{getAnswerText(count)}
-												</span>
-											</div>
-										);
-									})}
-								</div>
+											);
+										})}
+									</div>
+								)}
 							</div>
 						)}
 
-						{/* Tab 2: Individual Answers (only show participants who answered) */}
+						{/* Tab 2: Individual Answers */}
 						{activeTab === 'answers' && (
 							<div>
 								{(() => {
-									// Build list of participants who answered
-									// Since the host doesn't receive individual answer data from the backend,
-									// we show participants with score > 0 or participants who have answered
-									const answeredParticipants = participants.filter(p => {
-										return totalAnswered > 0 && p.score > 0;
-									});
+									if (participants.length === 0) {
+										return (
+											<h3 className={styles['review-no-answers-text']}>
+												Немає учасників у сесії...
+											</h3>
+										);
+									}
 
-									// If no answers at all, show the placeholder
-									if (totalAnswered === 0 || answeredParticipants.length === 0) {
+									// If no participant answered at all and totalAnswered is 0
+									if (totalAnswered === 0 && (!reviewData.participantAnswers || reviewData.participantAnswers.length === 0)) {
 										return (
 											<h3 className={styles['review-no-answers-text']}>
 												Немає відповідей на це запитання...
@@ -237,22 +287,149 @@ export function ReviewHostView({
 										);
 									}
 
-									// Show cards for participants who scored something
+									// Map each participant to their answer information
+									const studentAnswers = participants.map((p) => {
+										const pa = reviewData.participantAnswers?.find(
+											(item) => item.participantId === p.participantId,
+										);
+										return {
+											participantId: p.participantId,
+											nickname: p.nickname,
+											totalScore: pa?.totalScore !== undefined ? pa.totalScore : p.score,
+											isAnswered: pa ? pa.isAnswered : false,
+											variantIds: pa ? pa.variantIds || [] : [],
+											typedAnswer: pa ? pa.typedAnswer : undefined,
+											timeSpentMs: pa ? pa.timeSpentMs : 0,
+											isCorrect: pa ? pa.isCorrect : false,
+											scoreEarned: pa ? pa.scoreEarned : 0,
+										};
+									});
+
 									return (
 										<div className={styles['review-students-grid']}>
-											{answeredParticipants.map((p) => (
-												<div key={p.participantId} className={styles['student-answer-card']}>
-													<div className={styles['student-answer-header']}>
-														<div className={styles['student-answer-name']}>
-															<span className={styles['student-avatar-icon']}>👤</span>
-															<span>{p.nickname}</span>
+											{studentAnswers.map((student) => {
+												let cardStatusClass = styles['is-skipped'];
+												if (student.isAnswered) {
+													cardStatusClass = student.isCorrect
+														? styles['is-correct']
+														: styles['is-wrong'];
+												}
+
+												return (
+													<div
+														key={student.participantId}
+														className={`${styles['student-answer-card']} ${cardStatusClass}`}
+													>
+														<div className={styles['student-answer-header']}>
+															<div className={styles['student-answer-name']}>
+																<span className={styles['student-avatar-icon']}>👤</span>
+																<span>{student.nickname}</span>
+															</div>
+															{student.isAnswered ? (
+																student.isCorrect ? (
+																	<span
+																		className={`${styles['student-status-badge']} ${styles['status-correct']}`}
+																	>
+																		✓ Правильно {student.scoreEarned > 0 ? `(+${student.scoreEarned})` : ''}
+																	</span>
+																) : (
+																	<span
+																		className={`${styles['student-status-badge']} ${styles['status-wrong']}`}
+																	>
+																		✗ Неправильно (+0)
+																	</span>
+																)
+															) : (
+																<span
+																	className={`${styles['student-status-badge']} ${styles['status-skipped']}`}
+																>
+																	⚪ Не відповів
+																</span>
+															)}
+														</div>
+
+														<div className={styles['student-answer-body']}>
+															{student.isAnswered ? (
+																student.typedAnswer ? (
+																	<div className={styles['student-selected-variant']}>
+																		<span className={styles['student-variant-text']} style={{ fontWeight: 600 }}>
+																			Відповідь: &ldquo;{student.typedAnswer}&rdquo;
+																		</span>
+																		{student.isCorrect && (
+																			<span
+																				style={{
+																					color: 'var(--color-success, #22c55e)',
+																					fontSize: '0.75rem',
+																					fontWeight: 700,
+																					marginLeft: 'auto',
+																				}}
+																			>
+																				✓
+																			</span>
+																		)}
+																	</div>
+																) : student.variantIds.length > 0 ? (
+																	<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+																		{student.variantIds.map((vId) => {
+																			const variant = question.variants.find((v) => v.id === vId);
+																			const variantIndex =
+																				question.variants.findIndex((v) => v.id === vId) + 1;
+																			const isThisCorrect = correctIds.includes(vId);
+
+																			return (
+																				<div
+																					key={vId}
+																					className={styles['student-selected-variant']}
+																				>
+																					<span className={styles['student-variant-num']}>
+																						{variantIndex > 0 ? variantIndex : '•'}
+																					</span>
+																					<span className={styles['student-variant-text']}>
+																						{variant?.text || 'Варіант без тексту'}
+																					</span>
+																					{isThisCorrect && (
+																						<span
+																							style={{
+																								color: 'var(--color-success, #22c55e)',
+																								fontSize: '0.75rem',
+																								fontWeight: 700,
+																								marginLeft: 'auto',
+																							}}
+																						>
+																							✓
+																						</span>
+																					)}
+																				</div>
+																			);
+																		})}
+																	</div>
+																) : (
+																	<div className={styles['student-selected-variant-skipped']}>
+																		Час вийшов (без відповіді)
+																	</div>
+																)
+															) : (
+																<div className={styles['student-selected-variant-skipped']}>
+																	Час вийшов (без відповіді)
+																</div>
+															)}
+														</div>
+
+														<div className={styles['student-answer-footer']}>
+															<div className={styles['student-answer-time']}>
+																{student.isAnswered && student.timeSpentMs > 0 ? (
+																	<span>⏱ {(student.timeSpentMs / 1000).toFixed(1)} сек</span>
+																) : (
+																	<span>-</span>
+																)}
+															</div>
+															<div className={styles['student-answer-total-score']}>
+																Загальний бал: <strong>{student.totalScore}</strong> б
+															</div>
 														</div>
 													</div>
-													<div className={styles['student-answer-score']}>
-														Поточний бал: <strong style={{ color: '#fff' }}>{p.score}</strong>
-													</div>
-												</div>
-											))}
+												);
+											})}
 										</div>
 									);
 								})()}
@@ -313,6 +490,12 @@ export function ReviewHostView({
 					))}
 				</div>
 			</aside>
+
+			<ImageLightboxModal
+				isOpen={!!lightboxImage}
+				imageUrl={lightboxImage}
+				onClose={() => setLightboxImage(null)}
+			/>
 		</div>
 	);
 }

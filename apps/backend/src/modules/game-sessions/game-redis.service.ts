@@ -23,7 +23,8 @@ export interface RedisParticipant {
 
 export interface RedisAnswerData {
 	participantId: number;
-	variantIds: number[];
+	variantIds?: number[] | undefined;
+	typedAnswer?: string | undefined;
 	timeSpentMs: number;
 	isCorrect?: boolean | undefined;
 	scoreEarned?: number | undefined;

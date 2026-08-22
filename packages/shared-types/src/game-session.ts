@@ -23,7 +23,8 @@ export interface GameJwtPayload {
 export interface SubmitAnswerDto {
 	roomId: number;
 	questionIndex: number;
-	variantIds: number[];
+	variantIds?: number[] | undefined;
+	typedAnswer?: string | undefined;
 }
 
 export interface ParticipantDto {
@@ -60,18 +61,34 @@ export interface ParticipantRoundResultDto {
 	isCorrect: boolean;
 	pointsEarned: number;
 	timeSpentMs: number;
-	selectedVariantIds: number[];
+	selectedVariantIds?: number[] | undefined;
+	typedAnswer?: string | undefined;
+}
+
+export interface ParticipantRoundAnswerDto {
+	participantId: number;
+	nickname: string;
+	isAnswered: boolean;
+	variantIds?: number[] | undefined;
+	typedAnswer?: string | undefined;
+	timeSpentMs: number;
+	isCorrect: boolean;
+	scoreEarned: number;
+	totalScore?: number | undefined;
 }
 
 export interface GameReviewDataDto {
 	questionIndex: number;
 	correctVariantIds: number[];
+	correctTextAnswers?: string[] | undefined;
 	answersDistribution: Record<number, number>;
 	totalAnswered?: number | undefined;
 	totalParticipants?: number | undefined;
+	participantAnswers?: ParticipantRoundAnswerDto[] | undefined;
 	participantResult?: ParticipantRoundResultDto | undefined;
 	myAnswer?: {
-		variantIds: number[];
+		variantIds?: number[] | undefined;
+		typedAnswer?: string | undefined;
 		timeSpentMs: number;
 		isCorrect?: boolean | undefined;
 		scoreEarned?: number | undefined;
@@ -93,6 +110,8 @@ export interface GameSyncStateDto {
 	currentQuestion?: GameQuestionDto | null;
 	alreadyAnswered: boolean;
 	reviewData?: GameReviewDataDto | null;
+	finishedData?: GameFinishedDto | null;
+	answeredCount?: number | undefined;
 	resultUuid?: string | null | undefined;
 	isHost: boolean;
 }

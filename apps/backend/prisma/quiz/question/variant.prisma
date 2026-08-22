@@ -9,7 +9,7 @@ model Variant {
 
   questionId           Int
   question             Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  answersByParticipant Answer[]
+  answersByParticipant AnswerVariant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

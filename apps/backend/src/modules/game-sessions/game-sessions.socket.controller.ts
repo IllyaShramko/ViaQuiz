@@ -7,6 +7,7 @@ import { gameRedisService, type RedisQuestionData } from "./game-redis.service";
 import { GameSessionsRepository } from "./game-sessions.repository";
 import { PRISMA_CLIENT } from "../../config/database";
 import { logger } from "../../tools/logger";
+import type { ParticipantRoundAnswerDto } from "@viaquiz/shared-types";
 
 // Зберігаємо таймери питань на сервері в пам'яті за roomId
 const activeRoomTimers = new Map<number, NodeJS.Timeout>();
@@ -135,20 +136,26 @@ export const gameSessionsSocketController: SocketController = {
 				let currentQuestionSanitized: unknown = null;
 				let alreadyAnswered = false;
 				let reviewData: unknown = null;
+				let answeredCount = 0;
+				let finishedData: unknown = null;
 
 				if (roomState && roomState.status === "PROGRESS") {
-					const cachedQ = await gameRedisService.getCachedQuestion(
+					const cachedQ = await getOrCacheQuestion(
 						roomId,
+						targetRoom.quizId,
 						roomState.currentQuestionIndex,
 					);
 					if (cachedQ) {
 						currentQuestionSanitized = {
 							questionId: cachedQ.questionId,
+							questionIndex: roomState.currentQuestionIndex,
+							totalQuestions: roomState.totalQuestions || 0,
 							text: cachedQ.text,
 							media: cachedQ.media,
 							type: cachedQ.type,
 							points: cachedQ.points,
 							timeLimit: cachedQ.timeLimit,
+							startedAt: roomState.questionStartedAt || Date.now(),
 							variants: cachedQ.variants.map((v) => ({
 								id: v.id,
 								text: v.text,
@@ -157,53 +164,123 @@ export const gameSessionsSocketController: SocketController = {
 							})),
 						};
 
-						if (participantId) {
-							const answers = await gameRedisService.getAnswersForQuestion(
-								roomId,
-								roomState.currentQuestionIndex,
-							);
-							alreadyAnswered = !!answers[participantId];
-						}
-					}
-				} else if (roomState && roomState.status === "REVIEWING") {
-					const cachedQ = await gameRedisService.getCachedQuestion(
-						roomId,
-						roomState.currentQuestionIndex,
-					);
-					if (cachedQ) {
 						const answers = await gameRedisService.getAnswersForQuestion(
 							roomId,
 							roomState.currentQuestionIndex,
 						);
+						answeredCount = Object.keys(answers).length;
+
+						if (participantId) {
+							alreadyAnswered = !!answers[participantId];
+						}
+					}
+				} else if (roomState && roomState.status === "REVIEWING") {
+					const cachedQ = await getOrCacheQuestion(
+						roomId,
+						targetRoom.quizId,
+						roomState.currentQuestionIndex,
+					);
+					if (cachedQ) {
+						currentQuestionSanitized = {
+							questionId: cachedQ.questionId,
+							questionIndex: roomState.currentQuestionIndex,
+							totalQuestions: roomState.totalQuestions || 0,
+							text: cachedQ.text,
+							media: cachedQ.media,
+							type: cachedQ.type,
+							points: cachedQ.points,
+							timeLimit: cachedQ.timeLimit,
+							startedAt: roomState.questionStartedAt || Date.now(),
+							variants: cachedQ.variants.map((v) => ({
+								id: v.id,
+								text: v.text,
+								media: v.media,
+								order: v.order,
+							})),
+						};
+
+						const answers = await gameRedisService.getAnswersForQuestion(
+							roomId,
+							roomState.currentQuestionIndex,
+						);
+						answeredCount = Object.keys(answers).length;
+
 						const correctVariantIds = cachedQ.variants
 							.filter((v) => v.isCorrect)
 							.map((v) => v.id);
+						const correctTextAnswers = cachedQ.variants
+							.filter((v) => v.text && v.text.trim().length > 0)
+							.map((v) => v.text!);
 
 						const distribution: Record<number, number> = {};
 						for (const v of cachedQ.variants) {
 							distribution[v.id] = 0;
 						}
 						for (const a of Object.values(answers)) {
-							for (const vId of a.variantIds) {
-								distribution[vId] = (distribution[vId] || 0) + 1;
+							if (a.variantIds) {
+								for (const vId of a.variantIds) {
+									distribution[vId] = (distribution[vId] || 0) + 1;
+								}
 							}
+						}
+
+						let participantAnswers: ParticipantRoundAnswerDto[] | undefined = undefined;
+						if (isTeacher) {
+							participantAnswers = participants.map((p) => {
+								const participantAnswer = answers[p.participantId];
+								return {
+									participantId: p.participantId,
+									nickname: p.nickname,
+									isAnswered: !!participantAnswer,
+									variantIds: participantAnswer?.variantIds || [],
+									typedAnswer: participantAnswer?.typedAnswer,
+									timeSpentMs: participantAnswer?.timeSpentMs || 0,
+									isCorrect: participantAnswer?.isCorrect ?? false,
+									scoreEarned: participantAnswer?.scoreEarned ?? 0,
+									totalScore: p.score,
+								};
+							});
+						}
+
+						let participantResult: unknown = undefined;
+						if (participantId) {
+							const myAns = answers[participantId];
+							participantResult = {
+								isAnswered: !!myAns,
+								isCorrect: myAns?.isCorrect ?? false,
+								pointsEarned: myAns?.scoreEarned ?? 0,
+								timeSpentMs: myAns?.timeSpentMs ?? 0,
+								selectedVariantIds: myAns?.variantIds || [],
+								typedAnswer: myAns?.typedAnswer,
+							};
 						}
 
 						reviewData = {
 							questionIndex: roomState.currentQuestionIndex,
 							correctVariantIds,
+							correctTextAnswers,
 							answersDistribution: distribution,
+							totalAnswered: Object.keys(answers).length,
+							totalParticipants: participants.length,
+							participantAnswers,
+							participantResult,
 							myAnswer: participantId ? answers[participantId] : null,
 						};
 					}
 				}
 
 				let resultUuid: string | null = null;
-				if (roomState && roomState.status === "FINISHED" && participantId) {
-					const res = await PRISMA_CLIENT.result.findUnique({
-						where: { participantId },
-					});
-					resultUuid = res?.uuid || null;
+				if (roomState && roomState.status === "FINISHED") {
+					finishedData = {
+						totalQuestions: roomState.totalQuestions || 0,
+						leaderboard: [...participants].sort((a, b) => b.score - a.score),
+					};
+					if (participantId) {
+						const res = await PRISMA_CLIENT.result.findUnique({
+							where: { participantId },
+						});
+						resultUuid = res?.uuid || null;
+					}
 				}
 
 				// Надсилаємо синхронізацію клієнту
@@ -214,6 +291,8 @@ export const gameSessionsSocketController: SocketController = {
 					currentQuestion: currentQuestionSanitized,
 					alreadyAnswered,
 					reviewData,
+					finishedData,
+					answeredCount,
 					resultUuid,
 					isHost: isTeacher,
 				});
@@ -454,7 +533,7 @@ export const gameSessionsSocketController: SocketController = {
 		 */
 		socket.on("participant:submit_answer", async (data) => {
 			try {
-				const { roomId, questionIndex, variantIds } = data;
+				const { roomId, questionIndex, variantIds, typedAnswer } = data;
 				const participantId = socket.data.participantId;
 				if (!participantId) return;
 
@@ -479,13 +558,35 @@ export const gameSessionsSocketController: SocketController = {
 
 				let isCorrect = false;
 				if (cachedQ.type === "MANY_ANSWERS") {
+					const ids = variantIds || [];
 					isCorrect =
-						variantIds.length === correctVariantIds.length &&
-						variantIds.every((id) => correctVariantIds.includes(id));
+						ids.length === correctVariantIds.length &&
+						ids.every((id) => correctVariantIds.includes(id));
+				} else if (
+					cachedQ.type === "TYPE_ANSWER_V1" ||
+					cachedQ.type === "TYPE_ANSWER_V2"
+				) {
+					if (typeof typedAnswer === "string" && typedAnswer.trim().length > 0) {
+						const normalizedInput = typedAnswer
+							.trim()
+							.toLowerCase()
+							.replace(/\s+/g, " ");
+						const acceptableVariants = cachedQ.variants.filter(
+							(v) => v.text && v.text.trim().length > 0,
+						);
+						isCorrect = acceptableVariants.some((v) => {
+							const normalizedVariant = (v.text || "")
+								.trim()
+								.toLowerCase()
+								.replace(/\s+/g, " ");
+							return normalizedInput === normalizedVariant;
+						});
+					}
 				} else {
-					const chosenId = variantIds[0];
+					const ids = variantIds || [];
+					const chosenId = ids[0];
 					isCorrect =
-						variantIds.length === 1 &&
+						ids.length === 1 &&
 						chosenId !== undefined &&
 						correctVariantIds.includes(chosenId);
 				}
@@ -506,6 +607,7 @@ export const gameSessionsSocketController: SocketController = {
 					await gameRedisService.recordAnswer(roomId, questionIndex, participantId, {
 						participantId,
 						variantIds,
+						typedAnswer,
 						timeSpentMs,
 						isCorrect,
 						scoreEarned,
@@ -552,6 +654,41 @@ export const gameSessionsSocketController: SocketController = {
 };
 
 /**
+ * Отримати кешоване запитання або завантажити з БД і закешувати
+ */
+async function getOrCacheQuestion(
+	roomId: number,
+	quizId: number,
+	questionIndex: number,
+): Promise<RedisQuestionData | null> {
+	let cachedQ = await gameRedisService.getCachedQuestion(roomId, questionIndex);
+	if (!cachedQ) {
+		const quiz = await GameSessionsRepository.findQuizWithQuestions(quizId);
+		const q = quiz?.questions?.[questionIndex];
+		if (q) {
+			const timeLimitMs = q.timeLimit || 30000;
+			cachedQ = {
+				questionId: q.id,
+				text: q.text,
+				media: q.media,
+				type: q.type,
+				points: q.points,
+				timeLimit: timeLimitMs,
+				variants: q.variants.map((v) => ({
+					id: v.id,
+					text: v.text,
+					media: v.media,
+					isCorrect: v.isCorrect,
+					order: v.order,
+				})),
+			};
+			await gameRedisService.cacheQuestion(roomId, questionIndex, cachedQ);
+		}
+	}
+	return cachedQ;
+}
+
+/**
  * Запуск серверного таймера для запитання
  */
 function startServerQuestionTimer(
@@ -594,7 +731,10 @@ async function endQuestionRound(
 	await gameRedisService.setRoomState(roomId, { status: "REVIEWING" });
 	await GameSessionsRepository.updateRoomStatus(roomId, "REVIEWING", questionIndex);
 
-	const cachedQ = await gameRedisService.getCachedQuestion(roomId, questionIndex);
+	const room = await GameSessionsRepository.findRoomById(roomId);
+	const cachedQ = room
+		? await getOrCacheQuestion(roomId, room.quizId, questionIndex)
+		: await gameRedisService.getCachedQuestion(roomId, questionIndex);
 	if (!cachedQ) return;
 
 	const answers = await gameRedisService.getAnswersForQuestion(
@@ -604,6 +744,9 @@ async function endQuestionRound(
 	const correctVariantIds = cachedQ.variants
 		.filter((v) => v.isCorrect)
 		.map((v) => v.id);
+	const correctTextAnswers = cachedQ.variants
+		.filter((v) => v.text && v.text.trim().length > 0)
+		.map((v) => v.text!);
 
 	// Розподіл відповідей по варіантах для кругової діаграми
 	const distribution: Record<number, number> = {};
@@ -611,21 +754,54 @@ async function endQuestionRound(
 		distribution[v.id] = 0;
 	}
 	for (const a of Object.values(answers)) {
-		for (const vId of a.variantIds) {
-			distribution[vId] = (distribution[vId] || 0) + 1;
+		if (a.variantIds) {
+			for (const vId of a.variantIds) {
+				distribution[vId] = (distribution[vId] || 0) + 1;
+			}
 		}
 	}
 
 	const participants = await gameRedisService.getParticipants(roomId);
 
-	// Спільна подія завершення запитання
-	ioServer.to(`room:${roomId}`).emit("game:question_ended", {
+	// Детальні відповіді кожного учасника для вчителя (хоста)
+	const participantAnswers: ParticipantRoundAnswerDto[] = participants.map((p) => {
+		const participantAnswer = answers[p.participantId];
+		return {
+			participantId: p.participantId,
+			nickname: p.nickname,
+			isAnswered: !!participantAnswer,
+			variantIds: participantAnswer?.variantIds || [],
+			typedAnswer: participantAnswer?.typedAnswer,
+			timeSpentMs: participantAnswer?.timeSpentMs || 0,
+			isCorrect: participantAnswer?.isCorrect ?? false,
+			scoreEarned: participantAnswer?.scoreEarned ?? 0,
+			totalScore: p.score,
+		};
+	});
+
+	// Подія для хоста з детальними результатами всіх учасників
+	ioServer.to(`room:host:${roomId}`).emit("game:question_ended", {
 		questionIndex,
 		correctVariantIds,
+		correctTextAnswers,
 		answersDistribution: distribution,
 		totalAnswered: Object.keys(answers).length,
 		totalParticipants: participants.length,
+		participantAnswers,
 	});
+
+	// Спільна подія для учнів (виключаючи хоста)
+	ioServer
+		.to(`room:${roomId}`)
+		.except(`room:host:${roomId}`)
+		.emit("game:question_ended", {
+			questionIndex,
+			correctVariantIds,
+			correctTextAnswers,
+			answersDistribution: distribution,
+			totalAnswered: Object.keys(answers).length,
+			totalParticipants: participants.length,
+		});
 
 	// Відправляємо персональні результати кожному учню в його власну кімнату participant:id
 	for (const p of participants) {
@@ -637,6 +813,7 @@ async function endQuestionRound(
 		ioServer.to(`participant:${p.participantId}`).emit("game:question_ended", {
 			questionIndex,
 			correctVariantIds,
+			correctTextAnswers,
 			answersDistribution: distribution,
 			participantResult: {
 				isAnswered: !!participantAnswer,
@@ -644,6 +821,7 @@ async function endQuestionRound(
 				pointsEarned,
 				timeSpentMs,
 				selectedVariantIds: participantAnswer?.variantIds || [],
+				typedAnswer: participantAnswer?.typedAnswer,
 			},
 		});
 	}
@@ -679,30 +857,36 @@ async function finishGameSession(
 
 		for (let i = 0; i < actualTotalQuestions; i++) {
 			const q = questions[i];
+			if (!q) continue;
+
 			const answers = await gameRedisService.getAnswersForQuestion(roomId, i);
 			const ans = answers[p.participantId];
-			if (ans && ans.variantIds && ans.variantIds.length > 0) {
+			const hasAnswer =
+				ans &&
+				((ans.variantIds && ans.variantIds.length > 0) ||
+					(typeof ans.typedAnswer === "string" && ans.typedAnswer.trim().length > 0));
+
+			if (hasAnswer && ans) {
 				totalTime += ans.timeSpentMs;
 				if (ans.isCorrect) totalCorrect++;
 
-				// Зберігаємо окремі відповіді
-				for (const vId of ans.variantIds) {
-					await GameSessionsRepository.saveAnswer({
-						participantId: p.participantId,
-						questionId: q?.id,
-						variantId: vId,
-						timeSpentMs: ans.timeSpentMs,
-						isCorrect: !!ans.isCorrect,
-						isSkipped: false,
-					});
-				}
+				await GameSessionsRepository.saveAnswer({
+					participantId: p.participantId,
+					questionId: q.id,
+					variantIds: ans.variantIds,
+					typedAnswer: ans.typedAnswer,
+					timeSpentMs: ans.timeSpentMs,
+					scoreEarned: ans.scoreEarned ?? 0,
+					isCorrect: !!ans.isCorrect,
+					isSkipped: false,
+				});
 			} else {
 				// Питання пропущено (не було відповіді)
 				await GameSessionsRepository.saveAnswer({
 					participantId: p.participantId,
-					questionId: q?.id,
-					variantId: null,
+					questionId: q.id,
 					timeSpentMs: ans?.timeSpentMs || 0,
+					scoreEarned: 0,
 					isCorrect: false,
 					isSkipped: true,
 				});

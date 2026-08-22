@@ -87,29 +87,41 @@ export function GameHostPage() {
 				/>
 			)}
 
-			{status === 'PROGRESS' && currentQuestion && (
-				<QuestionHostView
-					question={currentQuestion}
-					questionIndex={currentQuestionIndex}
-					totalQuestions={totalQuestions}
-					participants={participants}
-					answeredCount={answeredCount}
-					remainingSeconds={remainingSeconds}
-					onExtendTime={(secs) => extendTime(currentRoomId, secs)}
-					onSkipQuestion={() => endQuestion(currentRoomId)}
-					onKickParticipant={(pId) => kickParticipant(currentRoomId, pId)}
-				/>
+			{status === 'PROGRESS' && (
+				currentQuestion ? (
+					<QuestionHostView
+						question={currentQuestion}
+						questionIndex={currentQuestionIndex}
+						totalQuestions={totalQuestions}
+						participants={participants}
+						answeredCount={answeredCount}
+						remainingSeconds={remainingSeconds}
+						onExtendTime={(secs) => extendTime(currentRoomId, secs)}
+						onSkipQuestion={() => endQuestion(currentRoomId)}
+						onKickParticipant={(pId) => kickParticipant(currentRoomId, pId)}
+					/>
+				) : (
+					<div className={styles['game-main-content']}>
+						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження запитання...</div>
+					</div>
+				)
 			)}
 
-			{status === 'REVIEWING' && currentQuestion && reviewData && (
-				<ReviewHostView
-					question={currentQuestion}
-					reviewData={reviewData}
-					participants={participants}
-					remainingSeconds={remainingSeconds}
-					onExtendTime={(secs) => extendTime(currentRoomId, secs)}
-					onNextQuestion={() => nextQuestion(currentRoomId)}
-				/>
+			{status === 'REVIEWING' && (
+				currentQuestion && reviewData ? (
+					<ReviewHostView
+						question={currentQuestion}
+						reviewData={reviewData}
+						participants={participants}
+						remainingSeconds={remainingSeconds}
+						onExtendTime={(secs) => extendTime(currentRoomId, secs)}
+						onNextQuestion={() => nextQuestion(currentRoomId)}
+					/>
+				) : (
+					<div className={styles['game-main-content']}>
+						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження огляду результатів...</div>
+					</div>
+				)
 			)}
 
 			{status === 'FINISHED' && (

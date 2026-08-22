@@ -24,7 +24,8 @@ export interface ClientToServerEvents {
 	"participant:submit_answer": (data: {
 		roomId: number;
 		questionIndex: number;
-		variantIds: number[];
+		variantIds?: number[];
+		typedAnswer?: string;
 	}) => void;
 }
 

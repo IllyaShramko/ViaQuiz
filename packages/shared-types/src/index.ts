@@ -31,6 +31,7 @@ export type {
 	QuestionVariantDto,
 	GameQuestionDto,
 	ParticipantRoundResultDto,
+	ParticipantRoundAnswerDto,
 	GameReviewDataDto,
 	GameSyncStateDto,
 	GameFinishedDto,

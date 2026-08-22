@@ -48,9 +48,11 @@ export interface GameSessionsRepositoryContract {
 	deleteParticipant(participantId: number): Promise<Participant>;
 	saveAnswer(data: {
 		participantId: number;
-		questionId?: number | null | undefined;
-		variantId?: number | null | undefined;
+		questionId: number;
+		variantIds?: number[] | undefined;
+		typedAnswer?: string | null | undefined;
 		timeSpentMs: number;
+		scoreEarned?: number | undefined;
 		isCorrect: boolean;
 		isSkipped?: boolean | undefined;
 	}): Promise<Answer>;

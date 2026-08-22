@@ -7,21 +7,14 @@ import {
 } from "../../errors/customErrors";
 import { GameSessionsRepository } from "./game-sessions.repository";
 import { gameRedisService } from "./game-redis.service";
-import type { Room, Participant } from "../../generated/prisma";
+import type { GameSessionsServiceContract } from "./types/game-sessions.contracts";
 import type {
-	GameSessionsServiceContract,
-	FullQuizSession,
-} from "./types/game-sessions.contracts";
-import type {
-	CreateRoomDto,
-	JoinByCodeDto,
 	GameJwtPayload,
 	QuestionReportDto,
-	StudentResultReportDto,
 } from "./types/game-sessions.types";
 
 export const GameSessionsService: GameSessionsServiceContract = {
-	async createRoom(hostId: number, data: CreateRoomDto): Promise<Room> {
+	async createRoom(hostId, data) {
 		const quiz = await GameSessionsRepository.findQuizWithQuestions(data.quizId);
 		if (!quiz) {
 			throw new NotFoundError("Quiz not found");
@@ -67,7 +60,7 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		return room;
 	},
 
-	async validateJoinCode(joinCode: string): Promise<Room> {
+	async validateJoinCode(joinCode) {
 		const room = await GameSessionsRepository.findRoomByJoinCode(joinCode);
 		if (!room) {
 			throw new NotFoundError("Room with this PIN code was not found");
@@ -80,14 +73,7 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		return room;
 	},
 
-	async joinRoom(
-		data: JoinByCodeDto,
-		currentUserId?: number,
-	): Promise<{
-		participant: Participant;
-		token: string;
-		room: Room;
-	}> {
+	async joinRoom(data, currentUserId) {
 		const room = await this.validateJoinCode(data.joinCode);
 
 		let nickname = data.nickname?.trim() || "Participant";
@@ -183,7 +169,7 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		return { participant, token, room };
 	},
 
-	async getRoomByUuid(uuid: string, currentUserId?: number): Promise<Room> {
+	async getRoomByUuid(uuid, currentUserId) {
 		const room = await GameSessionsRepository.findRoomByUuid(uuid);
 		if (!room) {
 			throw new NotFoundError("Game room not found");
@@ -192,7 +178,7 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		return room;
 	},
 
-	async getQuizSessionData(quizId: number): Promise<FullQuizSession> {
+	async getQuizSessionData(quizId) {
 		const quiz = await GameSessionsRepository.findQuizWithQuestions(quizId);
 		if (!quiz) {
 			throw new NotFoundError("Quiz not found");
@@ -200,11 +186,11 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		return quiz;
 	},
 
-	generateGameToken(payload: GameJwtPayload): string {
+	generateGameToken(payload) {
 		return jwt.sign(payload, env.JWT_SECRET, { expiresIn: "12h" });
 	},
 
-	verifyGameToken(token: string): GameJwtPayload {
+	verifyGameToken(token) {
 		try {
 			return jwt.verify(token, env.JWT_SECRET) as GameJwtPayload;
 		} catch (error) {
@@ -212,7 +198,7 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		}
 	},
 
-	async getResultReport(uuid: string): Promise<StudentResultReportDto> {
+	async getResultReport(uuid) {
 		const result = await GameSessionsRepository.findResultByUuid(uuid);
 		if (!result) {
 			throw new NotFoundError("Результат тесту не знайдено");
@@ -225,11 +211,11 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		const student = participant.student;
 
 		const authorName = author
-			? `${author.lastName || ""} ${author.firstName || ""}`.trim() || "Шрамко Ілля"
-			: "Шрамко Ілля";
+			? `${author.lastName || ""} ${author.firstName || ""}`.trim() || "NickName"
+			: "NickName";
 		const teacherName = host
-			? `${host.lastName || ""} ${host.firstName || ""}`.trim() || "Шрамко Ілля"
-			: "Шрамко Ілля";
+			? `${host.lastName || ""} ${host.firstName || ""}`.trim() || "NickName"
+			: "NickName";
 
 		const participantName = student
 			? `${student.lastName || ""} ${student.firstName || ""}`.trim()
@@ -244,20 +230,11 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		let totalTimeSpentMs = 0;
 
 		const questionReports: QuestionReportDto[] = questions.map((q: any, index: number) => {
-			const qAnswers = answers.filter(
-				(a: any) =>
-					a.questionId === q.id ||
-					(a.variantId && q.variants.some((v: any) => v.id === a.variantId)),
-			);
+			const answer = answers.find((a: any) => a.questionId === q.id);
 
-			const isSkipped =
-				qAnswers.length === 0 || qAnswers.some((a: any) => a.isSkipped);
-			const isCorrect = !isSkipped && qAnswers.some((a: any) => a.isCorrect);
-
-			let timeSpentMs = 0;
-			if (qAnswers.length > 0) {
-				timeSpentMs = qAnswers[0].timeSpentMs || 0;
-			}
+			const isSkipped = !answer || answer.isSkipped;
+			const isCorrect = !isSkipped && !!answer.isCorrect;
+			const timeSpentMs = answer ? answer.timeSpentMs || 0 : 0;
 			totalTimeSpentMs += timeSpentMs;
 
 			let status: "CORRECT" | "INCORRECT" | "SKIPPED" = "SKIPPED";
@@ -273,25 +250,30 @@ export const GameSessionsService: GameSessionsServiceContract = {
 			}
 
 			let studentAnswer = "Пропущено";
-			if (!isSkipped && qAnswers.length > 0) {
-				const chosenVariants = q.variants.filter((v: any) =>
-					qAnswers.some((a: any) => a.variantId === v.id),
-				);
-				if (chosenVariants.length > 0) {
-					studentAnswer = chosenVariants
-						.map((v: any) => v.text || "—")
+			if (!isSkipped && answer) {
+				if (
+					answer.typedAnswer !== null &&
+					answer.typedAnswer !== undefined &&
+					answer.typedAnswer.trim() !== ""
+				) {
+					studentAnswer = answer.typedAnswer;
+				} else if (answer.variants && answer.variants.length > 0) {
+					studentAnswer = answer.variants
+						.map((av: any) => av.variant?.text || "—")
 						.join(", ");
 				}
 			}
 
-			const correctVariants = q.variants.filter((v: any) => v.isCorrect);
+			const correctVariants = (q.variants || []).filter((v: any) => v.isCorrect);
 			const correctAnswer =
 				correctVariants.length > 0
-					? correctVariants.map((v: any) => v.text || "—").join(", ")
+					? correctVariants
+							.map((v: any) => v.text || "—")
+							.join(q.type === "TYPE_ANSWER_V1" ? " / " : ", ")
 					: "—";
 
-			const points = q.points || 1;
-			const earnedPoints = isCorrect ? points : 0;
+			const points = q.points || 1000;
+			const earnedPoints = isCorrect ? (answer?.scoreEarned || points) : 0;
 			const timeSpentSec = Number((timeSpentMs / 1000).toFixed(2));
 
 			return {

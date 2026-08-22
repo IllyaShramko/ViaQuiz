@@ -1,23 +1,11 @@
 import { PRISMA_CLIENT } from "../../config/database";
 import type {
-	Room,
-	Participant,
-	Answer,
-	Result,
-	Student,
-} from "../../generated/prisma";
-import type {
 	GameSessionsRepositoryContract,
 	FullQuizSession,
 } from "./types/game-sessions.contracts";
-import type { CreateRoomDto, RoomStatus } from "./types/game-sessions.types";
 
 export const GameSessionsRepository: GameSessionsRepositoryContract = {
-	async createRoom(
-		hostId: number,
-		data: CreateRoomDto,
-		joinCode: string,
-	): Promise<Room> {
+	async createRoom(hostId, data, joinCode) {
 		return PRISMA_CLIENT.room.create({
 			data: {
 				hostId,
@@ -30,7 +18,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findRoomById(id: number): Promise<Room | null> {
+	async findRoomById(id) {
 		return PRISMA_CLIENT.room.findUnique({
 			where: { id },
 			include: {
@@ -41,7 +29,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findRoomByUuid(uuid: string): Promise<Room | null> {
+	async findRoomByUuid(uuid) {
 		return PRISMA_CLIENT.room.findUnique({
 			where: { uuid },
 			include: {
@@ -52,7 +40,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findRoomByJoinCode(joinCode: string): Promise<Room | null> {
+	async findRoomByJoinCode(joinCode) {
 		return PRISMA_CLIENT.room.findUnique({
 			where: { joinCode },
 			include: {
@@ -63,11 +51,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async updateRoomStatus(
-		id: number,
-		status: RoomStatus,
-		currentQuestionIndex?: number,
-	): Promise<Room> {
+	async updateRoomStatus(id, status, currentQuestionIndex) {
 		return PRISMA_CLIENT.room.update({
 			where: { id },
 			data: {
@@ -79,7 +63,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findQuizWithQuestions(quizId: number): Promise<FullQuizSession | null> {
+	async findQuizWithQuestions(quizId) {
 		return PRISMA_CLIENT.quiz.findUnique({
 			where: { id: quizId },
 			include: {
@@ -95,16 +79,13 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		}) as Promise<FullQuizSession | null>;
 	},
 
-	async findStudentById(studentId: number): Promise<Student | null> {
+	async findStudentById(studentId) {
 		return PRISMA_CLIENT.student.findUnique({
 			where: { id: studentId },
 		});
 	},
 
-	async isStudentEnrolledInCourse(
-		studentId: number,
-		courseId: number,
-	): Promise<boolean> {
+	async isStudentEnrolledInCourse(studentId, courseId) {
 		const course = await PRISMA_CLIENT.course.findFirst({
 			where: {
 				id: courseId,
@@ -116,11 +97,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		return !!course;
 	},
 
-	async createParticipant(data: {
-		roomId: number;
-		nickname: string;
-		studentId?: number | null;
-	}): Promise<Participant> {
+	async createParticipant(data) {
 		return PRISMA_CLIENT.participant.create({
 			data: {
 				roomId: data.roomId,
@@ -133,7 +110,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findParticipantById(id: number): Promise<Participant | null> {
+	async findParticipantById(id) {
 		return PRISMA_CLIENT.participant.findUnique({
 			where: { id },
 			include: {
@@ -143,10 +120,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findParticipantByRoomAndStudent(
-		roomId: number,
-		studentId: number,
-	): Promise<Participant | null> {
+	async findParticipantByRoomAndStudent(roomId, studentId) {
 		return PRISMA_CLIENT.participant.findUnique({
 			where: {
 				roomId_studentId: {
@@ -157,24 +131,21 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findParticipantsByRoomId(roomId: number): Promise<Participant[]> {
+	async findParticipantsByRoomId(roomId) {
 		return PRISMA_CLIENT.participant.findMany({
 			where: { roomId, isBanned: false },
 			orderBy: { score: "desc" },
 		});
 	},
 
-	async updateParticipantConnection(
-		participantId: number,
-		isConnected: boolean,
-	): Promise<Participant> {
+	async updateParticipantConnection(participantId, isConnected) {
 		return PRISMA_CLIENT.participant.update({
 			where: { id: participantId },
 			data: { isConnected },
 		});
 	},
 
-	async banParticipant(participantId: number): Promise<Participant> {
+	async banParticipant(participantId) {
 		return PRISMA_CLIENT.participant.update({
 			where: { id: participantId },
 			data: {
@@ -184,39 +155,59 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async deleteParticipant(participantId: number): Promise<Participant> {
+	async deleteParticipant(participantId) {
 		return PRISMA_CLIENT.participant.delete({
 			where: { id: participantId },
 		});
 	},
 
-	async saveAnswer(data: {
-		participantId: number;
-		questionId?: number | null | undefined;
-		variantId?: number | null | undefined;
-		timeSpentMs: number;
-		isCorrect: boolean;
-		isSkipped?: boolean | undefined;
-	}): Promise<Answer> {
-		return PRISMA_CLIENT.answer.create({
-			data: {
+	async saveAnswer(data) {
+		return PRISMA_CLIENT.answer.upsert({
+			where: {
+				participantId_questionId: {
+					participantId: data.participantId,
+					questionId: data.questionId,
+				},
+			},
+			create: {
 				participantId: data.participantId,
-				questionId: data.questionId ?? null,
-				variantId: data.variantId ?? null,
+				questionId: data.questionId,
+				typedAnswer: data.typedAnswer ?? null,
 				timeSpentMs: data.timeSpentMs,
+				scoreEarned: data.scoreEarned ?? 0,
 				isCorrect: data.isCorrect,
 				isSkipped: data.isSkipped ?? false,
+				...(data.variantIds && data.variantIds.length > 0
+					? {
+							variants: {
+								create: data.variantIds.map((vId) => ({
+									variantId: vId,
+								})),
+							},
+					  }
+					: {}),
+			},
+			update: {
+				typedAnswer: data.typedAnswer ?? null,
+				timeSpentMs: data.timeSpentMs,
+				scoreEarned: data.scoreEarned ?? 0,
+				isCorrect: data.isCorrect,
+				isSkipped: data.isSkipped ?? false,
+				variants: {
+					deleteMany: {},
+					...(data.variantIds && data.variantIds.length > 0
+						? {
+								create: data.variantIds.map((vId) => ({
+									variantId: vId,
+								})),
+						  }
+						: {}),
+				},
 			},
 		});
 	},
 
-	async saveResult(data: {
-		roomId: number;
-		participantId: number;
-		score: number;
-		correctAnswersCount: number;
-		totalQuestionsCount: number;
-	}): Promise<Result> {
+	async saveResult(data) {
 		return PRISMA_CLIENT.result.upsert({
 			where: { participantId: data.participantId },
 			create: {
@@ -234,7 +225,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
-	async findResultByUuid(uuid: string): Promise<any | null> {
+	async findResultByUuid(uuid) {
 		return PRISMA_CLIENT.result.findUnique({
 			where: { uuid },
 			include: {
@@ -285,7 +276,11 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 						},
 						answers: {
 							include: {
-								variant: true,
+								variants: {
+									include: {
+										variant: true,
+									},
+								},
 							},
 						},
 					},

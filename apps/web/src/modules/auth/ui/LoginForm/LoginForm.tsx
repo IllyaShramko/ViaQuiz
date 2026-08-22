@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { useLoginMutation } from '../../api/authApi';
 import { useStudentLoginMutation } from '../../../students/api/studentsApi';
 import { useUserContext } from '../../context';
+import { getSafeRedirectUrl } from '../../utils';
 import { PasswordInput } from './PasswordInput';
 import styles from '../Auth.module.css';
 
@@ -16,7 +17,7 @@ export interface LoginFormProps {
 export function LoginForm({ onSuccess, onError }: LoginFormProps) {
   const { t } = useLocale();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { login: setAuthContext } = useUserContext();
   const [authRole, setAuthRole] = useState<'teacher' | 'student'>('teacher');
   const [serverError, setServerError] = useState<string | null>(null);
@@ -42,14 +43,8 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        const fromState = (location.state as any)?.from;
-        let from = '/dashboard';
-        if (typeof fromState === 'string') {
-          from = fromState;
-        } else if (fromState?.pathname) {
-          from = `${fromState.pathname}${fromState.search || ''}${fromState.hash || ''}`;
-        }
-        navigate(from, { replace: true });
+        const targetUrl = getSafeRedirectUrl(searchParams, '/dashboard');
+        navigate(targetUrl, { replace: true });
       }
     } catch (err: any) {
       let rawMessage =
@@ -104,7 +99,8 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate('/student/dashboard', { replace: true });
+        const targetUrl = getSafeRedirectUrl(searchParams, '/student/dashboard');
+        navigate(targetUrl, { replace: true });
       }
     } catch (err: any) {
       let rawMessage =

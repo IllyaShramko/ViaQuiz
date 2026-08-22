@@ -21,7 +21,7 @@ export const getGameSocket = (explicitToken?: string, roomUuid?: string): Socket
 	// 4. Global game token fallback
 	const token = explicitToken || roomToken || userToken || globalGameToken || '';
 
-	if (socket && socket.connected && currentSocketToken === token) {
+	if (socket && currentSocketToken === token) {
 		return socket;
 	}
 

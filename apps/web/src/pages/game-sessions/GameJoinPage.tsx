@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
 	useValidateJoinCodeMutation,
 	useJoinGameRoomMutation,
 	GAME_TOKEN_STORAGE_KEY,
 } from '../../modules/game-session';
+import { createLoginRedirectUrl } from '../../modules/auth';
 import { getAuthToken } from '../../shared/api/headers';
 import styles from '../../modules/game-session/ui/GameSession.module.css';
 
@@ -22,55 +23,69 @@ export function GameJoinPage() {
 	const [validateCode, { isLoading: isValidating }] = useValidateJoinCodeMutation();
 	const [joinRoom, { isLoading: isJoining }] = useJoinGameRoomMutation();
 
+	const autoProcessedCodeRef = useRef<string | null>(null);
+
+	const processJoinCode = useCallback(
+		async (codeToProcess: string) => {
+			const cleanCode = codeToProcess.trim();
+			if (cleanCode.length < 6) {
+				setErrorMessage('Введіть 6-значний PIN код');
+				return;
+			}
+
+			setErrorMessage(null);
+			try {
+				const res = await validateCode({ joinCode: cleanCode }).unwrap();
+
+				const isLoggedIn = !!getAuthToken();
+
+				// Якщо користувач уже авторизований (учень/вчитель) — одразу приєднуємо!
+				if (isLoggedIn) {
+					const joinRes = await joinRoom({ joinCode: cleanCode }).unwrap();
+					if (joinRes.token) {
+						sessionStorage.setItem(`viaquiz_game_token_${joinRes.room.uuid}`, joinRes.token);
+						sessionStorage.setItem(GAME_TOKEN_STORAGE_KEY, joinRes.token);
+					}
+					navigate(`/game/play/${joinRes.room.uuid}`);
+					return;
+				}
+
+				// Якщо не авторизований, але кімната вимагає акаунт класу
+				if (res.requiresAuth) {
+					setRequiresAuth(true);
+					setErrorMessage(
+						'Ця вікторина призначена виключно для учнів класу. Будь ласка, увійдіть у свій акаунт.',
+					);
+					return;
+				}
+
+				// Якщо відкрита вікторина для гостей — переходимо на крок 2 (введення імені)
+				setStep(2);
+			} catch (err: unknown) {
+				const error = err as { data?: { message?: string } };
+				setErrorMessage(
+					error.data?.message || 'Невірний PIN-код або сесія вже завершена.',
+				);
+			}
+		},
+		[validateCode, joinRoom, navigate],
+	);
+
 	useEffect(() => {
 		if (codeFromUrl) {
 			setJoinCode(codeFromUrl);
+			const clean = codeFromUrl.trim();
+			if (clean.length === 6 && autoProcessedCodeRef.current !== clean) {
+				autoProcessedCodeRef.current = clean;
+				processJoinCode(clean);
+			}
 		}
-	}, [codeFromUrl]);
+	}, [codeFromUrl, processJoinCode]);
 
-	// Step 1: Validate PIN code
+	// Step 1: Validate PIN code manually
 	const handleStepOneSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		const cleanCode = joinCode.trim();
-		if (cleanCode.length < 6) {
-			setErrorMessage('Введіть 6-значний PIN код');
-			return;
-		}
-
-		setErrorMessage(null);
-		try {
-			const res = await validateCode({ joinCode: cleanCode }).unwrap();
-
-			const isLoggedIn = !!getAuthToken();
-
-			// Якщо користувач уже авторизований (учень/вчитель) — одразу приєднуємо!
-			if (isLoggedIn) {
-				const joinRes = await joinRoom({ joinCode: cleanCode }).unwrap();
-				if (joinRes.token) {
-					sessionStorage.setItem(`viaquiz_game_token_${joinRes.room.uuid}`, joinRes.token);
-					sessionStorage.setItem(GAME_TOKEN_STORAGE_KEY, joinRes.token);
-				}
-				navigate(`/game/play/${joinRes.room.uuid}`);
-				return;
-			}
-
-			// Якщо не авторизований, але кімната вимагає акаунт класу
-			if (res.requiresAuth) {
-				setRequiresAuth(true);
-				setErrorMessage(
-					'Ця вікторина призначена виключно для учнів класу. Будь ласка, увійдіть у свій акаунт.',
-				);
-				return;
-			}
-
-			// Якщо відкрита вікторина для гостей — переходимо на крок 2 (введення імені)
-			setStep(2);
-		} catch (err: unknown) {
-			const error = err as { data?: { message?: string } };
-			setErrorMessage(
-				error.data?.message || 'Невірний PIN-код або сесія вже завершена.',
-			);
-		}
+		await processJoinCode(joinCode);
 	};
 
 	// Step 2: Guest joins with Nickname
@@ -150,7 +165,7 @@ export function GameJoinPage() {
 
 						{requiresAuth ? (
 							<Link
-								to={`/login?redirect=/join?code=${joinCode}`}
+								to={createLoginRedirectUrl(`/join?code=${joinCode}`)}
 								className={styles['lobby-start-btn']}
 								style={{ width: '100%', textDecoration: 'none' }}
 							>
