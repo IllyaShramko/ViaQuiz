@@ -17,5 +17,8 @@ export {
   StudentHistoryPage,
   StudentCoursesPage,
   StudentProfilePage,
+  StudentResultReportPage,
 } from './student-main';
+export { GameJoinPage, GameHostPage, GamePlayPage } from './game-sessions';
 export { NotFoundPage } from './NotFoundPage/NotFoundPage';
+

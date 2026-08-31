@@ -44,7 +44,8 @@ export function UserContextProvider({ children }: UserContextProviderProps) {
 
   const {
     data: userData,
-    isLoading: isFetchingUser,
+    isFetching: isFetchingUser,
+    isError,
     refetch,
   } = useGetMeQuery(undefined, {
     skip: !token,
@@ -53,10 +54,14 @@ export function UserContextProvider({ children }: UserContextProviderProps) {
   useEffect(() => {
     if (userData) {
       setUserState(userData);
+    } else if (isError) {
+      removeAuthToken();
+      setTokenState(null);
+      setUserState(null);
     } else if (!token) {
       setUserState(null);
     }
-  }, [userData, token]);
+  }, [userData, isError, token]);
 
   const setToken = useCallback((newToken: string | null) => {
     setTokenState(newToken);
@@ -90,11 +95,14 @@ export function UserContextProvider({ children }: UserContextProviderProps) {
     }
   }, [token, refetch]);
 
+  const currentUser = user ?? userData ?? null;
+  const isInitializing = Boolean(token && !currentUser && !isError);
+
   const value: UserContextContract = {
-    user,
+    user: currentUser,
     token,
-    isAuthenticated: Boolean(token && user),
-    isLoading: Boolean(token && isFetchingUser && !user),
+    isAuthenticated: Boolean(token && currentUser),
+    isLoading: isInitializing || Boolean(token && isFetchingUser && !currentUser),
     login,
     logout,
     setUser,
@@ -104,3 +112,4 @@ export function UserContextProvider({ children }: UserContextProviderProps) {
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
+

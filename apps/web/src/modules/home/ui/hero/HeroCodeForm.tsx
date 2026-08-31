@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import styles from '../Home.module.css';
 
@@ -8,18 +9,23 @@ export interface HeroCodeFormProps {
 
 export function HeroCodeForm({ onSubmitCode }: HeroCodeFormProps) {
   const { t } = useLocale();
+  const navigate = useNavigate();
   const [code, setCode] = useState('');
 
   const handleCodeSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (onSubmitCode) {
+      onSubmitCode(code.trim());
+      return;
+    }
+
     if (code.trim()) {
-      if (onSubmitCode) {
-        onSubmitCode(code.trim());
-      } else {
-        alert(`${t('hero.enterCode')}: ${code.trim()}`);
-      }
+      navigate(`/join?code=${encodeURIComponent(code.trim())}`);
+    } else {
+      navigate('/join');
     }
   };
+
 
   return (
     <form id="enter-code" className={styles['hero__code-form']} onSubmit={handleCodeSubmit}>

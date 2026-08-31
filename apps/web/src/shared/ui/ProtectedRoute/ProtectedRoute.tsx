@@ -2,8 +2,9 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
 
 export function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useUserContext();
+  const { isAuthenticated, isLoading, token } = useUserContext();
   const location = useLocation();
+  console.log(isAuthenticated, isLoading, token)
 
   if (isLoading) {
     return (
@@ -24,7 +25,7 @@ export function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

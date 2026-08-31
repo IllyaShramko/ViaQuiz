@@ -1,3 +1,5 @@
+@import './fonts.css';
+
 :root {
   /* Color Palette (Dark Theme) */
   --color-bg: #0a0a0f;
@@ -96,6 +98,7 @@ button {
   font: inherit;
   border: none;
   background: none;
+  color: inherit;
 }
 
 input, textarea, select {

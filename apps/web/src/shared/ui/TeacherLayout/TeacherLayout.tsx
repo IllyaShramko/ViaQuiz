@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
+import { removeAuthToken } from '../../api/headers';
 import styles from './TeacherLayout.module.css';
 
 export interface TeacherLayoutProps {
@@ -8,7 +9,7 @@ export interface TeacherLayoutProps {
 }
 
 export function TeacherLayout() {
-  const { user, logout } = useUserContext();
+  const { user } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,8 +22,8 @@ export function TeacherLayout() {
   };
 
   const handleLogout = () => {
-    logout();
-    navigate('/', { replace: true });
+    removeAuthToken();
+    window.location.replace('/');
   };
 
   const isProfile = location.pathname.includes('/profile');
@@ -153,7 +154,7 @@ export function TeacherLayout() {
               <span>Створити</span>
             </button>
 
-            <Link to="/#enter-code" className={styles['btn-teacher-code']}>
+            <Link to="/join" className={styles['btn-teacher-code']}>
               Введіть код
             </Link>
 

@@ -44,5 +44,5 @@ export {
   type StepProfileProps,
   type StepVerificationProps,
 } from './ui';
-export { getUserDashboardPath } from './utils';
+export { getUserDashboardPath, getSafeRedirectUrl, createLoginRedirectUrl } from './utils';
 

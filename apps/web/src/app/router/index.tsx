@@ -19,6 +19,10 @@ import {
   StudentHistoryPage,
   StudentCoursesPage,
   StudentProfilePage,
+  StudentResultReportPage,
+  GameJoinPage,
+  GameHostPage,
+  GamePlayPage,
   NotFoundPage,
 } from '../../pages';
 
@@ -36,6 +40,12 @@ export const router = createBrowserRouter([
       { path: '/register', element: <RegisterPage /> },
     ],
   },
+  // Game session routes (Player & Guest join)
+  { path: '/join', element: <GameJoinPage /> },
+  { path: '/game/play/:roomUuid', element: <GamePlayPage /> },
+  // Student Result Report route
+  { path: '/student/results/:uuid', element: <StudentResultReportPage /> },
+
   {
     element: <ProtectedRoute />,
     children: [
@@ -65,6 +75,8 @@ export const router = createBrowserRouter([
           { path: '/student/profile', element: <StudentProfilePage /> },
         ],
       },
+      // Teacher Host Live Session
+      { path: '/game/host/:roomUuid', element: <GameHostPage /> },
       // Drafts Hub — select or create drafts (separate layout)
       { path: '/quiz/drafts', element: <QuizDraftsPage /> },
       // Quiz Editor — separate layout (no TeacherLayout sidebar/topbar)

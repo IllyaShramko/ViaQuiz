@@ -22,7 +22,7 @@ export function NotFoundHeader({ homePath }: NotFoundHeaderProps) {
         </Link>
 
         <div className={styles['not-found-header__actions']}>
-          <Link to="/#enter-code" className={`${styles['not-found-nav-btn']} ${styles['not-found-nav-btn--code']}`}>
+          <Link to="/join" className={`${styles['not-found-nav-btn']} ${styles['not-found-nav-btn--code']}`}>
             Код
           </Link>
           <Link to={homePath} className={`${styles['not-found-nav-btn']} ${styles['not-found-nav-btn--home']}`}>

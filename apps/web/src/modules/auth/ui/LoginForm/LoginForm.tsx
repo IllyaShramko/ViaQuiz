@@ -1,25 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { useLoginMutation } from '../../api/authApi';
 import { useStudentLoginMutation } from '../../../students/api/studentsApi';
 import { useUserContext } from '../../context';
+import { getSafeRedirectUrl } from '../../utils';
 import { PasswordInput } from './PasswordInput';
 import styles from '../Auth.module.css';
 
 export interface LoginFormProps {
   onSuccess?: () => void;
   onError?: (error: string) => void;
+  defaultRole?: 'teacher' | 'student';
 }
 
-export function LoginForm({ onSuccess, onError }: LoginFormProps) {
+export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
   const { t } = useLocale();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { login: setAuthContext } = useUserContext();
-  const [authRole, setAuthRole] = useState<'teacher' | 'student'>('teacher');
+
+  const roleParam = searchParams.get('role') || searchParams.get('tab') || searchParams.get('type');
+  const redirectParam = searchParams.get('redirect') || searchParams.get('from') || '';
+  const shouldDefaultToStudent =
+    defaultRole === 'student' ||
+    roleParam === 'student' ||
+    (!roleParam && !defaultRole && (redirectParam.startsWith('/join') || redirectParam.startsWith('/student')));
+
+  const [authRole, setAuthRole] = useState<'teacher' | 'student'>(() => {
+    if (roleParam === 'teacher') return 'teacher';
+    if (shouldDefaultToStudent) return 'student';
+    return defaultRole || 'teacher';
+  });
+
   const [serverError, setServerError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (roleParam === 'student' || roleParam === 'teacher') {
+      setAuthRole(roleParam);
+    }
+  }, [roleParam]);
 
   const [loginTeacher, { isLoading: isTeacherLoading }] = useLoginMutation();
   const [loginStudent, { isLoading: isStudentLoading }] = useStudentLoginMutation();
@@ -42,8 +63,8 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        const from = (location.state as any)?.from?.pathname || '/dashboard';
-        navigate(from, { replace: true });
+        const targetUrl = getSafeRedirectUrl(searchParams, '/dashboard');
+        navigate(targetUrl, { replace: true });
       }
     } catch (err: any) {
       let rawMessage =
@@ -98,7 +119,8 @@ export function LoginForm({ onSuccess, onError }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate('/student/dashboard', { replace: true });
+        const targetUrl = getSafeRedirectUrl(searchParams, '/student/dashboard');
+        navigate(targetUrl, { replace: true });
       }
     } catch (err: any) {
       let rawMessage =

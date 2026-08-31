@@ -21,10 +21,13 @@ export {
   QuizQuestionsList,
   QuizDetailsSkeleton,
   QuizDetailsError,
+  QuizLaunchCard,
   DEFAULT_QUIZ_HERO_GRADIENT,
   type QuizBackButtonProps,
   type QuizDetailsHeroProps,
   type QuizQuestionCardProps,
   type QuizQuestionsListProps,
   type QuizDetailsErrorProps,
+  type QuizLaunchCardProps,
 } from './ui';
+

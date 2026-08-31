@@ -21,3 +21,20 @@ export type {
 	StudentAnalyticsDto,
 	StudentDashboardDto,
 } from "./classroom";
+export type {
+	RoomStatus,
+	CreateRoomDto,
+	JoinByCodeDto,
+	GameJwtPayload,
+	SubmitAnswerDto,
+	ParticipantDto,
+	QuestionVariantDto,
+	GameQuestionDto,
+	ParticipantRoundResultDto,
+	ParticipantRoundAnswerDto,
+	GameReviewDataDto,
+	GameSyncStateDto,
+	GameFinishedDto,
+	QuestionReportDto,
+	StudentResultReportDto,
+} from "./game-session";

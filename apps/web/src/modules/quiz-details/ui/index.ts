@@ -27,3 +27,9 @@ export {
   QuizDetailsError,
   type QuizDetailsErrorProps,
 } from './QuizDetailsError';
+
+export {
+  QuizLaunchCard,
+  type QuizLaunchCardProps,
+} from './QuizLaunchCard/QuizLaunchCard';
+

@@ -11,6 +11,7 @@ model Question {
   quizId   Int
   quiz     Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
   variants Variant[]
+  answers  Answer[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
