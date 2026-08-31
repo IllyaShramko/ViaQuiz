@@ -20,7 +20,7 @@ export function QuizQuestionCard({ question, index }: QuizQuestionCardProps) {
   return (
     <article className={styles['quiz-question-card']}>
       <div className={styles['quiz-question-card__header']}>
-        <span className={styles['quiz-question-number']}>#{index + 1}</span>
+        <span className={styles['quiz-question-number']}>№{index + 1}</span>
         <h4 className={styles['quiz-question-title']}>
           {questionText || `Запитання ${index + 1}`}
         </h4>

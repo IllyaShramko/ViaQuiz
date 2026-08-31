@@ -137,6 +137,7 @@ export const gameSessionsSocketController: SocketController = {
 				let alreadyAnswered = false;
 				let reviewData: unknown = null;
 				let answeredCount = 0;
+				let answeredParticipantIds: number[] = [];
 				let finishedData: unknown = null;
 
 				if (roomState && roomState.status === "PROGRESS") {
@@ -146,6 +147,10 @@ export const gameSessionsSocketController: SocketController = {
 						roomState.currentQuestionIndex,
 					);
 					if (cachedQ) {
+						const isTyped =
+							cachedQ.type === "TYPE_ANSWER_V1" ||
+							cachedQ.type === "TYPE_ANSWER_V2";
+
 						currentQuestionSanitized = {
 							questionId: cachedQ.questionId,
 							questionIndex: roomState.currentQuestionIndex,
@@ -158,7 +163,7 @@ export const gameSessionsSocketController: SocketController = {
 							startedAt: roomState.questionStartedAt || Date.now(),
 							variants: cachedQ.variants.map((v) => ({
 								id: v.id,
-								text: v.text,
+								text: !isTeacher && isTyped ? "" : v.text,
 								media: v.media,
 								order: v.order,
 							})),
@@ -169,6 +174,7 @@ export const gameSessionsSocketController: SocketController = {
 							roomState.currentQuestionIndex,
 						);
 						answeredCount = Object.keys(answers).length;
+						answeredParticipantIds = Object.keys(answers).map(Number);
 
 						if (participantId) {
 							alreadyAnswered = !!answers[participantId];
@@ -204,6 +210,7 @@ export const gameSessionsSocketController: SocketController = {
 							roomState.currentQuestionIndex,
 						);
 						answeredCount = Object.keys(answers).length;
+						answeredParticipantIds = Object.keys(answers).map(Number);
 
 						const correctVariantIds = cachedQ.variants
 							.filter((v) => v.isCorrect)
@@ -293,6 +300,7 @@ export const gameSessionsSocketController: SocketController = {
 					reviewData,
 					finishedData,
 					answeredCount,
+					answeredParticipantIds,
 					resultUuid,
 					isHost: isTeacher,
 				});
@@ -354,8 +362,11 @@ export const gameSessionsSocketController: SocketController = {
 				});
 				await GameSessionsRepository.updateRoomStatus(roomId, "PROGRESS", 0);
 
-				// Відправляємо питання всім БЕЗ isCorrect
-				ioServer.to(`room:${roomId}`).emit("game:question_started", {
+				const isTyped0 =
+					q0.type === "TYPE_ANSWER_V1" || q0.type === "TYPE_ANSWER_V2";
+
+				// Відправляємо питання хосту (з повними варіантами)
+				ioServer.to(`room:host:${roomId}`).emit("game:question_started", {
 					questionIndex: 0,
 					totalQuestions: quiz.questions.length,
 					text: q0.text,
@@ -371,6 +382,27 @@ export const gameSessionsSocketController: SocketController = {
 						order: v.order,
 					})),
 				});
+
+				// Відправляємо питання учням (санітизовано для текстових відповідей)
+				ioServer
+					.to(`room:${roomId}`)
+					.except(`room:host:${roomId}`)
+					.emit("game:question_started", {
+						questionIndex: 0,
+						totalQuestions: quiz.questions.length,
+						text: q0.text,
+						media: q0.media,
+						type: q0.type,
+						points: q0.points,
+						timeLimit: timeLimitMs,
+						startedAt: now,
+						variants: q0.variants.map((v) => ({
+							id: v.id,
+							text: isTyped0 ? "" : v.text,
+							media: v.media,
+							order: v.order,
+						})),
+					});
 
 				// Запускаємо серверний таймер
 				startServerQuestionTimer(ioServer, roomId, 0, timeLimitMs);
@@ -431,7 +463,11 @@ export const gameSessionsSocketController: SocketController = {
 				});
 				await GameSessionsRepository.updateRoomStatus(roomId, "PROGRESS", nextIndex);
 
-				ioServer.to(`room:${roomId}`).emit("game:question_started", {
+				const isNextTyped =
+					nextQ.type === "TYPE_ANSWER_V1" || nextQ.type === "TYPE_ANSWER_V2";
+
+				// Відправляємо питання хосту
+				ioServer.to(`room:host:${roomId}`).emit("game:question_started", {
 					questionIndex: nextIndex,
 					totalQuestions: quiz.questions.length,
 					text: nextQ.text,
@@ -447,6 +483,27 @@ export const gameSessionsSocketController: SocketController = {
 						order: v.order,
 					})),
 				});
+
+				// Відправляємо питання учням (санітизовано для текстових відповідей)
+				ioServer
+					.to(`room:${roomId}`)
+					.except(`room:host:${roomId}`)
+					.emit("game:question_started", {
+						questionIndex: nextIndex,
+						totalQuestions: quiz.questions.length,
+						text: nextQ.text,
+						media: nextQ.media,
+						type: nextQ.type,
+						points: nextQ.points,
+						timeLimit: timeLimitMs,
+						startedAt: now,
+						variants: nextQ.variants.map((v) => ({
+							id: v.id,
+							text: isNextTyped ? "" : v.text,
+							media: v.media,
+							order: v.order,
+						})),
+					});
 
 				startServerQuestionTimer(ioServer, roomId, nextIndex, timeLimitMs);
 			} catch (error) {
@@ -620,6 +677,7 @@ export const gameSessionsSocketController: SocketController = {
 
 				// Сповіщаємо хоста про прогрес відповідей
 				ioServer.to(`room:host:${roomId}`).emit("game:answer_received", {
+					participantId,
 					answeredCount,
 					totalParticipants: activeParticipants.length,
 				});

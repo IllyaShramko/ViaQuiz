@@ -28,6 +28,7 @@ export function GameHostPage() {
 		reviewData,
 		finishedData,
 		answeredCount,
+		answeredParticipantIds,
 		remainingSeconds,
 		kickedReason,
 		startGame,
@@ -95,10 +96,11 @@ export function GameHostPage() {
 						totalQuestions={totalQuestions}
 						participants={participants}
 						answeredCount={answeredCount}
+						answeredParticipantIds={answeredParticipantIds}
 						remainingSeconds={remainingSeconds}
-						onExtendTime={(secs) => extendTime(currentRoomId, secs)}
+						onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
 						onSkipQuestion={() => endQuestion(currentRoomId)}
-						onKickParticipant={(pId) => kickParticipant(currentRoomId, pId)}
+						onKickParticipant={(pId: number) => kickParticipant(currentRoomId, pId)}
 					/>
 				) : (
 					<div className={styles['game-main-content']}>
@@ -114,8 +116,9 @@ export function GameHostPage() {
 						reviewData={reviewData}
 						participants={participants}
 						remainingSeconds={remainingSeconds}
-						onExtendTime={(secs) => extendTime(currentRoomId, secs)}
+						onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
 						onNextQuestion={() => nextQuestion(currentRoomId)}
+						onKickParticipant={(pId: number) => kickParticipant(currentRoomId, pId)}
 					/>
 				) : (
 					<div className={styles['game-main-content']}>

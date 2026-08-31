@@ -28,20 +28,14 @@ export function KickConfirmModal({
 					<button
 						type="button"
 						onClick={onCancel}
-						className={styles['control-action-btn']}
+						className={styles['modal-cancel-btn']}
 					>
 						Скасувати
 					</button>
 					<button
 						type="button"
 						onClick={onConfirm}
-						style={{
-							background: 'var(--color-error, #ef4444)',
-							color: '#fff',
-							fontWeight: 700,
-							padding: '0.6rem 1.25rem',
-							borderRadius: 'var(--radius-lg)',
-						}}
+						className={styles['modal-danger-btn']}
 					>
 						Вилучити
 					</button>

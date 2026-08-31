@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Chart from 'react-apexcharts';
 import { ImageLightboxModal } from '../modals/ImageLightboxModal';
+import { ParticipantsSidebar } from '../sidebar/ParticipantsSidebar';
 import type {
 	GameQuestionDto,
 	GameReviewDataDto,
@@ -18,8 +19,9 @@ export interface ReviewHostViewProps {
 	reviewData: GameReviewDataDto;
 	participants: ParticipantDto[];
 	remainingSeconds: number;
-	onExtendTime: (seconds?: number) => void;
+	onExtendTime?: (seconds?: number) => void;
 	onNextQuestion: () => void;
+	onKickParticipant?: (participantId: number) => void;
 }
 
 export function ReviewHostView({
@@ -27,8 +29,9 @@ export function ReviewHostView({
 	reviewData,
 	participants,
 	remainingSeconds,
-	onExtendTime,
+	onExtendTime: _onExtendTime,
 	onNextQuestion,
+	onKickParticipant,
 }: ReviewHostViewProps) {
 	const [activeTab, setActiveTab] = useState<'overview' | 'answers'>('overview');
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -278,8 +281,28 @@ export function ReviewHostView({
 										);
 									}
 
-									// If no participant answered at all and totalAnswered is 0
-									if (totalAnswered === 0 && (!reviewData.participantAnswers || reviewData.participantAnswers.length === 0)) {
+									// Map each participant to their answer information and keep only answered
+									const answeredStudents = participants
+										.map((p) => {
+											const pa = reviewData.participantAnswers?.find(
+												(item) => item.participantId === p.participantId,
+											);
+											return {
+												participantId: p.participantId,
+												nickname: p.nickname,
+												totalScore: pa?.totalScore !== undefined ? pa.totalScore : p.score,
+												isAnswered: pa ? pa.isAnswered : false,
+												variantIds: pa ? pa.variantIds || [] : [],
+												typedAnswer: pa ? pa.typedAnswer : undefined,
+												timeSpentMs: pa ? pa.timeSpentMs : 0,
+												isCorrect: pa ? pa.isCorrect : false,
+												scoreEarned: pa ? pa.scoreEarned : 0,
+											};
+										})
+										.filter((student) => student.isAnswered);
+
+									// If no participant answered at all
+									if (answeredStudents.length === 0) {
 										return (
 											<h3 className={styles['review-no-answers-text']}>
 												Немає відповідей на це запитання...
@@ -287,33 +310,12 @@ export function ReviewHostView({
 										);
 									}
 
-									// Map each participant to their answer information
-									const studentAnswers = participants.map((p) => {
-										const pa = reviewData.participantAnswers?.find(
-											(item) => item.participantId === p.participantId,
-										);
-										return {
-											participantId: p.participantId,
-											nickname: p.nickname,
-											totalScore: pa?.totalScore !== undefined ? pa.totalScore : p.score,
-											isAnswered: pa ? pa.isAnswered : false,
-											variantIds: pa ? pa.variantIds || [] : [],
-											typedAnswer: pa ? pa.typedAnswer : undefined,
-											timeSpentMs: pa ? pa.timeSpentMs : 0,
-											isCorrect: pa ? pa.isCorrect : false,
-											scoreEarned: pa ? pa.scoreEarned : 0,
-										};
-									});
-
 									return (
 										<div className={styles['review-students-grid']}>
-											{studentAnswers.map((student) => {
-												let cardStatusClass = styles['is-skipped'];
-												if (student.isAnswered) {
-													cardStatusClass = student.isCorrect
-														? styles['is-correct']
-														: styles['is-wrong'];
-												}
+											{answeredStudents.map((student) => {
+												const cardStatusClass = student.isCorrect
+													? styles['is-correct']
+													: styles['is-wrong'];
 
 												return (
 													<div
@@ -325,89 +327,75 @@ export function ReviewHostView({
 																<span className={styles['student-avatar-icon']}>👤</span>
 																<span>{student.nickname}</span>
 															</div>
-															{student.isAnswered ? (
-																student.isCorrect ? (
-																	<span
-																		className={`${styles['student-status-badge']} ${styles['status-correct']}`}
-																	>
-																		✓ Правильно {student.scoreEarned > 0 ? `(+${student.scoreEarned})` : ''}
-																	</span>
-																) : (
-																	<span
-																		className={`${styles['student-status-badge']} ${styles['status-wrong']}`}
-																	>
-																		✗ Неправильно (+0)
-																	</span>
-																)
+															{student.isCorrect ? (
+																<span
+																	className={`${styles['student-status-badge']} ${styles['status-correct']}`}
+																>
+																	✓ Правильно {student.scoreEarned > 0 ? `(+${student.scoreEarned})` : ''}
+																</span>
 															) : (
 																<span
-																	className={`${styles['student-status-badge']} ${styles['status-skipped']}`}
+																	className={`${styles['student-status-badge']} ${styles['status-wrong']}`}
 																>
-																	⚪ Не відповів
+																	✗ Неправильно (+0)
 																</span>
 															)}
 														</div>
 
 														<div className={styles['student-answer-body']}>
-															{student.isAnswered ? (
-																student.typedAnswer ? (
-																	<div className={styles['student-selected-variant']}>
-																		<span className={styles['student-variant-text']} style={{ fontWeight: 600 }}>
-																			Відповідь: &ldquo;{student.typedAnswer}&rdquo;
+															{student.typedAnswer ? (
+																<div className={styles['student-selected-variant']}>
+																	<span className={styles['student-variant-text']} style={{ fontWeight: 600 }}>
+																		Відповідь: &ldquo;{student.typedAnswer}&rdquo;
+																	</span>
+																	{student.isCorrect && (
+																		<span
+																			style={{
+																				color: 'var(--color-success, #22c55e)',
+																				fontSize: '0.75rem',
+																				fontWeight: 700,
+																				marginLeft: 'auto',
+																			}}
+																		>
+																			✓
 																		</span>
-																		{student.isCorrect && (
-																			<span
-																				style={{
-																					color: 'var(--color-success, #22c55e)',
-																					fontSize: '0.75rem',
-																					fontWeight: 700,
-																					marginLeft: 'auto',
-																				}}
-																			>
-																				✓
-																			</span>
-																		)}
-																	</div>
-																) : student.variantIds.length > 0 ? (
-																	<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-																		{student.variantIds.map((vId) => {
-																			const variant = question.variants.find((v) => v.id === vId);
-																			const variantIndex =
-																				question.variants.findIndex((v) => v.id === vId) + 1;
-																			const isThisCorrect = correctIds.includes(vId);
+																	)}
+																</div>
+															) : student.variantIds.length > 0 ? (
+																<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+																	{student.variantIds.map((vId) => {
+																		const variant = question.variants.find((v) => v.id === vId);
+																		const variantIndex =
+																			question.variants.findIndex((v) => v.id === vId) + 1;
+																		const isThisCorrect = correctIds.includes(vId);
 
-																			return (
-																				<div
-																					key={vId}
-																					className={styles['student-selected-variant']}
-																				>
-																					<span className={styles['student-variant-num']}>
-																						{variantIndex > 0 ? variantIndex : '•'}
+																		return (
+																			<div
+																				key={vId}
+																				className={styles['student-selected-variant']}
+																			>
+																				<span className={styles['student-variant-num']}>
+																					{variantIndex > 0 ? variantIndex : '•'}
+																				</span>
+																				<span className={styles['student-variant-text']}>
+																					{variant?.text || 'Варіант без тексту'}
+																				</span>
+																				{isThisCorrect && (
+																					<span
+																						style={{
+																							color: 'var(--color-success, #22c55e)',
+																							fontSize: '0.75rem',
+																							fontWeight: 700,
+																							marginLeft: 'auto',
+																						}}
+																					>
+																						✓
 																					</span>
-																					<span className={styles['student-variant-text']}>
-																						{variant?.text || 'Варіант без тексту'}
-																					</span>
-																					{isThisCorrect && (
-																						<span
-																							style={{
-																								color: 'var(--color-success, #22c55e)',
-																								fontSize: '0.75rem',
-																								fontWeight: 700,
-																								marginLeft: 'auto',
-																							}}
-																						>
-																							✓
-																						</span>
-																					)}
-																				</div>
-																			);
-																		})}
-																	</div>
-																) : (
-																	<div className={styles['student-selected-variant-skipped']}>
-																		Час вийшов (без відповіді)
-																	</div>
-																)
+																				)}
+																			</div>
+																		);
+																	})}
+																</div>
 															) : (
 																<div className={styles['student-selected-variant-skipped']}>
 																	Час вийшов (без відповіді)
@@ -417,7 +405,7 @@ export function ReviewHostView({
 
 														<div className={styles['student-answer-footer']}>
 															<div className={styles['student-answer-time']}>
-																{student.isAnswered && student.timeSpentMs > 0 ? (
+																{student.timeSpentMs > 0 ? (
 																	<span>⏱ {(student.timeSpentMs / 1000).toFixed(1)} сек</span>
 																) : (
 																	<span>-</span>
@@ -449,7 +437,8 @@ export function ReviewHostView({
 						<button
 							type="button"
 							className={styles['bottom-control-btn']}
-							onClick={() => onExtendTime(15)}
+							disabled={true}
+							title="Неможливо додати час на етапі огляду відповідей"
 						>
 							<div className={styles['bottom-control-btn-inner']}>
 								<p>+15 сек</p>
@@ -471,25 +460,12 @@ export function ReviewHostView({
 			</div>
 
 			{/* Sidebar Participants */}
-			<aside className={styles['game-sidebar']}>
-				<div className={styles['game-sidebar-header']}>
-					<span>Учасники: ({participants.length})</span>
-					<span style={{ color: 'var(--color-text-muted)' }}>⚙</span>
-				</div>
-				<div className={styles['game-sidebar-list']}>
-					{participants.map((p, idx) => (
-						<div key={p.participantId || idx} className={styles['participant-item']}>
-							<div className={styles['participant-item-left']}>
-								<span className={styles['participant-badge']}>{idx + 1}</span>
-								<span style={{ fontWeight: 600 }}>{p.nickname}</span>
-							</div>
-							<span style={{ fontSize: '0.85rem', color: 'var(--color-accent, #863bff)', fontWeight: 700 }}>
-								{p.score} б
-							</span>
-						</div>
-					))}
-				</div>
-			</aside>
+			<ParticipantsSidebar
+				participants={participants}
+				status="REVIEWING"
+				reviewData={reviewData}
+				onKickParticipant={onKickParticipant}
+			/>
 
 			<ImageLightboxModal
 				isOpen={!!lightboxImage}

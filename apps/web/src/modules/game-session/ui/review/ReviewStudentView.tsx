@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ImageLightboxModal } from '../modals/ImageLightboxModal';
+import { getRandomCaption } from '../../utils/captions';
 import type {
 	GameQuestionDto,
 	GameReviewDataDto,
@@ -20,6 +21,12 @@ export function ReviewStudentView({
 	const isCorrect = res?.isCorrect ?? reviewData.myAnswer?.isCorrect ?? false;
 	const selectedIds = res?.selectedVariantIds ?? reviewData.myAnswer?.variantIds ?? [];
 	const correctIds = reviewData.correctVariantIds;
+
+	const [quote] = useState(() => {
+		if (!isAnswered) return getRandomCaption('skipped');
+		if (isCorrect) return getRandomCaption('correct');
+		return getRandomCaption('incorrect');
+	});
 
 	const [isMinimized, setIsMinimized] = useState(false);
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
@@ -69,7 +76,7 @@ export function ReviewStudentView({
 								isMinimized ? styles['is-hidden'] : ''
 							}`}
 						>
-							Занадто легко для твоєї уваги?
+							{quote}
 						</span>
 					</>
 				) : isCorrect ? (
@@ -86,7 +93,7 @@ export function ReviewStudentView({
 								isMinimized ? styles['is-hidden'] : ''
 							}`}
 						>
-							Чудова робота! Так тримати!
+							{quote}
 						</span>
 					</>
 				) : (
@@ -103,7 +110,7 @@ export function ReviewStudentView({
 								isMinimized ? styles['is-hidden'] : ''
 							}`}
 						>
-							Невдача — це лише паливо для майбутньої перемоги.
+							{quote}
 						</span>
 					</>
 				)}

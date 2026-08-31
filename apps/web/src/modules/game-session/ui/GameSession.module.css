@@ -48,12 +48,6 @@
   color: #fff;
 }
 
-.game-logo-icon {
-  width: 28px;
-  height: 28px;
-  color: var(--color-accent, #863bff);
-}
-
 .game-topbar-center {
   display: flex;
   align-items: center;
@@ -150,8 +144,8 @@
 .participant-badge {
   background: var(--color-border, #2a2a3a);
   color: var(--color-text-secondary, #9090a8);
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,6 +167,54 @@
 .participant-kick-btn:hover {
   opacity: 0.8;
   background: rgba(239, 68, 68, 0.15);
+}
+
+/* Participant item right section: status icon / score */
+.participant-item-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  position: relative;
+}
+
+/* Score text (shown on hover) */
+.participant-score-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent, #863bff);
+  white-space: nowrap;
+}
+
+/* Answer status icon with fade-in animation */
+.participant-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInCheckMark 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInCheckMark {
+  from {
+    opacity: 0;
+    transform: translateX(8px) scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Clickable participant row */
+.participant-item-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.participant-item-clickable:hover {
+  background: var(--color-bg-hover, #22222e);
+  border-color: rgba(134, 59, 255, 0.3);
 }
 
 /* ==========================================================================
@@ -214,21 +256,21 @@
 .lobby-step-badge {
   background: var(--color-accent, #863bff);
   color: #fff;
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 1.25rem;
   flex-shrink: 0;
 }
 
 .lobby-step-title {
   color: var(--color-text-secondary, #b0b0c4);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .lobby-copy-icon-btn {
@@ -236,8 +278,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-sm, 0.25rem);
   transition: all var(--transition-fast);
 }
@@ -261,12 +303,17 @@
 }
 
 .lobby-url-text {
-  font-size: 1.45rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #ffffff;
   word-break: break-all;
   letter-spacing: -0.02em;
   user-select: all;
+}
+
+.lobby-url-text:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 .lobby-qr-preview-btn {
@@ -702,10 +749,17 @@
   background: var(--color-bg-surface, #1a1a26);
   border: 1px solid var(--color-border, #2a2a3a);
   color: var(--color-text-secondary, #9090a8);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 0.35rem 0.85rem;
+  padding: 0.25rem 0.6rem;
   border-radius: var(--radius-full);
+  min-width: 108px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .teacher-variant-badge-count.has-answers {
@@ -749,6 +803,7 @@
 
 .bottom-controls-buttons {
   width: 100%;
+  height: 35px;
   display: flex;
   align-items: flex-end;
   gap: 8px;
@@ -768,12 +823,18 @@
   transition: height 0.1s ease;
 }
 
-.bottom-control-btn:hover {
+.bottom-control-btn:hover:not(:disabled) {
   height: 35px;
 }
 
-.bottom-control-btn:active {
+.bottom-control-btn:active:not(:disabled) {
   height: 30px;
+}
+
+.bottom-control-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  height: 33px;
 }
 
 .bottom-control-btn-inner {
@@ -838,38 +899,29 @@
 }
 
 /* ==========================================================================
-   ANTI-CHEAT WAITING OVERLAY
+   ANTI-CHEAT WAITING OVERLAY & STATUS BANNERS
    ========================================================================== */
 
-.anticheat-overlay {
+/* Student Wait Banner Container (Always centered, does not drop down) */
+.wait-student-banner-container {
   position: fixed;
-  inset: 0;
-  background: rgba(10, 10, 15, 0.88);
-  backdrop-filter: blur(8px);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.anticheat-banner {
-  background: rgba(18, 18, 26, 0.95);
-  border-top: 1px solid var(--color-border, #2a2a3a);
-  border-bottom: 1px solid var(--color-border, #2a2a3a);
+  top: 50%;
+  left: 0;
   width: 100%;
-  padding: 2.5rem;
+  transform: translateY(-50%);
+  z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  text-align: center;
-  box-shadow: var(--shadow-lg);
+  pointer-events: none;
 }
 
-.anticheat-spinner {
-  font-size: 2rem;
-  animation: spin 2s linear infinite;
-  color: var(--color-accent, #863bff);
+.wait-spinner-icon {
+  width: 44px;
+  height: 44px;
+  animation: spin 1.5s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 @keyframes spin {
@@ -877,19 +929,8 @@
   to { transform: rotate(360deg); }
 }
 
-.anticheat-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #fff;
-}
-
-.anticheat-subtitle {
-  color: var(--color-text-secondary, #9090a8);
-  font-size: 1rem;
-}
-
 /* ==========================================================================
-   REVIEW SCREENS (TEACHER & STUDENT)
+   REVIEW & RESULT STATUS SCREENS
    ========================================================================== */
 
 /* Student Review Result Full-Width Banner */
@@ -919,9 +960,10 @@
   font-weight: 800;
   text-align: center;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  gap: 0.85rem;
   box-shadow: var(--shadow-lg);
   animation: bannerSweepIn 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transition: padding 0.8s cubic-bezier(0.16, 1, 0.3, 1), font-size 0.8s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
@@ -949,6 +991,13 @@
   }
 }
 
+.review-banner-wait {
+  background: #171717;
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .review-banner-correct {
   background: var(--color-success, #22c55e);
   color: #fff;
@@ -969,17 +1018,20 @@
   font-weight: 500;
   color: #fff;
   opacity: 0.9;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
+  text-align: center;
+  max-width: 90vw;
+  padding: 0 1rem;
   animation: quoteFadeIn 0.8s ease-out 0.3s both;
-  transition: opacity 0.5s ease, height 0.5s ease, margin 0.5s ease;
-  overflow: hidden;
-  height: 20px; /* fixed height before hide */
+  transition: opacity 0.5s ease, max-height 0.5s ease, margin 0.5s ease;
+  max-height: 60px;
 }
 
 .review-banner-quote.is-hidden {
   opacity: 0;
-  height: 0;
+  max-height: 0;
   margin-top: 0;
+  overflow: hidden;
 }
 
 @keyframes quoteFadeIn {
@@ -1455,6 +1507,43 @@
   background: var(--color-bg-hover);
 }
 
+.modal-cancel-btn,
+.control-action-btn {
+  background: transparent;
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-lg, 0.5rem);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.2s ease);
+}
+
+.modal-cancel-btn:hover,
+.control-action-btn:hover {
+  background: var(--color-bg-hover, #22222e);
+  color: var(--color-text-primary, #f0f0f5);
+  border-color: var(--color-border-hover, #3a3a4e);
+}
+
+.modal-danger-btn {
+  background: var(--color-error, #ef4444);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-lg, 0.5rem);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.2s ease);
+}
+
+.modal-danger-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
 /* QR Code Modal (Matches Screenshot 3) */
 .qr-modal-backdrop {
   position: fixed;
@@ -1755,6 +1844,135 @@
   color: #94a3b8;
   font-style: italic;
 }
+
+/* Typed answer host active question styles */
+.typed-host-card {
+  width: 100%;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-2xl, 1.25rem);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.typed-host-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.typed-host-type-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.typed-host-icon {
+  font-size: 1.1rem;
+}
+
+.typed-host-reveal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-lg, 0.75rem);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #e2e8f0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.typed-host-reveal-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.typed-host-reveal-btn.is-revealed {
+  background: rgba(134, 59, 255, 0.15);
+  border-color: var(--color-accent, #863bff);
+  color: #c084fc;
+}
+
+.typed-host-status-box {
+  min-height: 4.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xl, 1rem);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.typed-host-status-box.is-revealed {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.typed-host-status-text {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary, #94a3b8);
+  font-weight: 500;
+  animation: fadeInAnswer 0.2s ease;
+}
+
+.typed-host-revealed-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  animation: fadeInAnswer 0.2s ease;
+}
+
+.typed-host-revealed-label {
+  font-size: 1rem;
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.typed-host-revealed-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+@keyframes fadeInAnswer {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 
 

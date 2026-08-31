@@ -112,6 +112,7 @@ export interface GameSyncStateDto {
 	reviewData?: GameReviewDataDto | null;
 	finishedData?: GameFinishedDto | null;
 	answeredCount?: number | undefined;
+	answeredParticipantIds?: number[] | undefined;
 	resultUuid?: string | null | undefined;
 	isHost: boolean;
 }

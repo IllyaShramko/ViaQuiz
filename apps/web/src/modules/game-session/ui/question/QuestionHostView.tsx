@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ImageLightboxModal } from '../modals/ImageLightboxModal';
-import { KickConfirmModal } from '../modals/KickConfirmModal';
+import { ParticipantsSidebar } from '../sidebar/ParticipantsSidebar';
 import type { GameQuestionDto, ParticipantDto } from '@viaquiz/shared-types';
 import timerIcon from '../../../../assets/icons/timer.svg';
 import nextIcon from '../../../../assets/icons/next.svg';
@@ -12,6 +12,7 @@ export interface QuestionHostViewProps {
 	totalQuestions: number;
 	participants: ParticipantDto[];
 	answeredCount: number;
+	answeredParticipantIds: Set<number>;
 	remainingSeconds: number;
 	onExtendTime: (seconds?: number) => void;
 	onSkipQuestion: () => void;
@@ -24,13 +25,19 @@ export function QuestionHostView({
 	totalQuestions,
 	participants,
 	answeredCount,
+	answeredParticipantIds,
 	remainingSeconds,
 	onExtendTime,
 	onSkipQuestion,
 	onKickParticipant,
 }: QuestionHostViewProps) {
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-	const [kickTarget, setKickTarget] = useState<ParticipantDto | null>(null);
+	const [isAnswerRevealed, setIsAnswerRevealed] = useState<boolean>(false);
+
+	// Reset revealed state on question change
+	useEffect(() => {
+		setIsAnswerRevealed(false);
+	}, [questionIndex, (question as { questionId?: number; id?: number }).questionId, (question as { id?: number }).id]);
 
 	return (
 		<div className={styles['game-layout-body']}>
@@ -63,17 +70,54 @@ export function QuestionHostView({
 
 					{/* Variants Grid / Typed Preview (Host View) */}
 					{question.type === 'TYPE_ANSWER_V1' || question.type === 'TYPE_ANSWER_V2' ? (
-						<div className={styles['typed-review-card']}>
-							<div className={styles['typed-review-row']}>
-								<span className={styles['typed-review-label']}>
-									{question.type === 'TYPE_ANSWER_V2'
-										? 'Тип запитання: Слово по буквах'
-										: 'Тип запитання: Ввід тексту'}
-								</span>
-								<div className={`${styles['typed-review-value']} ${styles['is-correct']}`}>
-									Правильна відповідь: {question.variants.map((v) => v.text).filter(Boolean).join(' / ') || '—'}
+						<div className={styles['typed-host-card']}>
+							<div className={styles['typed-host-header']}>
+								<div className={styles['typed-host-type-badge']}>
+									<span className={styles['typed-host-icon']}>⌨️</span>
+									<span>
+										{question.type === 'TYPE_ANSWER_V2'
+											? 'Тип запитання: Слово по буквах'
+											: 'Тип запитання: Ввід тексту'}
+									</span>
 								</div>
+
+								<button
+									type="button"
+									className={`${styles['typed-host-reveal-btn']} ${
+										isAnswerRevealed ? styles['is-revealed'] : ''
+									}`}
+									onClick={() => setIsAnswerRevealed((prev) => !prev)}
+									title={
+										isAnswerRevealed
+											? 'Приховати правильну відповідь'
+											: 'Показати правильну відповідь (обережно при демонстрації екрана)'
+									}
+								>
+									<span>{isAnswerRevealed ? '🙈' : '👁️'}</span>
+									<span>
+										{isAnswerRevealed ? 'Приховати відповідь' : 'Показати відповідь'}
+									</span>
+								</button>
 							</div>
+
+							{isAnswerRevealed ? (
+								<div className={`${styles['typed-host-status-box']} ${styles['is-revealed']}`}>
+									<div className={styles['typed-host-revealed-inner']}>
+										<span className={styles['typed-host-revealed-label']}>
+											Правильна відповідь:
+										</span>
+										<span className={styles['typed-host-revealed-text']}>
+											{question.variants.map((v) => v.text).filter(Boolean).join(' / ') || '—'}
+										</span>
+									</div>
+								</div>
+							) : (
+								<div className={styles['typed-host-status-box']}>
+									<p className={styles['typed-host-status-text']}>
+										Учасники самостійно вводять відповідь на своїх пристроях
+									</p>
+								</div>
+							)}
 						</div>
 					) : (
 						<div className={styles['variants-grid']}>
@@ -133,47 +177,17 @@ export function QuestionHostView({
 			</div>
 
 			{/* Sidebar Participants */}
-			<aside className={styles['game-sidebar']}>
-				<div className={styles['game-sidebar-header']}>
-					<span>Учасники: ({participants.length})</span>
-					<span style={{ color: 'var(--color-text-muted)' }}>⚙</span>
-				</div>
-				<div className={styles['game-sidebar-list']}>
-					{participants.map((p, idx) => (
-						<div key={p.participantId || idx} className={styles['participant-item']}>
-							<div className={styles['participant-item-left']}>
-								<span className={styles['participant-badge']}>{idx + 1}</span>
-								<span style={{ fontWeight: 600 }}>{p.nickname}</span>
-							</div>
-							<button
-								type="button"
-								className={styles['participant-kick-btn']}
-								onClick={() => setKickTarget(p)}
-								title="Вилучити учасника"
-							>
-								✕
-							</button>
-						</div>
-					))}
-				</div>
-			</aside>
+			<ParticipantsSidebar
+				participants={participants}
+				status="PROGRESS"
+				answeredParticipantIds={answeredParticipantIds}
+				onKickParticipant={onKickParticipant}
+			/>
 
 			<ImageLightboxModal
 				isOpen={!!lightboxImage}
 				imageUrl={lightboxImage}
 				onClose={() => setLightboxImage(null)}
-			/>
-
-			<KickConfirmModal
-				isOpen={!!kickTarget}
-				participantName={kickTarget?.nickname || ''}
-				onConfirm={() => {
-					if (kickTarget) {
-						onKickParticipant(kickTarget.participantId);
-						setKickTarget(null);
-					}
-				}}
-				onCancel={() => setKickTarget(null)}
 			/>
 		</div>
 	);

@@ -40,6 +40,7 @@ export interface ServerToClientEvents {
 		newRemainingMs: number;
 	}) => void;
 	"game:answer_received": (payload: {
+		participantId: number;
 		answeredCount: number;
 		totalParticipants: number;
 	}) => void;

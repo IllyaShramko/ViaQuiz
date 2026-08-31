@@ -2,6 +2,7 @@ export * from './api/gameSessionApi';
 export * from './socket/socketClient';
 export * from './socket/useGameSession';
 export * from './utils/shuffle';
+export * from './utils/captions';
 
 export { HostLobby } from './ui/lobby/HostLobby';
 export { StudentLobby } from './ui/lobby/StudentLobby';
@@ -14,3 +15,4 @@ export { FinalResultsHost } from './ui/results/FinalResultsHost';
 export { QrCodeModal } from './ui/modals/QrCodeModal';
 export { ImageLightboxModal } from './ui/modals/ImageLightboxModal';
 export { KickConfirmModal } from './ui/modals/KickConfirmModal';
+export { ParticipantsSidebar } from './ui/sidebar/ParticipantsSidebar';

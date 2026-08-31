@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import styles from '../GameSession.module.css';
 
@@ -11,28 +11,50 @@ export interface QrCodeModalProps {
 export function QrCodeModal({ isOpen, onClose, joinUrl }: QrCodeModalProps) {
 	const [rendered, setRendered] = useState(isOpen);
 	const [isClosing, setIsClosing] = useState(false);
+	const closingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+	// Sync with isOpen prop (external control).
+	// Only start the close animation here when isOpen goes false
+	// AND we're not already closing (handleClose handles its own animation).
 	useEffect(() => {
 		if (isOpen) {
+			// Opening: cancel any pending close, show immediately
+			if (closingTimerRef.current) {
+				clearTimeout(closingTimerRef.current);
+				closingTimerRef.current = null;
+			}
 			setRendered(true);
 			setIsClosing(false);
 		} else if (rendered && !isClosing) {
+			// isOpen became false externally and we're not already closing —
+			// start close animation
 			setIsClosing(true);
-			const timer = setTimeout(() => {
+			closingTimerRef.current = setTimeout(() => {
 				setRendered(false);
 				setIsClosing(false);
+				closingTimerRef.current = null;
 			}, 220);
-			return () => clearTimeout(timer);
 		}
-	}, [isOpen, rendered, isClosing]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isOpen]);
+
+	// Cleanup timer on unmount
+	useEffect(() => {
+		return () => {
+			if (closingTimerRef.current) {
+				clearTimeout(closingTimerRef.current);
+			}
+		};
+	}, []);
 
 	const handleClose = useCallback(() => {
 		if (isClosing) return;
 		setIsClosing(true);
-		setTimeout(() => {
+		closingTimerRef.current = setTimeout(() => {
 			onClose();
 			setRendered(false);
 			setIsClosing(false);
+			closingTimerRef.current = null;
 		}, 220);
 	}, [isClosing, onClose]);
 
@@ -79,7 +101,3 @@ export function QrCodeModal({ isOpen, onClose, joinUrl }: QrCodeModalProps) {
 		</div>
 	);
 }
-
-
-
-

@@ -33,6 +33,7 @@ export function useGameSession({
 	const [finishedData, setFinishedData] = useState<GameFinishedDto | null>(null);
 	const [resultUuid, setResultUuid] = useState<string | null>(null);
 	const [answeredCount, setAnsweredCount] = useState<number>(0);
+	const [answeredParticipantIds, setAnsweredParticipantIds] = useState<Set<number>>(new Set());
 	const [remainingMs, setRemainingMs] = useState<number>(0);
 	const [isHost, setIsHost] = useState<boolean>(false);
 	const [kickedReason, setKickedReason] = useState<string | null>(null);
@@ -74,6 +75,7 @@ export function useGameSession({
 		setFinishedData(null);
 		setResultUuid(null);
 		setAnsweredCount(0);
+		setAnsweredParticipantIds(new Set());
 		setRemainingMs(0);
 		setIsHost(false);
 		setKickedReason(null);
@@ -118,6 +120,14 @@ export function useGameSession({
 			if (data.reviewData !== undefined) setReviewData(data.reviewData);
 			if (data.finishedData) setFinishedData(data.finishedData);
 			if (data.answeredCount !== undefined) setAnsweredCount(data.answeredCount);
+			if (data.answeredParticipantIds) {
+				setAnsweredParticipantIds(new Set(data.answeredParticipantIds));
+			} else if (data.reviewData?.participantAnswers) {
+				const answered = data.reviewData.participantAnswers
+					.filter((pa) => pa.isAnswered)
+					.map((pa) => pa.participantId);
+				setAnsweredParticipantIds(new Set(answered));
+			}
 			if (data.resultUuid !== undefined) setResultUuid(data.resultUuid);
 			setIsHost(!!data.isHost);
 		};
@@ -165,6 +175,7 @@ export function useGameSession({
 			setAlreadyAnswered(false);
 			setReviewData(null);
 			setAnsweredCount(0);
+			setAnsweredParticipantIds(new Set());
 			startCountdown(payload.timeLimit || 30000);
 		};
 
@@ -172,8 +183,15 @@ export function useGameSession({
 			startCountdown(payload.newRemainingMs);
 		};
 
-		const handleAnswerReceived = (payload: { answeredCount: number; totalParticipants: number }) => {
+		const handleAnswerReceived = (payload: { participantId?: number; answeredCount: number; totalParticipants: number }) => {
 			setAnsweredCount(payload.answeredCount);
+			if (payload.participantId != null) {
+				setAnsweredParticipantIds((prev) => {
+					const next = new Set(prev);
+					next.add(payload.participantId!);
+					return next;
+				});
+			}
 		};
 
 		const handleQuestionEnded = (payload: GameReviewDataDto) => {
@@ -312,6 +330,7 @@ export function useGameSession({
 		finishedData,
 		resultUuid,
 		answeredCount,
+		answeredParticipantIds,
 		remainingSeconds: Math.ceil(remainingMs / 1000),
 		remainingMs,
 		isHost,

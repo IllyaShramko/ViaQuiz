@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { QrCodeModal } from '../modals/QrCodeModal';
-import { KickConfirmModal } from '../modals/KickConfirmModal';
-import { CopyIcon, CheckIcon, PlayIcon, SettingsIcon, CloseIcon } from '../../../../shared/ui/icons';
+import { ParticipantsSidebar } from '../sidebar/ParticipantsSidebar';
+import { CopyIcon, CheckIcon, PlayIcon } from '../../../../shared/ui/icons';
 import type { ParticipantDto } from '@viaquiz/shared-types';
 import styles from '../GameSession.module.css';
+import { Link } from 'react-router-dom';
 
 export interface HostLobbyProps {
 	joinCode: string;
@@ -22,7 +23,6 @@ export function HostLobby({
 	onKickParticipant,
 }: HostLobbyProps) {
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-	const [kickTarget, setKickTarget] = useState<ParticipantDto | null>(null);
 	const [copiedField, setCopiedField] = useState<'url' | 'code' | null>(null);
 
 	const joinUrl = `${window.location.origin}/join?code=${joinCode}`;
@@ -58,9 +58,9 @@ export function HostLobby({
 							</button>
 						</div>
 						<div className={styles['lobby-url-row']}>
-							<span className={styles['lobby-url-text']}>
-								{window.location.host}/join
-							</span>
+							<Link to={joinUrl} target="_blank" className={styles['lobby-url-text']}>
+								joinqptquiz.com
+							</Link>
 							<button
 								type="button"
 								className={styles['lobby-qr-preview-btn']}
@@ -124,55 +124,17 @@ export function HostLobby({
 			</div>
 
 			{/* Participants Sidebar */}
-			<aside className={styles['game-sidebar']}>
-				<div className={styles['game-sidebar-header']}>
-					<span>Учасники: ({participants.length})</span>
-					<SettingsIcon size={18} className={styles['game-sidebar-settings-icon']} />
-				</div>
-				<div className={styles['game-sidebar-list']}>
-					{participants.map((p, idx) => (
-						<div key={p.participantId || idx} className={styles['participant-item']}>
-							<div className={styles['participant-item-left']}>
-								<span className={styles['participant-badge']}>{idx + 1}</span>
-								<span className={styles['participant-name']}>{p.nickname}</span>
-							</div>
-							<button
-								type="button"
-								className={styles['participant-kick-btn']}
-								onClick={() => setKickTarget(p)}
-								title="Вилучити учасника"
-								aria-label={`Вилучити ${p.nickname}`}
-							>
-								<CloseIcon size={16} />
-							</button>
-						</div>
-					))}
-					{participants.length === 0 && (
-						<div className={styles['game-sidebar-empty']}>
-							Очікуємо підключення учнів...
-						</div>
-					)}
-				</div>
-			</aside>
+			<ParticipantsSidebar
+				participants={participants}
+				status="AWAITING"
+				onKickParticipant={onKickParticipant}
+			/>
 
 			{/* QR Code Modal */}
 			<QrCodeModal
 				isOpen={isQrModalOpen}
 				onClose={() => setIsQrModalOpen(false)}
 				joinUrl={joinUrl}
-			/>
-
-			{/* Kick Confirm Modal */}
-			<KickConfirmModal
-				isOpen={!!kickTarget}
-				participantName={kickTarget?.nickname || ''}
-				onConfirm={() => {
-					if (kickTarget) {
-						onKickParticipant(kickTarget.participantId);
-						setKickTarget(null);
-					}
-				}}
-				onCancel={() => setKickTarget(null)}
 			/>
 		</div>
 	);
