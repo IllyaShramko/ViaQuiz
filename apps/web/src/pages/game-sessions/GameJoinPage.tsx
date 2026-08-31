@@ -7,6 +7,7 @@ import {
 } from '../../modules/game-session';
 import { createLoginRedirectUrl } from '../../modules/auth';
 import { getAuthToken } from '../../shared/api/headers';
+import { LogoIcon } from '../../shared/ui/icons';
 import styles from '../../modules/game-session/ui/GameSession.module.css';
 
 export function GameJoinPage() {
@@ -123,9 +124,7 @@ export function GameJoinPage() {
 		<div className={styles['game-root']}>
 			<header className={styles['game-topbar']}>
 				<Link to="/" className={styles['game-logo']}>
-					<span style={{ color: 'var(--color-accent, #863bff)', fontSize: '1.5rem' }}>
-						✦
-					</span>
+					<LogoIcon size={24} className={styles['game-logo-icon']} />
 					<span>ViaQuiz</span>
 				</Link>
 			</header>
@@ -165,7 +164,7 @@ export function GameJoinPage() {
 
 						{requiresAuth ? (
 							<Link
-								to={createLoginRedirectUrl(`/join?code=${joinCode}`)}
+								to={createLoginRedirectUrl(`/join?code=${joinCode.trim()}`, 'student')}
 								className={styles['lobby-start-btn']}
 								style={{ width: '100%', textDecoration: 'none' }}
 							>

@@ -137,7 +137,7 @@ export function QuestionHostView({
 				<div className={styles['teacher-bottom-controls']}>
 					<div className={styles['bottom-timer-section']}>
 						<img src={timerIcon} alt="Timer" className={styles['bottom-timer-icon']} />
-						<span className={styles['bottom-timer-text']}>{remainingSeconds}</span>
+						<span className={styles['bottom-timer-text']}>{remainingSeconds} с</span>
 					</div>
 
 					<div
@@ -156,6 +156,12 @@ export function QuestionHostView({
 							type="button"
 							className={styles['bottom-control-btn']}
 							onClick={() => onExtendTime(15)}
+							disabled={remainingSeconds >= 900}
+							title={
+								remainingSeconds >= 900
+									? 'Максимальний час досягнуто (900 с)'
+									: undefined
+							}
 						>
 							<div className={styles['bottom-control-btn-inner']}>
 								<p>+15 сек</p>

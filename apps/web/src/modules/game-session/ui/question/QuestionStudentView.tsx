@@ -62,6 +62,69 @@ export function QuestionStudentView({
 		onSubmitAnswer(undefined, trimmed);
 	};
 
+	// Keyboard shortcuts for answering (1-8 to select variants, Enter to submit multi-answer)
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (alreadyAnswered) return;
+
+			// Do not intercept if user is typing in an input or textarea
+			const targetTag = (e.target as HTMLElement)?.tagName;
+			if (
+				targetTag === 'INPUT' ||
+				targetTag === 'TEXTAREA' ||
+				(e.target as HTMLElement)?.isContentEditable
+			) {
+				return;
+			}
+
+			if (isTyped) return;
+
+			let num: number | null = null;
+			if (e.key >= '1' && e.key <= '8') {
+				num = parseInt(e.key, 10);
+			} else if (/^Numpad[1-8]$/.test(e.code)) {
+				num = parseInt(e.code.replace('Numpad', ''), 10);
+			}
+
+			if (num !== null) {
+				const variantIndex = num - 1;
+				const targetVariant = question.variants?.[variantIndex];
+				if (targetVariant) {
+					e.preventDefault();
+					if (isMulti) {
+						setSelectedVariantIds((prev) =>
+							prev.includes(targetVariant.id)
+								? prev.filter((id) => id !== targetVariant.id)
+								: [...prev, targetVariant.id],
+						);
+					} else {
+						onSubmitAnswer([targetVariant.id]);
+					}
+				}
+				return;
+			}
+
+			if (e.key === 'Enter') {
+				if (isMulti && selectedVariantIds.length > 0) {
+					e.preventDefault();
+					onSubmitAnswer(selectedVariantIds);
+				}
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [
+		alreadyAnswered,
+		isTyped,
+		isMulti,
+		question.variants,
+		selectedVariantIds,
+		onSubmitAnswer,
+	]);
+
 	return (
 		<div className={styles['game-main-content']}>
 			{alreadyAnswered && <AntiCheatOverlay />}

@@ -11,7 +11,7 @@ import correctIcon from '../../../../assets/icons/correct_answers.svg';
 import wrongIcon from '../../../../assets/icons/wrong_answers.svg';
 import skippedIcon from '../../../../assets/icons/skipped_answers.svg';
 import nextIcon from '../../../../assets/icons/next.svg';
-import timerIcon from '../../../../assets/icons/timer.svg';
+import { TimerIcon } from '../../../../shared/ui/icons';
 import styles from '../GameSession.module.css';
 
 export interface ReviewHostViewProps {
@@ -19,7 +19,7 @@ export interface ReviewHostViewProps {
 	reviewData: GameReviewDataDto;
 	participants: ParticipantDto[];
 	remainingSeconds: number;
-	onExtendTime?: (seconds?: number) => void;
+	onExtendTime?: (secs?: number) => void;
 	onNextQuestion: () => void;
 	onKickParticipant?: (participantId: number) => void;
 }
@@ -29,7 +29,6 @@ export function ReviewHostView({
 	reviewData,
 	participants,
 	remainingSeconds,
-	onExtendTime: _onExtendTime,
 	onNextQuestion,
 	onKickParticipant,
 }: ReviewHostViewProps) {
@@ -172,7 +171,7 @@ export function ReviewHostView({
 					</div>
 
 					{/* Right Column: Tabs (Overview & Individual Answers) */}
-					<div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+					<div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
 						<div className={styles['review-tabs-header']}>
 							<button
 								type="button"
@@ -271,7 +270,7 @@ export function ReviewHostView({
 
 						{/* Tab 2: Individual Answers */}
 						{activeTab === 'answers' && (
-							<div>
+							<div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
 								{(() => {
 									if (participants.length === 0) {
 										return (
@@ -312,7 +311,7 @@ export function ReviewHostView({
 
 									return (
 										<div className={styles['review-students-grid']}>
-											{answeredStudents.map((student) => {
+											{answeredStudents.map((student, idx) => {
 												const cardStatusClass = student.isCorrect
 													? styles['is-correct']
 													: styles['is-wrong'];
@@ -321,6 +320,7 @@ export function ReviewHostView({
 													<div
 														key={student.participantId}
 														className={`${styles['student-answer-card']} ${cardStatusClass}`}
+														style={{ animationDelay: `${Math.min(idx * 0.03, 0.3)}s` }}
 													>
 														<div className={styles['student-answer-header']}>
 															<div className={styles['student-answer-name']}>
@@ -406,7 +406,9 @@ export function ReviewHostView({
 														<div className={styles['student-answer-footer']}>
 															<div className={styles['student-answer-time']}>
 																{student.timeSpentMs > 0 ? (
-																	<span>⏱ {(student.timeSpentMs / 1000).toFixed(1)} сек</span>
+																	<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+																		<TimerIcon size={14} /> {(student.timeSpentMs / 1000).toFixed(1)} сек
+																	</span>
 																) : (
 																	<span>-</span>
 																)}
@@ -429,8 +431,8 @@ export function ReviewHostView({
 				{/* Bottom Controls: Timer & Next Question */}
 				<div className={styles['teacher-bottom-controls']}>
 					<div className={styles['bottom-timer-section']}>
-						<img src={timerIcon} alt="Timer" className={styles['bottom-timer-icon']} />
-						<span className={styles['bottom-timer-text']}>{remainingSeconds}</span>
+						<TimerIcon size={24} className={styles['bottom-timer-icon']} />
+						<span className={styles['bottom-timer-text']}>{remainingSeconds} с</span>
 					</div>
 
 					<div className={styles['bottom-controls-buttons']}>

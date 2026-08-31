@@ -3,6 +3,7 @@ export * from './socket/socketClient';
 export * from './socket/useGameSession';
 export * from './utils/shuffle';
 export * from './utils/captions';
+export * from './utils/formatTime';
 
 export { HostLobby } from './ui/lobby/HostLobby';
 export { StudentLobby } from './ui/lobby/StudentLobby';

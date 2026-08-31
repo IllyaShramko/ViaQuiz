@@ -532,17 +532,21 @@ export const gameSessionsSocketController: SocketController = {
 				const state = await gameRedisService.getRoomState(roomId);
 				if (!state || state.status !== "PROGRESS") return;
 
-				const addedMs = seconds * 1000;
+				const MAX_TIME_MS = 900 * 1000;
+				const startedAt = state.questionStartedAt || Date.now();
+				const elapsed = Date.now() - startedAt;
 				const currentLimit = state.timeLimitMs || 30000;
-				const newLimit = currentLimit + addedMs;
+				const currentRemainingMs = Math.max(0, currentLimit - elapsed);
+
+				if (currentRemainingMs >= MAX_TIME_MS) return;
+
+				const addedMs = seconds * 1000;
+				const remainingMs = Math.min(MAX_TIME_MS, currentRemainingMs + addedMs);
+				const newLimit = elapsed + remainingMs;
 
 				await gameRedisService.setRoomState(roomId, { timeLimitMs: newLimit });
 
 				// Перезапускаємо таймер із залишком часу
-				const startedAt = state.questionStartedAt || Date.now();
-				const elapsed = Date.now() - startedAt;
-				const remainingMs = Math.max(0, newLimit - elapsed);
-
 				startServerQuestionTimer(
 					ioServer,
 					roomId,
@@ -551,7 +555,7 @@ export const gameSessionsSocketController: SocketController = {
 				);
 
 				ioServer.to(`room:${roomId}`).emit("game:time_extended", {
-					addedSeconds: seconds,
+					addedSeconds: Math.round((remainingMs - currentRemainingMs) / 1000),
 					newRemainingMs: remainingMs,
 				});
 			} catch (error) {

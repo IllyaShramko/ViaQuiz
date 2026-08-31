@@ -37,6 +37,7 @@
   background: rgba(18, 18, 26, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border, #2a2a3a);
+  min-height: 65px;
 }
 
 .game-logo {
@@ -46,9 +47,22 @@
   font-weight: 700;
   font-size: 1.25rem;
   color: #fff;
+  text-decoration: none;
+  z-index: 2;
+}
+
+.game-logo-icon {
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  flex-shrink: 0;
 }
 
 .game-topbar-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -59,15 +73,20 @@
   padding: 0.35rem 1rem;
   border-radius: var(--radius-full, 9999px);
   border: 1px solid var(--color-border, #2a2a3a);
+  pointer-events: auto;
+  white-space: nowrap;
+  z-index: 1;
 }
 
 .game-topbar-right {
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 1rem;
   font-weight: 600;
   font-size: 1.125rem;
   color: var(--color-text-secondary, #9090a8);
+  z-index: 2;
 }
 
 /* Layout Split (Main Content + Sidebar) */
@@ -570,13 +589,18 @@
 
 .question-header-card {
   width: 100%;
+  min-height: 180px;
   background: var(--color-bg-elevated, #12121a);
   border: 1px solid var(--color-border, #2a2a3a);
   border-radius: var(--radius-2xl);
-  padding: 2.5rem 2rem;
+  padding: 2rem;
   text-align: center;
   box-shadow: var(--shadow-md);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .question-text {
@@ -743,6 +767,7 @@
   justify-content: space-between;
   position: relative;
   gap: 1rem;
+  animation: slideInResultsAnswer 0.3s ease forwards;
 }
 
 .teacher-variant-badge-count {
@@ -1134,7 +1159,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1.25rem;
 }
 
 .review-stat-row {
@@ -1165,9 +1190,12 @@
   flex-wrap: wrap;
   gap: 10px;
   width: 100%;
-  max-height: 100%;
-  overflow: auto;
+  max-height: calc(100vh - 260px);
+  overflow-y: auto;
+  overflow-x: hidden;
   align-content: flex-start;
+  padding: 4px 4px 35px 4px;
+  margin-bottom: -35px;
 }
 
 .review-tabs-header {
@@ -1175,6 +1203,7 @@
   gap: 1.5rem;
   border-bottom: 1px solid var(--color-border, #2a2a3a);
   margin-bottom: 1.5rem;
+  position: relative;
 }
 
 .review-tab-btn {
@@ -1183,6 +1212,14 @@
   font-size: 1.1rem;
   color: var(--color-text-secondary, #9090a8);
   position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-fast, 0.2s ease);
+}
+
+.review-tab-btn:hover {
+  color: #d0d0e0;
 }
 
 .review-tab-btn.is-active {
@@ -1197,7 +1234,41 @@
   right: 0;
   height: 3px;
   background: var(--color-accent, #863bff);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-full, 9999px);
+  animation: tabUnderlineIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tabUnderlineIn {
+  from {
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes slideInResultsAnswer {
+  from {
+    opacity: 0;
+    transform: translateY(75px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInResultAnswerStudent {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .student-answer-card {
@@ -1214,7 +1285,7 @@
   border: 1px solid var(--color-border, #2e2e42);
   border-top: 4px solid var(--color-accent, #863bff);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  animation: slideInResultsAnswer 0.3s ease forwards;
+  animation: slideInResultAnswerStudent 0.3s ease forwards;
 }
 
 @media (max-width: 640px) {

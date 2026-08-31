@@ -6,8 +6,12 @@ export function LoginPage() {
   const { t } = useLocale();
   const [searchParams] = useSearchParams();
   const rawRedirect = searchParams.get('redirect') || searchParams.get('from');
-  const registerUrl = rawRedirect
-    ? `/register?redirect=${encodeURIComponent(rawRedirect)}`
+  const role = searchParams.get('role') || searchParams.get('tab');
+  const registerUrlParams = new URLSearchParams();
+  if (rawRedirect) registerUrlParams.set('redirect', rawRedirect);
+  if (role) registerUrlParams.set('role', role);
+  const registerUrl = registerUrlParams.toString()
+    ? `/register?${registerUrlParams.toString()}`
     : '/register';
 
   return (

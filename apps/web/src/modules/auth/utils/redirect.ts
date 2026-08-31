@@ -16,6 +16,19 @@ export function getSafeRedirectUrl(
 	return fallbackPath;
 }
 
-export function createLoginRedirectUrl(targetPath: string): string {
-	return `/login?redirect=${encodeURIComponent(targetPath)}`;
+export function createLoginRedirectUrl(
+	targetPath: string,
+	role?: 'teacher' | 'student',
+): string {
+	const params = new URLSearchParams();
+	params.set('redirect', targetPath);
+	const determinedRole =
+		role ||
+		(targetPath.startsWith('/join') || targetPath.startsWith('/student')
+			? 'student'
+			: undefined);
+	if (determinedRole) {
+		params.set('role', determinedRole);
+	}
+	return `/login?${params.toString()}`;
 }

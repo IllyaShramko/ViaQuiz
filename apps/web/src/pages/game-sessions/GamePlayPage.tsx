@@ -7,7 +7,9 @@ import {
 	QuestionStudentView,
 	ReviewStudentView,
 	shuffleArray,
+	formatTimer,
 } from '../../modules/game-session';
+import { LogoIcon, TimerIcon } from '../../shared/ui/icons';
 import styles from '../../modules/game-session/ui/GameSession.module.css';
 
 export function GamePlayPage() {
@@ -93,16 +95,13 @@ export function GamePlayPage() {
 			{/* Top Bar for Student */}
 			<header className={styles['game-topbar']}>
 				<div className={styles['game-logo']}>
-					<span style={{ color: 'var(--color-accent, #863bff)', fontSize: '1.5rem' }}>✦</span>
+					<LogoIcon size={24} className={styles['game-logo-icon']} />
 					<span>ViaQuiz</span>
 				</div>
 
 				<div className={styles['game-topbar-center']}>
-					{status === 'PROGRESS' ? (
-						<span>⏱ {remainingSeconds}с</span>
-					) : (
-						<span>00:00</span>
-					)}
+					<TimerIcon size={18} />
+					<span>{status === 'PROGRESS' ? formatTimer(remainingSeconds) : '00:00'}</span>
 				</div>
 
 				<div className={styles['game-topbar-right']}>

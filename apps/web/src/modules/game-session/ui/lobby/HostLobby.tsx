@@ -59,7 +59,7 @@ export function HostLobby({
 						</div>
 						<div className={styles['lobby-url-row']}>
 							<Link to={joinUrl} target="_blank" className={styles['lobby-url-text']}>
-								joinqptquiz.com
+								joinviaquiz.com
 							</Link>
 							<button
 								type="button"
