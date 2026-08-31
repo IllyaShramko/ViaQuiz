@@ -9,6 +9,8 @@ export {
   ClassesPage,
   ClassDetailsPage,
   StudentDetailsPage,
+  ReportsListPage,
+  SessionReportPage,
 } from './main';
 export {
   StudentDashboardPage,

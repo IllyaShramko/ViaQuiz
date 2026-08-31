@@ -1,0 +1,1 @@
+export { StudentDetailDrawer } from './StudentDetailDrawer';

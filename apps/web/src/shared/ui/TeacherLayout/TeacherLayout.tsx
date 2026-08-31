@@ -79,8 +79,8 @@ export function TeacherLayout() {
           </Link>
 
           <Link
-            to="/reports"
-            className={`${styles['teacher-nav-item']} ${location.pathname.startsWith('/reports') ? styles['is-active'] : ''}`}
+            to="/dashboard/reports"
+            className={`${styles['teacher-nav-item']} ${location.pathname.startsWith('/dashboard/reports') ? styles['is-active'] : ''}`}
           >
             <svg className={styles['teacher-nav-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="20" x2="18" y2="10" />
@@ -134,7 +134,20 @@ export function TeacherLayout() {
               <h1 className={styles['teacher-topbar__title']}>Бібліотека</h1>
             ) : isClasses ? (
               <h1 className={styles['teacher-topbar__title']}>Мої класи</h1>
-            ) : location.pathname.startsWith('/reports') ? (
+            ) : location.pathname.startsWith('/dashboard/reports/') ? (
+              <button
+                type="button"
+                className={styles['teacher-back-btn']}
+                onClick={() => navigate('/dashboard/reports')}
+                aria-label="Назад до звітів"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span className={styles['teacher-topbar__title']}>Результати вікторини</span>
+              </button>
+            ) : location.pathname.startsWith('/dashboard/reports') ? (
               <h1 className={styles['teacher-topbar__title']}>Звіти</h1>
             ) : (
               <h1 className={styles['teacher-topbar__title']}>Головна</h1>

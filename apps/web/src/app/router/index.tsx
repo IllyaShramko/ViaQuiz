@@ -13,6 +13,8 @@ import {
   ClassesPage,
   ClassDetailsPage,
   StudentDetailsPage,
+  ReportsListPage,
+  SessionReportPage,
   StudentDashboardPage,
   StudentClassPage,
   StudentPerformancePage,
@@ -60,6 +62,8 @@ export const router = createBrowserRouter([
           { path: '/library', element: <LibraryPage /> },
           { path: '/profile', element: <ProfilePage /> },
           { path: '/quiz/:uuid', element: <QuizDetailsPage /> },
+          { path: '/dashboard/reports', element: <ReportsListPage /> },
+          { path: '/dashboard/reports/:roomUuid', element: <SessionReportPage /> },
         ],
       },
       // Student Portal routes

@@ -38,3 +38,10 @@ export type {
 	QuestionReportDto,
 	StudentResultReportDto,
 } from "./game-session";
+export type {
+	TeacherSessionSummaryDto,
+	TeacherSessionsListDto,
+	SessionParticipantSummaryDto,
+	SessionQuestionStatsDto,
+	TeacherSessionReportDto,
+} from "./reports";

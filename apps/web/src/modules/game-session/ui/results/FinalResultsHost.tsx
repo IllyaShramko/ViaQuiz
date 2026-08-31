@@ -8,12 +8,14 @@ export interface FinalResultsHostProps {
 	quizName?: string;
 	totalQuestions: number;
 	leaderboard: ParticipantDto[];
+	roomUuid?: string;
 }
 
 export function FinalResultsHost({
 	quizName = 'Вікторина',
 	totalQuestions,
 	leaderboard,
+	roomUuid,
 }: FinalResultsHostProps) {
 	const navigate = useNavigate();
 	const [activeTab, setActiveTab] = useState<'overview' | 'chart'>('overview');
@@ -68,14 +70,26 @@ export function FinalResultsHost({
 						</p>
 					</div>
 
+					<div style={{ display: 'flex', gap: '0.75rem' }}>
+					{roomUuid && (
+						<button
+							type="button"
+							className={styles['lobby-start-btn']}
+							style={{ padding: '0.6rem 1.25rem' }}
+							onClick={() => navigate(`/dashboard/reports/${roomUuid}`)}
+						>
+							Переглянути повний звіт
+						</button>
+					)}
 					<button
 						type="button"
 						className={styles['lobby-start-btn']}
-						style={{ padding: '0.6rem 1.25rem' }}
+						style={{ padding: '0.6rem 1.25rem', background: 'var(--color-bg-surface, #1a1a26)', border: '1px solid var(--color-border, #2a2a3a)' }}
 						onClick={() => navigate('/dashboard')}
 					>
 						До панелі вчителя
 					</button>
+				</div>
 				</div>
 
 				{/* Tabs */}
