@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Chart from 'react-apexcharts';
 import { useGetSessionReportQuery } from '../../api';
 import { StudentDetailDrawer } from '../StudentDetailDrawer';
@@ -7,10 +7,17 @@ import styles from '../Reports.module.css';
 import type { SessionQuestionStatsDto, SessionParticipantSummaryDto } from '@viaquiz/shared-types';
 
 export const SessionReportPage: React.FC = () => {
+	const navigate = useNavigate();
 	const { roomUuid } = useParams<{ roomUuid: string }>();
 	const { data: report, isLoading, isError } = useGetSessionReportQuery(roomUuid as string, {
 		skip: !roomUuid,
 	});
+
+	useEffect(() => {
+		if (!roomUuid || isError) {
+			navigate('/not-found', { replace: true });
+		}
+	}, [roomUuid, isError, navigate]);
 
 	const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'chart'>('overview');
 	const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
@@ -27,7 +34,7 @@ export const SessionReportPage: React.FC = () => {
 	};
 
 	if (isLoading) return <div className={styles['report-page']}>Завантаження...</div>;
-	if (isError || !report) return <div className={styles['report-page']}>Помилка завантаження звіту.</div>;
+	if (isError || !report) return null;
 
 	return (
 		<div className={styles['report-page']}>

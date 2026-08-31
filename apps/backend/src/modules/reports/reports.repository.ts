@@ -2,19 +2,46 @@ import { PRISMA_CLIENT } from "../../config/database";
 import type { ReportsRepositoryContract } from "./types/reports.contracts";
 
 export const ReportsRepository: ReportsRepositoryContract = {
-	async findFinishedSessionsByHost(hostId: number, page: number, pageSize: number, search?: string) {
-		const whereClause: any = {
-			hostId,
-			status: "FINISHED"
-		};
+	async findFinishedSessionsByHost(
+		userId: number,
+		page: number,
+		pageSize: number,
+		search?: string,
+		classUuid?: string
+	) {
+		const andConditions: any[] = [];
 
 		if (search) {
-			whereClause.quiz = {
-				name: {
-					contains: search,
-					mode: "insensitive"
+			andConditions.push({
+				quiz: {
+					name: {
+						contains: search,
+						mode: "insensitive"
+					}
 				}
-			};
+			});
+		}
+
+		if (classUuid) {
+			andConditions.push({
+				OR: [
+					{ classroom: { uuid: classUuid } },
+					{ course: { classroom: { uuid: classUuid } } }
+				]
+			});
+		}
+
+		const whereClause: any = {
+			status: "FINISHED",
+			OR: [
+				{ hostId: userId },
+				{ classroom: { teacherId: userId } },
+				{ course: { classroom: { teacherId: userId } } }
+			]
+		};
+
+		if (andConditions.length > 0) {
+			whereClause.AND = andConditions;
 		}
 
 		const [rooms, total] = await Promise.all([
@@ -23,6 +50,9 @@ export const ReportsRepository: ReportsRepositoryContract = {
 				include: {
 					quiz: {
 						select: { id: true, uuid: true, name: true }
+					},
+					classroom: {
+						select: { id: true, name: true }
 					},
 					course: {
 						select: {
@@ -51,11 +81,15 @@ export const ReportsRepository: ReportsRepositoryContract = {
 		return { rooms, total };
 	},
 
-	async findSessionReportData(roomUuid: string, hostId: number) {
+	async findSessionReportData(roomUuid: string, userId: number) {
 		return PRISMA_CLIENT.room.findFirst({
 			where: {
 				uuid: roomUuid,
-				hostId
+				OR: [
+					{ hostId: userId },
+					{ classroom: { teacherId: userId } },
+					{ course: { classroom: { teacherId: userId } } }
+				]
 			},
 			include: {
 				quiz: {
@@ -72,6 +106,9 @@ export const ReportsRepository: ReportsRepositoryContract = {
 							}
 						}
 					}
+				},
+				classroom: {
+					select: { id: true, name: true }
 				},
 				course: {
 					select: {
@@ -113,11 +150,15 @@ export const ReportsRepository: ReportsRepositoryContract = {
 		});
 	},
 
-	async findParticipantReportData(roomUuid: string, participantId: number, hostId: number) {
+	async findParticipantReportData(roomUuid: string, participantId: number, userId: number) {
 		return PRISMA_CLIENT.room.findFirst({
 			where: {
 				uuid: roomUuid,
-				hostId
+				OR: [
+					{ hostId: userId },
+					{ classroom: { teacherId: userId } },
+					{ course: { classroom: { teacherId: userId } } }
+				]
 			},
 			include: {
 				quiz: {

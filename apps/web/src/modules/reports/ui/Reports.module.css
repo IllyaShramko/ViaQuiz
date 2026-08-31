@@ -63,7 +63,12 @@
 	border-bottom: none;
 }
 
-.reports-table tbody tr:hover {
+.reports-table-row {
+	cursor: pointer;
+	transition: background var(--transition-fast);
+}
+
+.reports-table-row:hover {
 	background: var(--color-bg-hover);
 }
 

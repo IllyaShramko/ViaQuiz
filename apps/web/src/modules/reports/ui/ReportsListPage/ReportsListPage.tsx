@@ -42,19 +42,8 @@ export const ReportsListPage: React.FC = () => {
 		});
 	};
 
-	const getStatusLabel = (status: string) => {
-		switch (status) {
-			case 'FINISHED': return 'Завершено';
-			case 'PROGRESS': return 'В процесі';
-			case 'AWAITING': return 'Очікування';
-			case 'REVIEWING': return 'Перевірка';
-			default: return status;
-		}
-	};
-
 	return (
 		<div className={styles['reports-page']}>
-			<h1>Звіти</h1>
 			<div className={styles['reports-search-box']}>
 				<span role="img" aria-label="search">🔍</span>
 				<input
@@ -84,15 +73,17 @@ export const ReportsListPage: React.FC = () => {
 										<th>Учасники</th>
 										<th>Сер. бал</th>
 										<th>Сер. %</th>
-										<th>Статус</th>
 										<th>Дата</th>
-										<th>Дія</th>
 									</tr>
 								</thead>
 								<tbody>
 									{data.sessions.map(session => (
-										<tr key={session.roomUuid}>
-											<td>{session.quizName}</td>
+										<tr 
+											key={session.roomUuid} 
+											className={styles['reports-table-row']}
+											onClick={() => navigate(`/dashboard/reports/${session.roomUuid}`)}
+										>
+											<td style={{ fontWeight: 600 }}>{session.quizName}</td>
 											<td>
 												{session.courseName
 													? `${session.courseName}${session.groupName ? ` (${session.groupName})` : ''}`
@@ -101,20 +92,7 @@ export const ReportsListPage: React.FC = () => {
 											<td>{session.participantsCount}</td>
 											<td>{session.avgScore.toFixed(1)}</td>
 											<td>{session.avgPercentage}%</td>
-											<td>
-												<span className={`${styles['reports-status-badge']} ${session.status === 'FINISHED' ? styles['reports-status-badge--finished'] : ''}`}>
-													{getStatusLabel(session.status)}
-												</span>
-											</td>
 											<td>{formatDate(session.endedAt || session.createdAt)}</td>
-											<td>
-												<button
-													className={styles['reports-view-btn']}
-													onClick={() => navigate(`/dashboard/reports/${session.roomUuid}`)}
-												>
-													Переглянути
-												</button>
-											</td>
 										</tr>
 									))}
 								</tbody>

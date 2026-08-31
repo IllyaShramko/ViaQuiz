@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
+import { isTeacher } from '../../../modules/auth/utils';
 import styles from './StudentLayout.module.css';
 
 export function StudentLayout() {
@@ -14,7 +15,7 @@ export function StudentLayout() {
     setIsMobileNavOpen(false);
   }, [location.pathname]);
 
-  if (user && (user as any).role?.toUpperCase() === 'TEACHER') {
+  if (isTeacher(user)) {
     return <Navigate to="/dashboard" replace />;
   }
 

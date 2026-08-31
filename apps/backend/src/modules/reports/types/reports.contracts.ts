@@ -3,28 +3,30 @@ import type { TeacherSessionsListDto, TeacherSessionReportDto, StudentResultRepo
 
 export interface ReportsRepositoryContract {
 	findFinishedSessionsByHost(
-		hostId: number,
+		userId: number,
 		page: number,
 		pageSize: number,
-		search?: string
+		search?: string,
+		classUuid?: string
 	): Promise<{ rooms: any[]; total: number }>;
 
-	findSessionReportData(roomUuid: string, hostId: number): Promise<any | null>;
+	findSessionReportData(roomUuid: string, userId: number): Promise<any | null>;
 
-	findParticipantReportData(roomUuid: string, participantId: number, hostId: number): Promise<any | null>;
+	findParticipantReportData(roomUuid: string, participantId: number, userId: number): Promise<any | null>;
 }
 
 export interface ReportsServiceContract {
 	getTeacherSessions(
-		hostId: number,
+		userId: number,
 		page: number,
 		pageSize: number,
-		search?: string
+		search?: string,
+		classUuid?: string
 	): Promise<TeacherSessionsListDto>;
 
-	getSessionReport(roomUuid: string, hostId: number): Promise<TeacherSessionReportDto>;
+	getSessionReport(roomUuid: string, userId: number): Promise<TeacherSessionReportDto>;
 
-	getParticipantReport(roomUuid: string, participantId: number, hostId: number): Promise<StudentResultReportDto>;
+	getParticipantReport(roomUuid: string, participantId: number, userId: number): Promise<StudentResultReportDto>;
 }
 
 export interface ReportsControllerContract {

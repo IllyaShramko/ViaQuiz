@@ -12,8 +12,20 @@ import type {
 } from "@viaquiz/shared-types";
 
 export const ReportsService: ReportsServiceContract = {
-	async getTeacherSessions(hostId: number, page: number, pageSize: number, search?: string): Promise<TeacherSessionsListDto> {
-		const { rooms, total } = await ReportsRepository.findFinishedSessionsByHost(hostId, page, pageSize, search);
+	async getTeacherSessions(
+		userId: number,
+		page: number,
+		pageSize: number,
+		search?: string,
+		classUuid?: string
+	): Promise<TeacherSessionsListDto> {
+		const { rooms, total } = await ReportsRepository.findFinishedSessionsByHost(
+			userId,
+			page,
+			pageSize,
+			search,
+			classUuid
+		);
 
 		const sessions: TeacherSessionSummaryDto[] = rooms.map((room: any) => {
 			let totalScore = 0;
@@ -35,7 +47,7 @@ export const ReportsService: ReportsServiceContract = {
 				quizName: room.quiz.name,
 				quizUuid: room.quiz.uuid,
 				courseName: room.course?.name || null,
-				groupName: room.course?.classroom?.name || null,
+				groupName: room.classroom?.name || room.course?.classroom?.name || null,
 				status: room.status as "AWAITING" | "PROGRESS" | "REVIEWING" | "FINISHED",
 				participantsCount: room._count.participants,
 				avgScore: validParticipants > 0 ? Math.round(totalScore / validParticipants) : 0,
@@ -54,8 +66,8 @@ export const ReportsService: ReportsServiceContract = {
 		};
 	},
 
-	async getSessionReport(roomUuid: string, hostId: number): Promise<TeacherSessionReportDto> {
-		const room: any = await ReportsRepository.findSessionReportData(roomUuid, hostId);
+	async getSessionReport(roomUuid: string, userId: number): Promise<TeacherSessionReportDto> {
+		const room: any = await ReportsRepository.findSessionReportData(roomUuid, userId);
 
 		if (!room) {
 			throw new NotFoundError("Сесію не знайдено або у вас немає до неї доступу");
@@ -160,7 +172,7 @@ export const ReportsService: ReportsServiceContract = {
 			quizName: room.quiz.name,
 			quizUuid: room.quiz.uuid,
 			courseName: room.course?.name || null,
-			groupName: room.course?.classroom?.name || null,
+			groupName: room.classroom?.name || room.course?.classroom?.name || null,
 			totalQuestions,
 			totalParticipants,
 			avgGrade: roomAvgGrade,
@@ -172,8 +184,8 @@ export const ReportsService: ReportsServiceContract = {
 		};
 	},
 
-	async getParticipantReport(roomUuid: string, participantId: number, hostId: number): Promise<StudentResultReportDto> {
-		const room: any = await ReportsRepository.findParticipantReportData(roomUuid, participantId, hostId);
+	async getParticipantReport(roomUuid: string, participantId: number, userId: number): Promise<StudentResultReportDto> {
+		const room: any = await ReportsRepository.findParticipantReportData(roomUuid, participantId, userId);
 
 		if (!room) {
 			throw new NotFoundError("Сесію не знайдено або у вас немає до неї доступу");

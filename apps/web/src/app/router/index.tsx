@@ -88,5 +88,6 @@ export const router = createBrowserRouter([
     ],
   },
   // 404 Catch-all route
+  { path: '/not-found', element: <NotFoundPage /> },
   { path: '*', element: <NotFoundPage /> },
 ]);

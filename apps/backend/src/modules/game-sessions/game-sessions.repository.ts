@@ -10,6 +10,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 			data: {
 				hostId,
 				quizId: data.quizId,
+				classroomId: data.classroomId ?? null,
 				courseId: data.courseId ?? null,
 				joinCode,
 				status: "AWAITING",
@@ -23,6 +24,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 			where: { id },
 			include: {
 				quiz: true,
+				classroom: true,
 				course: true,
 				participants: true,
 			},
@@ -34,6 +36,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 			where: { uuid },
 			include: {
 				quiz: true,
+				classroom: true,
 				course: true,
 				participants: true,
 			},
@@ -45,6 +48,7 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 			where: { joinCode },
 			include: {
 				quiz: true,
+				classroom: true,
 				course: true,
 				participants: true,
 			},
@@ -82,6 +86,15 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 	async findStudentById(studentId) {
 		return PRISMA_CLIENT.student.findUnique({
 			where: { id: studentId },
+		});
+	},
+
+	async findCourseById(id) {
+		return PRISMA_CLIENT.course.findUnique({
+			where: { id },
+			include: {
+				classroom: true,
+			},
 		});
 	},
 

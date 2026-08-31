@@ -3,6 +3,7 @@ export type RoomStatus = "AWAITING" | "PROGRESS" | "REVIEWING" | "FINISHED";
 export interface CreateRoomDto {
 	quizId: number;
 	courseId?: number | null | undefined;
+	classroomId?: number | null | undefined;
 }
 
 export interface JoinByCodeDto {

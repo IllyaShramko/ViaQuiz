@@ -10,6 +10,7 @@ model Classroom {
   teacherId Int
   teacher   User      @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   courses   Course[]
+  rooms     Room[]
   students  Student[]
 
   createdAt DateTime @default(now())

@@ -7,10 +7,18 @@ import type {
 
 export const reportsApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
-		getTeacherSessions: builder.query<TeacherSessionsListDto, { page?: number; pageSize?: number; search?: string }>({
-			query: ({ page = 1, pageSize = 10, search } = {}) => ({
+		getTeacherSessions: builder.query<
+			TeacherSessionsListDto,
+			{ page?: number; pageSize?: number; search?: string; classUuid?: string }
+		>({
+			query: ({ page = 1, pageSize = 10, search, classUuid } = {}) => ({
 				url: '/reports/sessions',
-				params: { page, pageSize, ...(search ? { search } : {}) },
+				params: {
+					page,
+					pageSize,
+					...(search ? { search } : {}),
+					...(classUuid ? { classUuid } : {}),
+				},
 			}),
 		}),
 		getSessionReport: builder.query<TeacherSessionReportDto, string>({

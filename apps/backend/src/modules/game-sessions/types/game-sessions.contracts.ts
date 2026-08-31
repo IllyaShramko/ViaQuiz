@@ -34,6 +34,7 @@ export interface GameSessionsRepositoryContract {
 	updateRoomStatus(id: number, status: RoomStatus, currentQuestionIndex?: number): Promise<Room>;
 	findQuizWithQuestions(quizId: number): Promise<FullQuizSession | null>;
 	findStudentById(studentId: number): Promise<Student | null>;
+	findCourseById(courseId: number): Promise<any | null>;
 	isStudentEnrolledInCourse(studentId: number, courseId: number): Promise<boolean>;
 	createParticipant(data: {
 		roomId: number;
