@@ -10,8 +10,9 @@ export const ReportsController: ReportsControllerContract = {
 			const pageSize = parseInt(req.query.pageSize as string) || 10;
 			const search = req.query.search as string | undefined;
 			const classUuid = req.query.classUuid as string | undefined;
+			const courseUuid = req.query.courseUuid as string | undefined;
 
-			const result = await ReportsService.getTeacherSessions(userId, page, pageSize, search, classUuid);
+			const result = await ReportsService.getTeacherSessions(userId, page, pageSize, search, classUuid, courseUuid);
 			res.status(200).json(result);
 		} catch (error) {
 			next(error);

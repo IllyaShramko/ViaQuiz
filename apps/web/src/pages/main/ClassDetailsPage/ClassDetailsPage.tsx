@@ -333,7 +333,11 @@ export function ClassDetailsPage() {
           ) : (
             <div className={styles['classes-grid']}>
               {courses.map((course) => (
-                <div key={course.uuid} className={styles['class-card']}>
+                <Link
+                  key={course.uuid}
+                  to={`/classes/${classroom.uuid}/courses/${course.uuid}`}
+                  className={styles['class-card']}
+                >
                   <div className={styles['class-card-header']}>
                     <h3 className={styles['class-name']}>{course.name}</h3>
                   </div>
@@ -349,7 +353,10 @@ export function ClassDetailsPage() {
                       <span className={styles['class-stat-value']}>{course._count?.rooms || 0}</span>
                     </div>
                   </div>
-                </div>
+                  <div className={styles['class-footer-link']}>
+                    <span>Перейти до курсу →</span>
+                  </div>
+                </Link>
               ))}
             </div>
           )}

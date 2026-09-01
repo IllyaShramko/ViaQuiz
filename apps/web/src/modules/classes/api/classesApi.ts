@@ -141,6 +141,15 @@ export const classesApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, { studentUuid }) => [{ type: 'Student', id: studentUuid }],
     }),
 
+    getCourse: builder.query<CourseDto, { classUuid: string; courseUuid: string }>({
+      query: ({ classUuid, courseUuid }) => `/classrooms/${classUuid}/courses/${courseUuid}`,
+      providesTags: (_result, _error, { courseUuid }) => [
+        'Classroom',
+        'Course',
+        { type: 'Course', id: courseUuid },
+      ],
+    }),
+
     createCourse: builder.mutation<CourseDto, { classUuid: string; body: CreateCourseRequest }>({
       query: ({ classUuid, body }) => ({
         url: `/classrooms/${classUuid}/courses`,
@@ -149,6 +158,7 @@ export const classesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, { classUuid }) => [
         'Classroom',
+        'Course',
         { type: 'Classroom', id: classUuid },
       ],
     }),
@@ -162,9 +172,44 @@ export const classesApi = baseApi.injectEndpoints({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: (_result, _error, { classUuid }) => [
+      invalidatesTags: (_result, _error, { classUuid, courseUuid }) => [
         'Classroom',
+        'Course',
         { type: 'Classroom', id: classUuid },
+        { type: 'Course', id: courseUuid },
+      ],
+    }),
+
+    enrollStudentsToCourse: builder.mutation<
+      CourseDto,
+      { classUuid: string; courseUuid: string; studentUuids: string[] }
+    >({
+      query: ({ classUuid, courseUuid, studentUuids }) => ({
+        url: `/classrooms/${classUuid}/courses/${courseUuid}/students`,
+        method: 'POST',
+        body: { studentUuids },
+      }),
+      invalidatesTags: (_result, _error, { classUuid, courseUuid }) => [
+        'Classroom',
+        'Course',
+        { type: 'Classroom', id: classUuid },
+        { type: 'Course', id: courseUuid },
+      ],
+    }),
+
+    unenrollStudentFromCourse: builder.mutation<
+      { message: string },
+      { classUuid: string; courseUuid: string; studentUuid: string }
+    >({
+      query: ({ classUuid, courseUuid, studentUuid }) => ({
+        url: `/classrooms/${classUuid}/courses/${courseUuid}/students/${studentUuid}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, { classUuid, courseUuid }) => [
+        'Classroom',
+        'Course',
+        { type: 'Classroom', id: classUuid },
+        { type: 'Course', id: courseUuid },
       ],
     }),
 
@@ -173,9 +218,11 @@ export const classesApi = baseApi.injectEndpoints({
         url: `/classrooms/${classUuid}/courses/${courseUuid}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_result, _error, { classUuid }) => [
+      invalidatesTags: (_result, _error, { classUuid, courseUuid }) => [
         'Classroom',
+        'Course',
         { type: 'Classroom', id: classUuid },
+        { type: 'Course', id: courseUuid },
       ],
     }),
   }),
@@ -191,7 +238,10 @@ export const {
   useResetStudentPasswordMutation,
   useDeleteStudentMutation,
   useGetStudentAnalyticsQuery,
+  useGetCourseQuery,
   useCreateCourseMutation,
   useUpdateCourseMutation,
+  useEnrollStudentsToCourseMutation,
+  useUnenrollStudentFromCourseMutation,
   useDeleteCourseMutation,
 } = classesApi;

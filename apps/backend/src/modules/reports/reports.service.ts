@@ -17,14 +17,16 @@ export const ReportsService: ReportsServiceContract = {
 		page: number,
 		pageSize: number,
 		search?: string,
-		classUuid?: string
+		classUuid?: string,
+		courseUuid?: string,
 	): Promise<TeacherSessionsListDto> {
 		const { rooms, total } = await ReportsRepository.findFinishedSessionsByHost(
 			userId,
 			page,
 			pageSize,
 			search,
-			classUuid
+			classUuid,
+			courseUuid,
 		);
 
 		const sessions: TeacherSessionSummaryDto[] = rooms.map((room: any) => {

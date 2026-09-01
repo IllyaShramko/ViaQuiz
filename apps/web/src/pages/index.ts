@@ -8,6 +8,7 @@ export {
   LibraryPage,
   ClassesPage,
   ClassDetailsPage,
+  CourseDetailsPage,
   StudentDetailsPage,
   ReportsListPage,
   SessionReportPage,

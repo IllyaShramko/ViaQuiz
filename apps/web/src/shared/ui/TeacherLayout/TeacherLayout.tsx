@@ -34,12 +34,19 @@ export function TeacherLayout() {
   const isClasses = location.pathname.startsWith('/classes');
 
   const classDetailsMatch = matchPath({ path: '/classes/:uuid', end: true }, location.pathname);
+  const courseDetailsMatch = matchPath(
+    { path: '/classes/:classUuid/courses/:courseUuid', end: true },
+    location.pathname,
+  );
   const studentDetailsMatch = matchPath(
     { path: '/classes/:classUuid/students/:studentUuid', end: true },
     location.pathname,
   );
 
-  const currentClassUuid = classDetailsMatch?.params.uuid || studentDetailsMatch?.params.classUuid;
+  const currentClassUuid =
+    classDetailsMatch?.params.uuid ||
+    studentDetailsMatch?.params.classUuid ||
+    courseDetailsMatch?.params.classUuid;
   const { data: currentClassroom } = useGetClassroomQuery(currentClassUuid || '', {
     skip: !currentClassUuid,
   });
@@ -142,6 +149,21 @@ export function TeacherLayout() {
                   <polyline points="12 19 5 12 12 5" />
                 </svg>
                 <span className={styles['teacher-topbar__title']}>Вікторина</span>
+              </button>
+            ) : courseDetailsMatch ? (
+              <button
+                type="button"
+                className={styles['teacher-back-btn']}
+                onClick={() => navigate(`/classes/${courseDetailsMatch.params.classUuid}`)}
+                aria-label="Назад до класу"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span className={styles['teacher-topbar__title']}>
+                  {currentClassroom?.name || 'Клас'}
+                </span>
               </button>
             ) : studentDetailsMatch ? (
               <button

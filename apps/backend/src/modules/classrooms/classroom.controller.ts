@@ -129,6 +129,22 @@ export const ClassroomController: ClassroomControllerContract = {
 		}
 	},
 
+	async getCourse(req, res, next) {
+		try {
+			const teacherId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const course = await ClassroomService.getCourse(
+				classUuid,
+				courseUuid,
+				teacherId,
+			);
+			res.status(200).json(course);
+		} catch (error) {
+			next(error);
+		}
+	},
+
 	async createCourse(req, res, next) {
 		try {
 			const teacherId = res.locals.userId as number;
@@ -156,6 +172,41 @@ export const ClassroomController: ClassroomControllerContract = {
 				req.body,
 			);
 			res.status(200).json(course);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async enrollStudentsToCourse(req, res, next) {
+		try {
+			const teacherId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const course = await ClassroomService.enrollStudents(
+				classUuid,
+				courseUuid,
+				teacherId,
+				req.body.studentUuids,
+			);
+			res.status(200).json(course);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async unenrollStudentFromCourse(req, res, next) {
+		try {
+			const teacherId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const studentUuid = req.params.studentUuid as string;
+			const result = await ClassroomService.unenrollStudent(
+				classUuid,
+				courseUuid,
+				studentUuid,
+				teacherId,
+			);
+			res.status(200).json(result);
 		} catch (error) {
 			next(error);
 		}

@@ -7,7 +7,8 @@ export const ReportsRepository: ReportsRepositoryContract = {
 		page: number,
 		pageSize: number,
 		search?: string,
-		classUuid?: string
+		classUuid?: string,
+		courseUuid?: string,
 	) {
 		const andConditions: any[] = [];
 
@@ -22,7 +23,11 @@ export const ReportsRepository: ReportsRepositoryContract = {
 			});
 		}
 
-		if (classUuid) {
+		if (courseUuid) {
+			andConditions.push({
+				course: { uuid: courseUuid }
+			});
+		} else if (classUuid) {
 			andConditions.push({
 				OR: [
 					{ classroom: { uuid: classUuid } },

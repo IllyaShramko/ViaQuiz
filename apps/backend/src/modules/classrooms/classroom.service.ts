@@ -311,6 +311,20 @@ export const ClassroomService: ClassroomServiceContract = {
 		};
 	},
 
+	async getCourse(classUuid, courseUuid, teacherId) {
+		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
+		if (!classroom) {
+			throw new NotFoundError("Клас не знайдено");
+		}
+
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroomId !== classroom.id) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		return course;
+	},
+
 	async createCourse(classUuid, teacherId, data) {
 		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
 		if (!classroom) {
@@ -396,6 +410,59 @@ export const ClassroomService: ClassroomServiceContract = {
 		if (studentIds !== undefined) updatePayload.studentIds = studentIds;
 
 		return await ClassroomRepository.updateCourse(course.id, updatePayload);
+	},
+
+	async enrollStudents(classUuid, courseUuid, teacherId, studentUuids) {
+		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
+		if (!classroom) {
+			throw new NotFoundError("Клас не знайдено");
+		}
+
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroomId !== classroom.id) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		// Filter students belonging to this class
+		const validClassStudents = classroom.students.filter((s) =>
+			studentUuids.includes(s.uuid),
+		);
+
+		const currentEnrolledIds = new Set(course.students.map((s) => s.id));
+		const newStudentsToAdd = validClassStudents.filter((s) => !currentEnrolledIds.has(s.id));
+
+		if (currentEnrolledIds.size + newStudentsToAdd.length > CLASSROOM_LIMITS.MAX_STUDENTS_PER_COURSE) {
+			throw new BadRequestError(
+				`У курсі може бути максимум ${CLASSROOM_LIMITS.MAX_STUDENTS_PER_COURSE} учнів.`,
+			);
+		}
+
+		const studentIds = newStudentsToAdd.map((s) => s.id);
+		if (studentIds.length === 0) {
+			return course;
+		}
+
+		return await ClassroomRepository.enrollStudentsToCourse(course.id, studentIds);
+	},
+
+	async unenrollStudent(classUuid, courseUuid, studentUuid, teacherId) {
+		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
+		if (!classroom) {
+			throw new NotFoundError("Клас не знайдено");
+		}
+
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroomId !== classroom.id) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		const student = course.students.find((s) => s.uuid === studentUuid);
+		if (!student) {
+			throw new NotFoundError("Учня не знайдено у списку учнів цього курсу");
+		}
+
+		await ClassroomRepository.unenrollStudentFromCourse(course.id, student.id);
+		return { message: "Учня успішно відраховано з курсу" };
 	},
 
 	async deleteCourse(classUuid, courseUuid, teacherId) {

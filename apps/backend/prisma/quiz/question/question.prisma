@@ -1,11 +1,11 @@
 model Question {
-  id           Int     @id @default(autoincrement())
-  uuid         String  @unique @default(uuid())
-  text         String
-  media        String?
-  type         String // "ONE_ANSWER" | "MANY_ANSWERS" | "TYPE_ANSWER_V1" | "TYPE_ANSWER_V2"
-  order        Int     @default(0)
-  points       Int     @default(1000)
+  id        Int     @id @default(autoincrement())
+  uuid      String  @unique @default(uuid())
+  text      String
+  media     String?
+  type      String // "ONE_ANSWER" | "MANY_ANSWERS" | "TYPE_ANSWER_V1" | "TYPE_ANSWER_V2"
+  order     Int     @default(0)
+  points    Int     @default(1000)
   timeLimit Int     @default(30000) // ms
 
   quizId   Int

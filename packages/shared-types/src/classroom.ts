@@ -27,6 +27,14 @@ export interface CourseDto {
 	isActive: boolean;
 	isArchived: boolean;
 	createdAt: string;
+	classroomId?: number;
+	classroom?: {
+		id: number;
+		uuid: string;
+		name: string;
+		code?: string | null;
+		students?: StudentDto[];
+	};
 	students?: StudentDto[];
 	_count?: {
 		students: number;

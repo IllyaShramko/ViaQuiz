@@ -158,7 +158,7 @@
     "first_name_placeholder": "Ваше ім'я",
     "last_name_label": "Прізвище",
     "last_name_placeholder": "Ваше прізвище",
-    "optional": "(необов'язково)",
+    "optional": "необов'язково",
     "skip": "Пропустити",
     "next": "Далі",
     "back": "Назад",

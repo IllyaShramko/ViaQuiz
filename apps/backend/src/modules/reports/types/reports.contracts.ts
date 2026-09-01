@@ -7,7 +7,8 @@ export interface ReportsRepositoryContract {
 		page: number,
 		pageSize: number,
 		search?: string,
-		classUuid?: string
+		classUuid?: string,
+		courseUuid?: string,
 	): Promise<{ rooms: any[]; total: number }>;
 
 	findSessionReportData(roomUuid: string, userId: number): Promise<any | null>;
@@ -21,7 +22,8 @@ export interface ReportsServiceContract {
 		page: number,
 		pageSize: number,
 		search?: string,
-		classUuid?: string
+		classUuid?: string,
+		courseUuid?: string,
 	): Promise<TeacherSessionsListDto>;
 
 	getSessionReport(roomUuid: string, userId: number): Promise<TeacherSessionReportDto>;

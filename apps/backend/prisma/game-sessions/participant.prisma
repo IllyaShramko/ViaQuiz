@@ -4,9 +4,9 @@ model Participant {
 
   nickname String
 
-  score Int @default(0)
+  score       Int     @default(0)
   isConnected Boolean @default(true)
-  isBanned Boolean @default(false)
+  isBanned    Boolean @default(false)
 
   roomId Int
   room   Room @relation(fields: [roomId], references: [id], onDelete: Cascade)

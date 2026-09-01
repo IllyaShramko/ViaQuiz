@@ -6,6 +6,7 @@ import {
 	createClassroomSchema,
 	createCourseSchema,
 	createStudentSchema,
+	enrollCourseStudentsSchema,
 	updateClassroomSchema,
 	updateCourseSchema,
 } from "./classroom.schema";
@@ -50,6 +51,10 @@ classroomRouter.get(
 );
 
 // Course management inside classroom
+classroomRouter.get(
+	"/:classUuid/courses/:courseUuid",
+	ClassroomController.getCourse,
+);
 classroomRouter.post(
 	"/:uuid/courses",
 	validateBody(createCourseSchema),
@@ -59,6 +64,15 @@ classroomRouter.put(
 	"/:classUuid/courses/:courseUuid",
 	validateBody(updateCourseSchema),
 	ClassroomController.updateCourse,
+);
+classroomRouter.post(
+	"/:classUuid/courses/:courseUuid/students",
+	validateBody(enrollCourseStudentsSchema),
+	ClassroomController.enrollStudentsToCourse,
+);
+classroomRouter.delete(
+	"/:classUuid/courses/:courseUuid/students/:studentUuid",
+	ClassroomController.unenrollStudentFromCourse,
 );
 classroomRouter.delete(
 	"/:classUuid/courses/:courseUuid",

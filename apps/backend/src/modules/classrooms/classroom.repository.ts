@@ -307,13 +307,30 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							firstName: true,
 							lastName: true,
 							login: true,
+							createdAt: true,
+							_count: {
+								select: {
+									passedQuizes: true,
+								},
+							},
 						},
+						orderBy: [
+							{ lastName: "asc" },
+							{ firstName: "asc" },
+						],
 					},
 					classroom: {
 						select: {
 							id: true,
 							uuid: true,
 							name: true,
+							code: true,
+						},
+					},
+					_count: {
+						select: {
+							students: true,
+							rooms: true,
 						},
 					},
 				},
@@ -390,6 +407,106 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							firstName: true,
 							lastName: true,
 							login: true,
+						},
+					},
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async enrollStudentsToCourse(courseId, studentIds) {
+		try {
+			return await PRISMA_CLIENT.course.update({
+				where: { id: courseId },
+				data: {
+					students: {
+						connect: studentIds.map((id) => ({ id })),
+					},
+				},
+				include: {
+					students: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							createdAt: true,
+							_count: {
+								select: {
+									passedQuizes: true,
+								},
+							},
+						},
+						orderBy: [
+							{ lastName: "asc" },
+							{ firstName: "asc" },
+						],
+					},
+					classroom: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							code: true,
+						},
+					},
+					_count: {
+						select: {
+							students: true,
+							rooms: true,
+						},
+					},
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async unenrollStudentFromCourse(courseId, studentId) {
+		try {
+			return await PRISMA_CLIENT.course.update({
+				where: { id: courseId },
+				data: {
+					students: {
+						disconnect: { id: studentId },
+					},
+				},
+				include: {
+					students: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							createdAt: true,
+							_count: {
+								select: {
+									passedQuizes: true,
+								},
+							},
+						},
+						orderBy: [
+							{ lastName: "asc" },
+							{ firstName: "asc" },
+						],
+					},
+					classroom: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							code: true,
+						},
+					},
+					_count: {
+						select: {
+							students: true,
+							rooms: true,
 						},
 					},
 				},

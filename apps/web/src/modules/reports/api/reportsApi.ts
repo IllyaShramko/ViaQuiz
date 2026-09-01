@@ -9,15 +9,16 @@ export const reportsApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
 		getTeacherSessions: builder.query<
 			TeacherSessionsListDto,
-			{ page?: number; pageSize?: number; search?: string; classUuid?: string }
+			{ page?: number; pageSize?: number; search?: string; classUuid?: string; courseUuid?: string }
 		>({
-			query: ({ page = 1, pageSize = 10, search, classUuid } = {}) => ({
+			query: ({ page = 1, pageSize = 10, search, classUuid, courseUuid } = {}) => ({
 				url: '/reports/sessions',
 				params: {
 					page,
 					pageSize,
 					...(search ? { search } : {}),
 					...(classUuid ? { classUuid } : {}),
+					...(courseUuid ? { courseUuid } : {}),
 				},
 			}),
 		}),
