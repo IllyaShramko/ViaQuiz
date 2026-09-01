@@ -8,7 +8,10 @@ export {
   LibraryPage,
   ClassesPage,
   ClassDetailsPage,
+  CourseDetailsPage,
   StudentDetailsPage,
+  ReportsListPage,
+  SessionReportPage,
 } from './main';
 export {
   StudentDashboardPage,

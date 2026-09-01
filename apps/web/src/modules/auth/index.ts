@@ -16,6 +16,7 @@ export {
 } from './context';
 export type {
   User,
+  UserRole,
   AuthResult,
   LoginData,
   RegisterData,
@@ -44,5 +45,5 @@ export {
   type StepProfileProps,
   type StepVerificationProps,
 } from './ui';
-export { getUserDashboardPath, getSafeRedirectUrl, createLoginRedirectUrl } from './utils';
+export { getUserDashboardPath, isStudent, isTeacher, getSafeRedirectUrl, createLoginRedirectUrl } from './utils';
 

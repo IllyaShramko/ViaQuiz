@@ -6,4 +6,7 @@ export { QuizDraftsPage } from './QuizDraftsPage/QuizDraftsPage';
 export { LibraryPage } from './LibraryPage';
 export { ClassesPage } from './ClassesPage/ClassesPage';
 export { ClassDetailsPage } from './ClassDetailsPage/ClassDetailsPage';
+export { CourseDetailsPage } from './CourseDetailsPage/CourseDetailsPage';
 export { StudentDetailsPage } from './StudentDetailsPage/StudentDetailsPage';
+export { ReportsListPage } from '../../modules/reports/ui/ReportsListPage';
+export { SessionReportPage } from '../../modules/reports/ui/SessionReportPage';

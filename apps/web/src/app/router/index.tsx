@@ -12,7 +12,10 @@ import {
   LibraryPage,
   ClassesPage,
   ClassDetailsPage,
+  CourseDetailsPage,
   StudentDetailsPage,
+  ReportsListPage,
+  SessionReportPage,
   StudentDashboardPage,
   StudentClassPage,
   StudentPerformancePage,
@@ -56,10 +59,13 @@ export const router = createBrowserRouter([
           { path: '/dashboard', element: <TeacherMainPage /> },
           { path: '/classes', element: <ClassesPage /> },
           { path: '/classes/:uuid', element: <ClassDetailsPage /> },
+          { path: '/classes/:classUuid/courses/:courseUuid', element: <CourseDetailsPage /> },
           { path: '/classes/:classUuid/students/:studentUuid', element: <StudentDetailsPage /> },
           { path: '/library', element: <LibraryPage /> },
           { path: '/profile', element: <ProfilePage /> },
           { path: '/quiz/:uuid', element: <QuizDetailsPage /> },
+          { path: '/dashboard/reports', element: <ReportsListPage /> },
+          { path: '/dashboard/reports/:roomUuid', element: <SessionReportPage /> },
         ],
       },
       // Student Portal routes
@@ -84,5 +90,6 @@ export const router = createBrowserRouter([
     ],
   },
   // 404 Catch-all route
+  { path: '/not-found', element: <NotFoundPage /> },
   { path: '*', element: <NotFoundPage /> },
 ]);

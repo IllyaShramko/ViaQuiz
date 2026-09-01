@@ -1,3 +1,5 @@
+export type UserRole = 'TEACHER' | 'STUDENT' | 'ADMIN';
+
 export interface User {
   id: number;
   uuid: string;
@@ -5,7 +7,7 @@ export interface User {
   login: string;
   firstName: string | null;
   lastName: string | null;
-  role?: string;
+  role?: UserRole;
   createdAt: string;
   updatedAt: string;
 }

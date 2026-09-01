@@ -1,5 +1,7 @@
-import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate, Navigate, matchPath } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
+import { isStudent } from '../../../modules/auth/utils';
+import { useGetClassroomQuery } from '../../../modules/classes/api/classesApi';
 import { removeAuthToken } from '../../api/headers';
 import styles from './TeacherLayout.module.css';
 
@@ -13,8 +15,8 @@ export function TeacherLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  if (user && (user as any).role?.toUpperCase() === 'STUDENT') {
-    return <Navigate to="/student/dashboard" replace />;
+  if (isStudent(user)) {
+    return <Navigate to="/not-found" replace />;
   }
 
   const handleCreateQuiz = () => {
@@ -30,6 +32,24 @@ export function TeacherLayout() {
   const isQuizDetails = location.pathname.startsWith('/quiz');
   const isLibrary = location.pathname.startsWith('/library');
   const isClasses = location.pathname.startsWith('/classes');
+
+  const classDetailsMatch = matchPath({ path: '/classes/:uuid', end: true }, location.pathname);
+  const courseDetailsMatch = matchPath(
+    { path: '/classes/:classUuid/courses/:courseUuid', end: true },
+    location.pathname,
+  );
+  const studentDetailsMatch = matchPath(
+    { path: '/classes/:classUuid/students/:studentUuid', end: true },
+    location.pathname,
+  );
+
+  const currentClassUuid =
+    classDetailsMatch?.params.uuid ||
+    studentDetailsMatch?.params.classUuid ||
+    courseDetailsMatch?.params.classUuid;
+  const { data: currentClassroom } = useGetClassroomQuery(currentClassUuid || '', {
+    skip: !currentClassUuid,
+  });
   const displayName =
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`
@@ -79,8 +99,8 @@ export function TeacherLayout() {
           </Link>
 
           <Link
-            to="/reports"
-            className={`${styles['teacher-nav-item']} ${location.pathname.startsWith('/reports') ? styles['is-active'] : ''}`}
+            to="/dashboard/reports"
+            className={`${styles['teacher-nav-item']} ${location.pathname.startsWith('/dashboard/reports') ? styles['is-active'] : ''}`}
           >
             <svg className={styles['teacher-nav-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="20" x2="18" y2="10" />
@@ -130,11 +150,69 @@ export function TeacherLayout() {
                 </svg>
                 <span className={styles['teacher-topbar__title']}>Вікторина</span>
               </button>
+            ) : courseDetailsMatch ? (
+              <button
+                type="button"
+                className={styles['teacher-back-btn']}
+                onClick={() => navigate(`/classes/${courseDetailsMatch.params.classUuid}`)}
+                aria-label="Назад до класу"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span className={styles['teacher-topbar__title']}>
+                  {currentClassroom?.name || 'Клас'}
+                </span>
+              </button>
+            ) : studentDetailsMatch ? (
+              <button
+                type="button"
+                className={styles['teacher-back-btn']}
+                onClick={() => navigate(`/classes/${studentDetailsMatch.params.classUuid}`)}
+                aria-label="Назад до класу"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span className={styles['teacher-topbar__title']}>
+                  {currentClassroom?.name || 'Клас'}
+                </span>
+              </button>
+            ) : classDetailsMatch ? (
+              <button
+                type="button"
+                className={styles['teacher-back-btn']}
+                onClick={() => navigate('/classes')}
+                aria-label="Назад до списку класів"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span className={styles['teacher-topbar__title']}>
+                  {currentClassroom?.name || 'Клас'}
+                </span>
+              </button>
             ) : isLibrary ? (
               <h1 className={styles['teacher-topbar__title']}>Бібліотека</h1>
             ) : isClasses ? (
               <h1 className={styles['teacher-topbar__title']}>Мої класи</h1>
-            ) : location.pathname.startsWith('/reports') ? (
+            ) : location.pathname.startsWith('/dashboard/reports/') ? (
+              <button
+                type="button"
+                className={styles['teacher-back-btn']}
+                onClick={() => navigate('/dashboard/reports')}
+                aria-label="Назад до звітів"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+                <span className={styles['teacher-topbar__title']}>Результати вікторини</span>
+              </button>
+            ) : location.pathname.startsWith('/dashboard/reports') ? (
               <h1 className={styles['teacher-topbar__title']}>Звіти</h1>
             ) : (
               <h1 className={styles['teacher-topbar__title']}>Головна</h1>

@@ -70,6 +70,13 @@ export const updateCourseSchema = z.object({
 	isArchived: z.boolean().optional(),
 });
 
+export const enrollCourseStudentsSchema = z.object({
+	studentUuids: z
+		.array(z.string().uuid())
+		.min(1, "Оберіть хоча б одного учня")
+		.max(50, "Курс може містити максимум 50 учнів"),
+});
+
 export const dateFilterSchema = z.object({
 	from: z.string().optional(),
 	to: z.string().optional(),

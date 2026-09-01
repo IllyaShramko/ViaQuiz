@@ -76,6 +76,14 @@ export interface ClassroomRepositoryContract {
 			studentIds?: number[] | undefined;
 		},
 	): Promise<CourseWithStudents>;
+	enrollStudentsToCourse(
+		courseId: number,
+		studentIds: number[],
+	): Promise<CourseWithDetails>;
+	unenrollStudentFromCourse(
+		courseId: number,
+		studentId: number,
+	): Promise<CourseWithDetails>;
 	deleteCourse(courseId: number): Promise<Course>;
 	findStudentQuizResults(
 		studentId: number,
@@ -118,6 +126,11 @@ export interface ClassroomServiceContract {
 		teacherId: number,
 		filter?: DateFilterDTO,
 	): Promise<StudentAnalyticsResponse>;
+	getCourse(
+		classUuid: string,
+		courseUuid: string,
+		teacherId: number,
+	): Promise<CourseWithDetails>;
 	createCourse(
 		classUuid: string,
 		teacherId: number,
@@ -129,6 +142,18 @@ export interface ClassroomServiceContract {
 		teacherId: number,
 		data: UpdateCourseDTO,
 	): Promise<CourseWithStudents>;
+	enrollStudents(
+		classUuid: string,
+		courseUuid: string,
+		teacherId: number,
+		studentUuids: string[],
+	): Promise<CourseWithDetails>;
+	unenrollStudent(
+		classUuid: string,
+		courseUuid: string,
+		studentUuid: string,
+		teacherId: number,
+	): Promise<{ message: string }>;
 	deleteCourse(
 		classUuid: string,
 		courseUuid: string,
@@ -178,12 +203,27 @@ export interface ClassroomControllerContract {
 		res: Response,
 		next: NextFunction,
 	): Promise<void>;
+	getCourse(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
 	createCourse(
 		req: Request,
 		res: Response,
 		next: NextFunction,
 	): Promise<void>;
 	updateCourse(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
+	enrollStudentsToCourse(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
+	unenrollStudentFromCourse(
 		req: Request,
 		res: Response,
 		next: NextFunction,

@@ -42,9 +42,24 @@ export const GameSessionsService: GameSessionsServiceContract = {
 			throw new BadRequestError("Failed to generate a unique room code. Try again.");
 		}
 
+		let classroomId = data.classroomId ?? null;
+
+		if (data.courseId) {
+			const course = await GameSessionsRepository.findCourseById(data.courseId);
+			if (!course) {
+				throw new NotFoundError("Course not found");
+			}
+			if (!classroomId) {
+				classroomId = course.classroomId;
+			}
+		}
+
 		const room = await GameSessionsRepository.createRoom(
 			hostId,
-			data,
+			{
+				...data,
+				classroomId,
+			},
 			joinCode,
 		);
 

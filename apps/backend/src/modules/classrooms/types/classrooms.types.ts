@@ -6,6 +6,7 @@ import type {
 	createStudentSchema,
 	createCourseSchema,
 	updateCourseSchema,
+	enrollCourseStudentsSchema,
 	dateFilterSchema,
 } from "../classroom.schema";
 
@@ -14,6 +15,7 @@ export type UpdateClassroomDTO = z.infer<typeof updateClassroomSchema>;
 export type CreateStudentDTO = z.infer<typeof createStudentSchema>;
 export type CreateCourseDTO = z.infer<typeof createCourseSchema>;
 export type UpdateCourseDTO = z.infer<typeof updateCourseSchema>;
+export type EnrollCourseStudentsDTO = z.infer<typeof enrollCourseStudentsSchema>;
 export type DateFilterDTO = z.infer<typeof dateFilterSchema>;
 
 export type TeacherClassroomSummary = Prisma.ClassroomGetPayload<{
@@ -160,6 +162,12 @@ export type CourseWithDetails = Prisma.CourseGetPayload<{
 				firstName: true;
 				lastName: true;
 				login: true;
+				createdAt: true;
+				_count: {
+					select: {
+						passedQuizes: true;
+					};
+				};
 			};
 		};
 		classroom: {
@@ -167,6 +175,13 @@ export type CourseWithDetails = Prisma.CourseGetPayload<{
 				id: true;
 				uuid: true;
 				name: true;
+				code: true;
+			};
+		};
+		_count: {
+			select: {
+				students: true;
+				rooms: true;
 			};
 		};
 	};

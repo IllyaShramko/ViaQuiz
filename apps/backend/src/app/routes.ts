@@ -7,6 +7,7 @@ import { questionRouter } from "../modules/questions/question.routes";
 import { classroomRouter } from "../modules/classrooms/classroom.routes";
 import { studentRouter } from "../modules/students/student.routes";
 import { gameSessionRouter } from "../modules/game-sessions/game-sessions.routes";
+import { reportsRouter } from "../modules/reports/reports.routes";
 
 export const apiRouter: Router = Router();
 
@@ -18,4 +19,5 @@ apiRouter.use("/questions", questionRouter);
 apiRouter.use("/classrooms", classroomRouter);
 apiRouter.use("/students", studentRouter);
 apiRouter.use("/game-sessions", gameSessionRouter);
+apiRouter.use("/reports", reportsRouter);
 

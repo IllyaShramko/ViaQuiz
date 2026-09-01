@@ -3,6 +3,7 @@ import { z } from "zod";
 export const createRoomSchema = z.object({
 	quizId: z.number().int().positive("Quiz ID is required"),
 	courseId: z.number().int().positive().nullable().optional(),
+	classroomId: z.number().int().positive().nullable().optional(),
 });
 
 export const joinRoomSchema = z.object({

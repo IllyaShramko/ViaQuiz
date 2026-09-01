@@ -1,5 +1,6 @@
 export type {
   User,
+  UserRole,
   AuthResult,
   LoginData,
   RegisterData,

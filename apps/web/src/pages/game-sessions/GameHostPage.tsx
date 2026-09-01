@@ -132,6 +132,7 @@ export function GameHostPage() {
 					quizName={quizName}
 					totalQuestions={totalQuestions}
 					leaderboard={finishedData?.leaderboard || participants}
+					roomUuid={roomUuid}
 				/>
 			)}
 		</div>

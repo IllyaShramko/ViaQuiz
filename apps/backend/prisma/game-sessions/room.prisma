@@ -9,6 +9,9 @@ model Room {
   quizId Int
   quiz   Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
 
+  classroomId Int?
+  classroom   Classroom? @relation(fields: [classroomId], references: [id], onDelete: SetNull)
+
   courseId Int?
   course   Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
 
@@ -28,4 +31,5 @@ model Room {
   @@index([quizId])
   @@index([hostId])
   @@index([courseId])
+  @@index([classroomId])
 }

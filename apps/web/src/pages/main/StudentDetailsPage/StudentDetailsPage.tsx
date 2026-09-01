@@ -69,22 +69,9 @@ export function StudentDetailsPage() {
     <div className={styles['classes-container']}>
       {/* Header matching Screenshot 1 */}
       <div className={styles['student-detail-header']}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <button
-            type="button"
-            className={styles['action-icon-btn']}
-            onClick={() => navigate(`/classes/${classUuid}`)}
-            title="Назад до класу"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-          <h1 className={styles['student-detail-title']}>
-            Учень: {student.lastName} {student.firstName}
-          </h1>
-        </div>
+        <h1 className={styles['student-detail-title']}>
+          Учень: {student.lastName} {student.firstName}
+        </h1>
 
         <button
           type="button"
