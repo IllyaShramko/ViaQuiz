@@ -20,6 +20,72 @@ export interface StudentDto {
 	};
 }
 
+export interface CourseUserSummary {
+	id: number;
+	uuid: string;
+	firstName: string | null;
+	lastName: string | null;
+	login: string;
+	email?: string;
+}
+
+export type CourseInvitationStatus =
+	| "PENDING"
+	| "ACCEPTED"
+	| "REJECTED"
+	| "CANCELED"
+	| "EXPIRED";
+
+export interface CourseInvitationDto {
+	id: number;
+	uuid: string;
+	token: string;
+	courseId?: number;
+	course?: {
+		id: number;
+		uuid: string;
+		name: string;
+		classroom?: {
+			id: number;
+			uuid: string;
+			name: string;
+		};
+	};
+	sender?: CourseUserSummary;
+	receiver?: CourseUserSummary | null;
+	invitedEmail?: string | null;
+	invitedLogin?: string | null;
+	status: CourseInvitationStatus;
+	expiresAt: string;
+	createdAt: string;
+}
+
+export interface AssignedCourseSummaryDto {
+	id: number;
+	uuid: string;
+	name: string;
+	isActive: boolean;
+	createdAt: string;
+	classroom: {
+		id: number;
+		uuid: string;
+		name: string;
+		code: string | null;
+	};
+	creator: {
+		id: number;
+		uuid: string;
+		firstName: string | null;
+		lastName: string | null;
+		login: string;
+		email?: string;
+	};
+	_count: {
+		students: number;
+		rooms: number;
+	};
+}
+
 export interface CourseDto {
 	id: number;
 	uuid: string;
@@ -28,6 +94,11 @@ export interface CourseDto {
 	isArchived: boolean;
 	createdAt: string;
 	classroomId?: number;
+	creatorId?: number;
+	teacherId?: number;
+	creator?: CourseUserSummary;
+	teacher?: CourseUserSummary;
+	invitations?: CourseInvitationDto[];
 	classroom?: {
 		id: number;
 		uuid: string;
@@ -145,4 +216,13 @@ export interface StudentDashboardDto {
 		name: string;
 		roomsCount: number;
 	}>;
+}
+
+export interface VerifyInvitationResponseDto {
+	isValid: boolean;
+	courseName: string;
+	classroomName: string;
+	senderName: string;
+	invitedEmail: string | null;
+	invitedLogin: string | null;
 }

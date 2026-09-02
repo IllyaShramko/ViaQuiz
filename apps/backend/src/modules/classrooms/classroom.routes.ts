@@ -4,6 +4,7 @@ import { validateBody } from "../../middlewares/validateMiddleware";
 import { ClassroomController } from "./classroom.controller";
 import {
 	createClassroomSchema,
+	createCourseInvitationSchema,
 	createCourseSchema,
 	createStudentSchema,
 	enrollCourseStudentsSchema,
@@ -13,8 +14,28 @@ import {
 
 export const classroomRouter: Router = Router();
 
-// Apply auth to all classroom routes (Teacher access)
+// Public route for verifying invitation token
+classroomRouter.get(
+	"/invitations/verify/:token",
+	ClassroomController.verifyInvitationToken,
+);
+
+// Apply auth to all subsequent classroom routes (Teacher access)
 classroomRouter.use(authenticate);
+
+// Global teacher invitations routes
+classroomRouter.get(
+	"/invitations/me",
+	ClassroomController.getMyPendingInvitations,
+);
+classroomRouter.post(
+	"/invitations/:token/accept",
+	ClassroomController.acceptInvitation,
+);
+classroomRouter.post(
+	"/invitations/:token/reject",
+	ClassroomController.rejectInvitation,
+);
 
 // Classroom routes
 classroomRouter.get("/", ClassroomController.getClassrooms);
@@ -77,4 +98,23 @@ classroomRouter.delete(
 classroomRouter.delete(
 	"/:classUuid/courses/:courseUuid",
 	ClassroomController.deleteCourse,
+);
+
+// Course teacher delegation & invitations
+classroomRouter.get(
+	"/:classUuid/courses/:courseUuid/invitations",
+	ClassroomController.getCourseInvitations,
+);
+classroomRouter.post(
+	"/:classUuid/courses/:courseUuid/invitations",
+	validateBody(createCourseInvitationSchema),
+	ClassroomController.inviteTeacher,
+);
+classroomRouter.delete(
+	"/:classUuid/courses/:courseUuid/invitations/:inviteUuid",
+	ClassroomController.cancelInvitation,
+);
+classroomRouter.post(
+	"/:classUuid/courses/:courseUuid/leave",
+	ClassroomController.leaveCourse,
 );

@@ -30,6 +30,47 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 		}
 	},
 
+	async findAssignedCoursesForTeacher(teacherId) {
+		try {
+			return await PRISMA_CLIENT.course.findMany({
+				where: {
+					teacherId,
+					creatorId: { not: teacherId },
+					isArchived: false,
+				},
+				include: {
+					classroom: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							code: true,
+						},
+					},
+					creator: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					_count: {
+						select: {
+							students: true,
+							rooms: true,
+						},
+					},
+				},
+				orderBy: { createdAt: "desc" },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
 	async countActiveTeacherClassrooms(teacherId) {
 		try {
 			return await PRISMA_CLIENT.classroom.count({
@@ -37,6 +78,20 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 					teacherId,
 					isActive: true,
 					isArchived: false,
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async countPendingInvitationsForTeacher(teacherId) {
+		try {
+			return await PRISMA_CLIENT.courseInvitation.count({
+				where: {
+					receiverId: teacherId,
+					status: "PENDING",
+					expiresAt: { gt: new Date() },
 				},
 			});
 		} catch (e) {
@@ -125,7 +180,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 				isActive?: boolean;
 				isArchived?: boolean;
 			} = {};
-
 			if (data.name !== undefined) updateData.name = data.name;
 			if (data.isActive !== undefined) updateData.isActive = data.isActive;
 			if (data.isArchived !== undefined) updateData.isArchived = data.isArchived;
@@ -327,6 +381,51 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							code: true,
 						},
 					},
+					creator: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					teacher: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					invitations: {
+						where: {
+							status: "PENDING",
+						},
+						select: {
+							id: true,
+							uuid: true,
+							token: true,
+							invitedEmail: true,
+							invitedLogin: true,
+							status: true,
+							expiresAt: true,
+							createdAt: true,
+							receiver: {
+								select: {
+									id: true,
+									uuid: true,
+									firstName: true,
+									lastName: true,
+									login: true,
+									email: true,
+								},
+							},
+						},
+					},
 					_count: {
 						select: {
 							students: true,
@@ -345,11 +444,13 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 			const createData: {
 				name: string;
 				classroomId: number;
+				creatorId: number;
 				teacherId: number;
 				students?: { connect: { id: number }[] };
 			} = {
 				name: data.name,
 				classroomId: data.classroomId,
+				creatorId: data.creatorId,
 				teacherId: data.teacherId,
 			};
 
@@ -416,6 +517,17 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 		}
 	},
 
+	async updateCourseTeacher(courseId, teacherId) {
+		try {
+			return await PRISMA_CLIENT.course.update({
+				where: { id: courseId },
+				data: { teacherId },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
 	async enrollStudentsToCourse(courseId, studentIds) {
 		try {
 			return await PRISMA_CLIENT.course.update({
@@ -451,6 +563,51 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							uuid: true,
 							name: true,
 							code: true,
+						},
+					},
+					creator: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					teacher: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					invitations: {
+						where: {
+							status: "PENDING",
+						},
+						select: {
+							id: true,
+							uuid: true,
+							token: true,
+							invitedEmail: true,
+							invitedLogin: true,
+							status: true,
+							expiresAt: true,
+							createdAt: true,
+							receiver: {
+								select: {
+									id: true,
+									uuid: true,
+									firstName: true,
+									lastName: true,
+									login: true,
+									email: true,
+								},
+							},
 						},
 					},
 					_count: {
@@ -501,6 +658,51 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							uuid: true,
 							name: true,
 							code: true,
+						},
+					},
+					creator: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					teacher: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					invitations: {
+						where: {
+							status: "PENDING",
+						},
+						select: {
+							id: true,
+							uuid: true,
+							token: true,
+							invitedEmail: true,
+							invitedLogin: true,
+							status: true,
+							expiresAt: true,
+							createdAt: true,
+							receiver: {
+								select: {
+									id: true,
+									uuid: true,
+									firstName: true,
+									lastName: true,
+									login: true,
+									email: true,
+								},
+							},
 						},
 					},
 					_count: {
@@ -572,6 +774,314 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 					},
 				},
 				orderBy: { joinedAt: "desc" },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findUserByLoginOrEmail(search) {
+		try {
+			const trimmed = search.trim();
+			return await PRISMA_CLIENT.user.findFirst({
+				where: {
+					OR: [
+						{ login: trimmed },
+						{ email: trimmed.toLowerCase() },
+					],
+				},
+				select: {
+					id: true,
+					uuid: true,
+					firstName: true,
+					lastName: true,
+					login: true,
+					email: true,
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async createCourseInvitation(data) {
+		try {
+			return await PRISMA_CLIENT.courseInvitation.create({
+				data: {
+					courseId: data.courseId,
+					senderId: data.senderId,
+					receiverId: data.receiverId ?? null,
+					invitedEmail: data.invitedEmail ?? null,
+					invitedLogin: data.invitedLogin ?? null,
+					expiresAt: data.expiresAt,
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findPendingInvitationByCourse(courseId) {
+		try {
+			return await PRISMA_CLIENT.courseInvitation.findFirst({
+				where: {
+					courseId,
+					status: "PENDING",
+					expiresAt: { gt: new Date() },
+				},
+				include: {
+					course: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							classroom: {
+								select: {
+									id: true,
+									uuid: true,
+									name: true,
+								},
+							},
+						},
+					},
+					sender: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					receiver: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findCourseInvitations(courseId) {
+		try {
+			return await PRISMA_CLIENT.courseInvitation.findMany({
+				where: { courseId },
+				include: {
+					course: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							classroom: {
+								select: {
+									id: true,
+									uuid: true,
+									name: true,
+								},
+							},
+						},
+					},
+					sender: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					receiver: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+				},
+				orderBy: { createdAt: "desc" },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findInvitationByToken(token) {
+		try {
+			return await PRISMA_CLIENT.courseInvitation.findUnique({
+				where: { token },
+				include: {
+					course: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							classroom: {
+								select: {
+									id: true,
+									uuid: true,
+									name: true,
+								},
+							},
+						},
+					},
+					sender: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					receiver: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findInvitationByUuid(uuid) {
+		try {
+			return await PRISMA_CLIENT.courseInvitation.findUnique({
+				where: { uuid },
+				include: {
+					course: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							classroom: {
+								select: {
+									id: true,
+									uuid: true,
+									name: true,
+								},
+							},
+						},
+					},
+					sender: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					receiver: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findPendingInvitationsForTeacher(teacherId, email, login) {
+		try {
+			const orConditions: Array<
+				| { receiverId: number }
+				| { invitedEmail: string }
+				| { invitedLogin: string }
+			> = [{ receiverId: teacherId }];
+
+			if (email) {
+				orConditions.push({ invitedEmail: email.toLowerCase() });
+			}
+			if (login) {
+				orConditions.push({ invitedLogin: login });
+			}
+
+			return await PRISMA_CLIENT.courseInvitation.findMany({
+				where: {
+					status: "PENDING",
+					expiresAt: { gt: new Date() },
+					OR: orConditions,
+				},
+				include: {
+					course: {
+						select: {
+							id: true,
+							uuid: true,
+							name: true,
+							classroom: {
+								select: {
+									id: true,
+									uuid: true,
+									name: true,
+								},
+							},
+						},
+					},
+					sender: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+					receiver: {
+						select: {
+							id: true,
+							uuid: true,
+							firstName: true,
+							lastName: true,
+							login: true,
+							email: true,
+						},
+					},
+				},
+				orderBy: { createdAt: "desc" },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async updateInvitationStatus(id, status, receiverId) {
+		try {
+			return await PRISMA_CLIENT.courseInvitation.update({
+				where: { id },
+				data: {
+					status,
+					...(receiverId ? { receiverId } : {}),
+				},
 			});
 		} catch (e) {
 			errorValidator(e);

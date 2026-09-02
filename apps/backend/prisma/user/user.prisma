@@ -9,10 +9,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdQuizes Quiz[]
-  classrooms    Classroom[]
-  courses       Course[]
-  rooms         Room[]
-  quizLikes     QuizLike[]
-  quizViews     QuizView[]
+  createdQuizes             Quiz[]
+  classrooms                Classroom[]
+  createdCourses            Course[]           @relation("CreatedCourses")
+  taughtCourses             Course[]           @relation("TaughtCourses")
+  sentCourseInvitations     CourseInvitation[] @relation("SentCourseInvitations")
+  receivedCourseInvitations CourseInvitation[] @relation("ReceivedCourseInvitations")
+  rooms                     Room[]
+  quizLikes                 QuizLike[]
+  quizViews                 QuizView[]
 }

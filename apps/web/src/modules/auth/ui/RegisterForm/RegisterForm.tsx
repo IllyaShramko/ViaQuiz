@@ -163,12 +163,17 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
     if (currentStep !== 2) return;
     try {
       setServerError(null);
-      const response = await registerApi(data).unwrap();
+      const inviteToken = searchParams.get('inviteToken');
+      const payload: RegisterFormInputs = {
+        ...data,
+        ...(inviteToken ? { inviteToken } : {}),
+      };
+      const response = await registerApi(payload).unwrap();
       setAuthContext(response.token, response.user);
       if (onSuccess) {
         onSuccess();
       } else {
-        const defaultPath = getUserDashboardPath(response.user);
+        const defaultPath = inviteToken ? '/classes' : getUserDashboardPath(response.user);
         const targetUrl = getSafeRedirectUrl(searchParams, defaultPath);
         navigate(targetUrl, { replace: true });
       }
@@ -183,8 +188,27 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
     }
   };
 
+  const inviteToken = searchParams.get('inviteToken');
+
   return (
     <>
+      {inviteToken && (
+        <div
+          style={{
+            background: 'rgba(134, 59, 255, 0.12)',
+            border: '1px solid rgba(134, 59, 255, 0.3)',
+            borderRadius: '10px',
+            padding: '10px 14px',
+            marginBottom: '16px',
+            fontSize: '0.85rem',
+            color: '#c4b5fd',
+            textAlign: 'center',
+          }}
+        >
+          ✉️ Реєстрація за запрошенням на курс. Після завершення ви станете його викладачем.
+        </div>
+      )}
+
       <RegisterSteps currentStep={currentStep} />
 
       {serverError && <div className="auth-error">{serverError}</div>}

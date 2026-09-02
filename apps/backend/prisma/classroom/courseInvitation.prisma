@@ -1,0 +1,37 @@
+enum CourseInvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELED
+  EXPIRED
+}
+
+model CourseInvitation {
+  id    Int    @id @default(autoincrement())
+  uuid  String @unique @default(uuid())
+  token String @unique @default(uuid())
+
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  senderId Int
+  sender   User @relation("SentCourseInvitations", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId Int?
+  receiver   User? @relation("ReceivedCourseInvitations", fields: [receiverId], references: [id], onDelete: SetNull)
+
+  invitedEmail String?
+  invitedLogin String?
+
+  status    CourseInvitationStatus @default(PENDING)
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@index([receiverId])
+  @@index([senderId])
+  @@index([token])
+  @@index([status])
+}

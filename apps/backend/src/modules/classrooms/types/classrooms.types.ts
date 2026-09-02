@@ -1,4 +1,4 @@
-import type { Classroom, Course, Student, Prisma } from "../../../generated/prisma";
+import type { Classroom, Course, Student, CourseInvitation, CourseInvitationStatus, Prisma } from "../../../generated/prisma";
 import type { z } from "zod";
 import type {
 	createClassroomSchema,
@@ -8,6 +8,7 @@ import type {
 	updateCourseSchema,
 	enrollCourseStudentsSchema,
 	dateFilterSchema,
+	createCourseInvitationSchema,
 } from "../classroom.schema";
 
 export type CreateClassroomDTO = z.infer<typeof createClassroomSchema>;
@@ -17,6 +18,7 @@ export type CreateCourseDTO = z.infer<typeof createCourseSchema>;
 export type UpdateCourseDTO = z.infer<typeof updateCourseSchema>;
 export type EnrollCourseStudentsDTO = z.infer<typeof enrollCourseStudentsSchema>;
 export type DateFilterDTO = z.infer<typeof dateFilterSchema>;
+export type CreateCourseInvitationDTO = z.infer<typeof createCourseInvitationSchema>;
 
 export type TeacherClassroomSummary = Prisma.ClassroomGetPayload<{
 	include: {
@@ -29,6 +31,71 @@ export type TeacherClassroomSummary = Prisma.ClassroomGetPayload<{
 				courses: {
 					where: { isArchived: false };
 				};
+			};
+		};
+	};
+}>;
+
+export type AssignedCourseSummary = {
+	id: number;
+	uuid: string;
+	name: string;
+	isActive: boolean;
+	createdAt: Date;
+	classroom: {
+		id: number;
+		uuid: string;
+		name: string;
+		code: string | null;
+	};
+	creator: {
+		id: number;
+		uuid: string;
+		firstName: string | null;
+		lastName: string | null;
+		login: string;
+		email: string;
+	};
+	_count: {
+		students: number;
+		rooms: number;
+	};
+};
+
+export type CourseInvitationWithDetails = Prisma.CourseInvitationGetPayload<{
+	include: {
+		course: {
+			select: {
+				id: true;
+				uuid: true;
+				name: true;
+				classroom: {
+					select: {
+						id: true;
+						uuid: true;
+						name: true;
+					};
+				};
+			};
+		};
+		sender: {
+			select: {
+				id: true;
+				uuid: true;
+				firstName: true;
+				lastName: true;
+				login: true;
+				email: true;
+			};
+		};
+		receiver: {
+			select: {
+				id: true;
+				uuid: true;
+				firstName: true;
+				lastName: true;
+				login: true;
+				email: true;
 			};
 		};
 	};
@@ -178,6 +245,51 @@ export type CourseWithDetails = Prisma.CourseGetPayload<{
 				code: true;
 			};
 		};
+		creator: {
+			select: {
+				id: true;
+				uuid: true;
+				firstName: true;
+				lastName: true;
+				login: true;
+				email: true;
+			};
+		};
+		teacher: {
+			select: {
+				id: true;
+				uuid: true;
+				firstName: true;
+				lastName: true;
+				login: true;
+				email: true;
+			};
+		};
+		invitations: {
+			where: {
+				status: "PENDING";
+			};
+			select: {
+				id: true;
+				uuid: true;
+				token: true;
+				invitedEmail: true;
+				invitedLogin: true;
+				status: true;
+				expiresAt: true;
+				createdAt: true;
+				receiver: {
+					select: {
+						id: true;
+						uuid: true;
+						firstName: true;
+						lastName: true;
+						login: true;
+						email: true;
+					};
+				};
+			};
+		};
 		_count: {
 			select: {
 				students: true;
@@ -240,7 +352,18 @@ export interface ClassroomLimitsInfo {
 
 export interface GetClassroomsResponse {
 	classrooms: TeacherClassroomSummary[];
+	assignedCourses: AssignedCourseSummary[];
+	pendingInvitationsCount: number;
 	limits: ClassroomLimitsInfo;
+}
+
+export interface VerifyInvitationResponse {
+	isValid: boolean;
+	courseName: string;
+	classroomName: string;
+	senderName: string;
+	invitedEmail: string | null;
+	invitedLogin: string | null;
 }
 
 export type SafeStudent = Prisma.StudentGetPayload<{ omit: { password: true } }>;

@@ -81,3 +81,12 @@ export const dateFilterSchema = z.object({
 	from: z.string().optional(),
 	to: z.string().optional(),
 });
+
+export const createCourseInvitationSchema = z.object({
+	search: z
+		.string()
+		.trim()
+		.min(1, "Вкажіть логін або email користувача")
+		.max(100, "Запит занадто довгий"),
+});
+

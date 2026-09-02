@@ -3,12 +3,17 @@ import type {
   ClassroomDto,
   ClassroomLimits,
   CourseDto,
+  CourseInvitationDto,
+  AssignedCourseSummaryDto,
+  VerifyInvitationResponseDto,
   StudentAnalyticsDto,
   StudentDto,
 } from '@viaquiz/shared-types';
 
 export interface GetClassroomsResponse {
   classrooms: ClassroomDto[];
+  assignedCourses?: AssignedCourseSummaryDto[];
+  pendingInvitationsCount?: number;
   limits: ClassroomLimits;
 }
 
@@ -225,6 +230,91 @@ export const classesApi = baseApi.injectEndpoints({
         { type: 'Course', id: courseUuid },
       ],
     }),
+
+    // Teacher Delegation & Invitations
+    getMyPendingInvitations: builder.query<CourseInvitationDto[], void>({
+      query: () => '/classrooms/invitations/me',
+      providesTags: ['Classroom'],
+    }),
+
+    getCourseInvitations: builder.query<
+      CourseInvitationDto[],
+      { classUuid: string; courseUuid: string }
+    >({
+      query: ({ classUuid, courseUuid }) =>
+        `/classrooms/${classUuid}/courses/${courseUuid}/invitations`,
+      providesTags: (_result, _error, { courseUuid }) => [
+        'Classroom',
+        { type: 'Course', id: courseUuid },
+      ],
+    }),
+
+    inviteTeacher: builder.mutation<
+      { message: string; invitation: CourseInvitationDto },
+      { classUuid: string; courseUuid: string; search: string }
+    >({
+      query: ({ classUuid, courseUuid, search }) => ({
+        url: `/classrooms/${classUuid}/courses/${courseUuid}/invitations`,
+        method: 'POST',
+        body: { search },
+      }),
+      invalidatesTags: (_result, _error, { classUuid, courseUuid }) => [
+        'Classroom',
+        'Course',
+        { type: 'Classroom', id: classUuid },
+        { type: 'Course', id: courseUuid },
+      ],
+    }),
+
+    cancelInvitation: builder.mutation<
+      { message: string },
+      { classUuid: string; courseUuid: string; inviteUuid: string }
+    >({
+      query: ({ classUuid, courseUuid, inviteUuid }) => ({
+        url: `/classrooms/${classUuid}/courses/${courseUuid}/invitations/${inviteUuid}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, { classUuid, courseUuid }) => [
+        'Classroom',
+        'Course',
+        { type: 'Classroom', id: classUuid },
+        { type: 'Course', id: courseUuid },
+      ],
+    }),
+
+    acceptInvitation: builder.mutation<
+      { message: string; course: { uuid: string; name: string; classUuid: string } },
+      string
+    >({
+      query: (token) => ({
+        url: `/classrooms/invitations/${token}/accept`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Classroom', 'Course'],
+    }),
+
+    rejectInvitation: builder.mutation<{ message: string }, string>({
+      query: (token) => ({
+        url: `/classrooms/invitations/${token}/reject`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Classroom', 'Course'],
+    }),
+
+    leaveCourse: builder.mutation<
+      { message: string },
+      { classUuid: string; courseUuid: string }
+    >({
+      query: ({ classUuid, courseUuid }) => ({
+        url: `/classrooms/${classUuid}/courses/${courseUuid}/leave`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Classroom', 'Course'],
+    }),
+
+    verifyInvitationToken: builder.query<VerifyInvitationResponseDto, string>({
+      query: (token) => `/classrooms/invitations/verify/${token}`,
+    }),
   }),
 });
 
@@ -244,4 +334,12 @@ export const {
   useEnrollStudentsToCourseMutation,
   useUnenrollStudentFromCourseMutation,
   useDeleteCourseMutation,
+  useGetMyPendingInvitationsQuery,
+  useGetCourseInvitationsQuery,
+  useInviteTeacherMutation,
+  useCancelInvitationMutation,
+  useAcceptInvitationMutation,
+  useRejectInvitationMutation,
+  useLeaveCourseMutation,
+  useVerifyInvitationTokenQuery,
 } = classesApi;

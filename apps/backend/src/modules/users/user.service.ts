@@ -13,6 +13,7 @@ import type { VerificationCode } from "../../generated/prisma";
 import { transporter } from "../../config/mail";
 import { logger } from "../../tools/logger";
 import { env } from "../../config/env";
+import { PRISMA_CLIENT } from "../../config/database";
 
 const JWT_SECRET = env.JWT_SECRET;
 const COOLDOWN_SECONDS = 60;
@@ -206,6 +207,41 @@ export const UserService: UserServiceContract = {
 		});
 
 		await UserRepository.deleteVerificationCode(credentials.email);
+
+		if (credentials.inviteToken) {
+			try {
+				const invite = await PRISMA_CLIENT.courseInvitation.findUnique({
+					where: { token: credentials.inviteToken },
+				});
+
+				if (
+					invite &&
+					invite.status === "PENDING" &&
+					new Date(invite.expiresAt) > new Date()
+				) {
+					await PRISMA_CLIENT.$transaction([
+						PRISMA_CLIENT.courseInvitation.update({
+							where: { id: invite.id },
+							data: {
+								status: "ACCEPTED",
+								receiverId: user.id,
+							},
+						}),
+						PRISMA_CLIENT.course.update({
+							where: { id: invite.courseId },
+							data: {
+								teacherId: user.id,
+							},
+						}),
+					]);
+				}
+			} catch (inviteErr) {
+				logger.error(
+					"Failed to auto-accept course invitation on register:",
+					inviteErr,
+				);
+			}
+		}
 
 		const token = jwt.sign(
 			{ userId: user.id, email: user.email, role: "TEACHER" },

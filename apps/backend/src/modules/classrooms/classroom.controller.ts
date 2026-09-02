@@ -227,4 +227,114 @@ export const ClassroomController: ClassroomControllerContract = {
 			next(error);
 		}
 	},
+
+	async inviteTeacher(req, res, next) {
+		try {
+			const creatorId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const { search } = req.body;
+			const result = await ClassroomService.inviteTeacher(
+				classUuid,
+				courseUuid,
+				creatorId,
+				search,
+			);
+			res.status(201).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async cancelInvitation(req, res, next) {
+		try {
+			const creatorId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const inviteUuid = req.params.inviteUuid as string;
+			const result = await ClassroomService.cancelInvitation(
+				classUuid,
+				courseUuid,
+				creatorId,
+				inviteUuid,
+			);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async getCourseInvitations(req, res, next) {
+		try {
+			const userId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const result = await ClassroomService.getCourseInvitations(
+				classUuid,
+				courseUuid,
+				userId,
+			);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async getMyPendingInvitations(_req, res, next) {
+		try {
+			const userId = res.locals.userId as number;
+			const result = await ClassroomService.getMyPendingInvitations(userId);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async acceptInvitation(req, res, next) {
+		try {
+			const userId = res.locals.userId as number;
+			const token = req.params.token as string;
+			const result = await ClassroomService.acceptInvitation(token, userId);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async rejectInvitation(req, res, next) {
+		try {
+			const userId = res.locals.userId as number;
+			const token = req.params.token as string;
+			const result = await ClassroomService.rejectInvitation(token, userId);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async leaveCourse(req, res, next) {
+		try {
+			const teacherId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const result = await ClassroomService.leaveCourse(
+				classUuid,
+				courseUuid,
+				teacherId,
+			);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async verifyInvitationToken(req, res, next) {
+		try {
+			const token = req.params.token as string;
+			const result = await ClassroomService.verifyInvitationToken(token);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
 };

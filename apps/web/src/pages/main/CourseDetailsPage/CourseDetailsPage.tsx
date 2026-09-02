@@ -9,15 +9,21 @@ import {
   CourseStudentsTab,
   CoursePerformanceTab,
   CourseHistoryTab,
+  CourseInstructorCard,
+  InviteTeacherModal,
   type CourseTabType,
 } from '../../../modules/classes';
+import { useAuth } from '../../../modules/auth';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 export function CourseDetailsPage() {
   const { classUuid, courseUuid } = useParams<{ classUuid: string; courseUuid: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [activeTab, setActiveTab] = useState<CourseTabType>('students');
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const {
     data: course,
@@ -72,6 +78,7 @@ export function CourseDetailsPage() {
   const courseStudents = course.students || [];
   const classroomStudents = classroom?.students || [];
   const className = course.classroom?.name || classroom?.name || 'Клас';
+  const isCreator = user?.id ? (course.creatorId ? course.creatorId === user.id : true) : true;
 
   return (
     <div className={styles['classes-container']}>
@@ -80,6 +87,15 @@ export function CourseDetailsPage() {
         studentsCount={courseStudents.length}
         maxStudents={50}
       />
+
+      <div style={{ margin: '1rem 0 1.5rem 0' }}>
+        <CourseInstructorCard
+          course={course}
+          classUuid={classUuid!}
+          isCreator={isCreator}
+          onOpenInviteModal={() => setIsInviteModalOpen(true)}
+        />
+      </div>
 
       <CourseTabs
         activeTab={activeTab}
@@ -111,6 +127,14 @@ export function CourseDetailsPage() {
         classroomStudents={classroomStudents}
         alreadyEnrolledUuids={courseStudents.map((s) => s.uuid)}
         maxCourseStudents={50}
+      />
+
+      <InviteTeacherModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        classUuid={classUuid!}
+        courseUuid={courseUuid!}
+        courseName={course.name}
       />
     </div>
   );

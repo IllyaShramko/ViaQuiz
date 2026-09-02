@@ -25,4 +25,7 @@ export const env = cleanEnv(process.env, {
 	REDIS_URL: str({
 		default: "redis://localhost:6379",
 	}),
+	CLIENT_URL: str({
+		default: "http://localhost:5173",
+	}),
 });

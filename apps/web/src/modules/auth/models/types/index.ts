@@ -30,6 +30,7 @@ export interface RegisterData {
   firstName?: string;
   lastName?: string;
   code: string;
+  inviteToken?: string;
 }
 
 export interface CheckUniqueData {
@@ -64,4 +65,5 @@ export interface RegisterFormInputs {
   firstName?: string;
   lastName?: string;
   code: string;
+  inviteToken?: string;
 }

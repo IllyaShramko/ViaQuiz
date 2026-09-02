@@ -16,10 +16,15 @@ export type {
 export type {
 	ClassroomLimits,
 	StudentDto,
+	CourseUserSummary,
+	CourseInvitationStatus,
+	CourseInvitationDto,
+	AssignedCourseSummaryDto,
 	CourseDto,
 	ClassroomDto,
 	StudentAnalyticsDto,
 	StudentDashboardDto,
+	VerifyInvitationResponseDto,
 } from "./classroom";
 export type {
 	RoomStatus,

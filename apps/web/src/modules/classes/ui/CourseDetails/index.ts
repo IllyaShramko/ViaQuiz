@@ -3,3 +3,4 @@ export { CourseTabs, type CourseTabsProps, type CourseTabType } from './CourseTa
 export { CourseStudentsTab, type CourseStudentsTabProps } from './CourseStudentsTab';
 export { CoursePerformanceTab } from './CoursePerformanceTab';
 export { CourseHistoryTab, type CourseHistoryTabProps } from './CourseHistoryTab';
+export { CourseInstructorCard, type CourseInstructorCardProps } from './CourseInstructorCard';

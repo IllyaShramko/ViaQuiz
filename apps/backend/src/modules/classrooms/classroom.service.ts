@@ -1,30 +1,37 @@
 import bcrypt from "bcryptjs";
 import { CLASSROOM_LIMITS } from "../../config/limits";
-import { BadRequestError, NotFoundError } from "../../errors/customErrors";
+import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors/customErrors";
 import {
 	generateClassCode,
 	generateSimplePassword,
 	generateStudentLogin,
 } from "../../tools/credentialsGenerator";
+import { UserRepository } from "../users/user.repository";
+import { sendCourseInvitationEmail } from "./classroom.mail";
 import { ClassroomRepository } from "./classroom.repository";
 import type { ClassroomServiceContract } from "./types/classrooms.contracts";
 import type { StudentAnalyticsHistoryItem } from "./types/classrooms.types";
 
 export const ClassroomService: ClassroomServiceContract = {
 	async getClassrooms(teacherId) {
-		const [classrooms, activeCount, activeCoursesCount] = await Promise.all([
-			ClassroomRepository.findTeacherClassrooms(teacherId),
-			ClassroomRepository.countActiveTeacherClassrooms(teacherId),
-			ClassroomRepository.countTeacherActiveCourses(teacherId),
-		]);
+		const [classrooms, assignedCourses, activeCount, activeCoursesCount, pendingCount] =
+			await Promise.all([
+				ClassroomRepository.findTeacherClassrooms(teacherId),
+				ClassroomRepository.findAssignedCoursesForTeacher(teacherId),
+				ClassroomRepository.countActiveTeacherClassrooms(teacherId),
+				ClassroomRepository.countTeacherActiveCourses(teacherId),
+				ClassroomRepository.countPendingInvitationsForTeacher(teacherId),
+			]);
 
 		return {
-			classrooms,
+			classrooms: classrooms || [],
+			assignedCourses: assignedCourses || [],
+			pendingInvitationsCount: pendingCount || 0,
 			limits: {
 				maxClasses: CLASSROOM_LIMITS.MAX_ACTIVE_CLASSES_PER_TEACHER,
-				currentActiveClasses: activeCount,
+				currentActiveClasses: activeCount || 0,
 				maxTotalCourses: CLASSROOM_LIMITS.MAX_ACTIVE_COURSES_PER_TEACHER,
-				currentActiveCourses: activeCoursesCount,
+				currentActiveCourses: activeCoursesCount || 0,
 				maxStudentsPerClass: CLASSROOM_LIMITS.MAX_STUDENTS_PER_CLASSROOM,
 				maxCoursesPerClass: CLASSROOM_LIMITS.MAX_COURSES_PER_CLASSROOM,
 				maxStudentsPerCourse: CLASSROOM_LIMITS.MAX_STUDENTS_PER_COURSE,
@@ -99,28 +106,34 @@ export const ClassroomService: ClassroomServiceContract = {
 			);
 		}
 
-		const isCustomLogin = Boolean(data.login?.trim());
-		let login = data.login?.trim().toLowerCase();
-		if (!login) {
-			login = generateStudentLogin(data.firstName, data.lastName);
-		}
-
-		// Check uniqueness of login
-		if (isCustomLogin) {
-			const existing = await ClassroomRepository.findStudentByGlobalLogin(login);
+		let finalLogin = data.login?.trim().toLowerCase();
+		if (!finalLogin) {
+			let attempts = 0;
+			let isUnique = false;
+			while (!isUnique && attempts < 10) {
+				const candidate = generateStudentLogin(data.firstName, data.lastName);
+				const existing = await ClassroomRepository.findStudentByGlobalLogin(candidate);
+				if (!existing) {
+					finalLogin = candidate;
+					isUnique = true;
+				}
+				attempts++;
+			}
+			if (!finalLogin) {
+				finalLogin = `student_${Math.random().toString(36).substring(2, 9)}`;
+			}
+		} else {
+			const existing = await ClassroomRepository.findStudentByGlobalLogin(finalLogin);
 			if (existing) {
-				throw new BadRequestError("Учень з таким логіном вже зареєстрований у системі. Оберіть інший логін.");
+				throw new BadRequestError("Учень з таким логіном вже існує в системі");
 			}
 		}
 
-		let finalLogin = login;
-		let suffix = 1;
-		while (await ClassroomRepository.findStudentByGlobalLogin(finalLogin)) {
-			finalLogin = `${login}_${suffix}`;
-			suffix++;
+		let plainPassword = data.password?.trim();
+		if (!plainPassword) {
+			plainPassword = generateSimplePassword(8);
 		}
 
-		const plainPassword = data.password?.trim() || generateSimplePassword(8);
 		const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
 		const student = await ClassroomRepository.createStudent({
@@ -153,16 +166,16 @@ export const ClassroomService: ClassroomServiceContract = {
 			throw new NotFoundError("Учня не знайдено в цьому класі");
 		}
 
-		const newPlainPassword = generateSimplePassword(8);
-		const hashedPassword = await bcrypt.hash(newPlainPassword, 10);
+		const newPassword = generateSimplePassword(8);
+		const hashedPassword = await bcrypt.hash(newPassword, 10);
 
 		await ClassroomRepository.updateStudentPassword(student.id, hashedPassword);
 
 		return {
-			studentUuid,
+			studentUuid: student.uuid,
 			studentName: `${student.firstName} ${student.lastName}`,
 			login: student.login,
-			newPassword: newPlainPassword,
+			newPassword,
 		};
 	},
 
@@ -181,9 +194,16 @@ export const ClassroomService: ClassroomServiceContract = {
 	},
 
 	async getStudentAnalytics(classUuid, studentUuid, teacherId, filter) {
-		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
+		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
+		}
+
+		const course = classroom.courses.find(
+			(c) => c.teacherId === teacherId || c.creatorId === teacherId,
+		);
+		if (classroom.teacherId !== teacherId && !course) {
+			throw new NotFoundError("Клас не знайдено або у вас немає доступу");
 		}
 
 		const student = await ClassroomRepository.findStudentByUuid(studentUuid);
@@ -200,7 +220,6 @@ export const ClassroomService: ClassroomServiceContract = {
 			toDate,
 		);
 
-		// Calculate statistics
 		const gradeCounts: Record<string, number> = {};
 		let totalScoreSum = 0;
 		let totalCorrectAnswers = 0;
@@ -221,7 +240,6 @@ export const ClassroomService: ClassroomServiceContract = {
 			const formattedFullDate = dateObj.toISOString().split("T")[0] || "";
 			const formattedTime = `${String(dateObj.getHours()).padStart(2, "0")}:${String(dateObj.getMinutes()).padStart(2, "0")}`;
 
-			// Calculate 12-point grade or percentage
 			const maxQuestions = res.totalQuestionsCount || 1;
 			const grade12 = Math.round((res.correctAnswersCount / maxQuestions) * 12);
 			const safeGrade = Math.max(1, Math.min(12, grade12 || 1));
@@ -258,7 +276,6 @@ export const ClassroomService: ClassroomServiceContract = {
 			};
 		});
 
-		// Sort timeline chronologically
 		timeline.sort((a, b) => a.timestamp - b.timestamp);
 
 		const totalTests = history.length;
@@ -266,7 +283,7 @@ export const ClassroomService: ClassroomServiceContract = {
 			totalTests > 0
 				? Number(
 						(
-							history.reduce((sum, h) => sum + h.grade, 0) / totalTests
+							history.reduce((sum, item) => sum + item.grade, 0) / totalTests
 						).toFixed(1),
 					)
 				: 0;
@@ -283,9 +300,9 @@ export const ClassroomService: ClassroomServiceContract = {
 				firstName: student.firstName,
 				lastName: student.lastName,
 				login: student.login,
-				classroomName: classroom.name,
-				classroomId: classroom.id,
-				classroomUuid: classroom.uuid,
+				classroomName: student.classroom.name,
+				classroomId: student.classroom.id,
+				classroomUuid: student.classroom.uuid,
 				courses: student.courses,
 			},
 			stats: {
@@ -312,14 +329,13 @@ export const ClassroomService: ClassroomServiceContract = {
 	},
 
 	async getCourse(classUuid, courseUuid, teacherId) {
-		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
-		if (!classroom) {
-			throw new NotFoundError("Клас не знайдено");
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
 		}
 
-		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
-		if (!course || course.classroomId !== classroom.id) {
-			throw new NotFoundError("Курс не знайдено у цьому класі");
+		if (course.creatorId !== teacherId && course.teacherId !== teacherId) {
+			throw new ForbiddenError("У вас немає доступу до цього курсу");
 		}
 
 		return course;
@@ -331,7 +347,6 @@ export const ClassroomService: ClassroomServiceContract = {
 			throw new NotFoundError("Клас не знайдено");
 		}
 
-		// Check teacher max active courses <= 30
 		const teacherCoursesCount = await ClassroomRepository.countTeacherActiveCourses(teacherId);
 		if (teacherCoursesCount >= CLASSROOM_LIMITS.MAX_ACTIVE_COURSES_PER_TEACHER) {
 			throw new BadRequestError(
@@ -339,7 +354,6 @@ export const ClassroomService: ClassroomServiceContract = {
 			);
 		}
 
-		// Check classroom max courses <= 15
 		const classCoursesCount = await ClassroomRepository.countClassroomCourses(classroom.id);
 		if (classCoursesCount >= CLASSROOM_LIMITS.MAX_COURSES_PER_CLASSROOM) {
 			throw new BadRequestError(
@@ -347,7 +361,6 @@ export const ClassroomService: ClassroomServiceContract = {
 			);
 		}
 
-		// Resolve student IDs if provided
 		let studentIds: number[] = [];
 		if (data.studentUuids && data.studentUuids.length > 0) {
 			if (data.studentUuids.length > CLASSROOM_LIMITS.MAX_STUDENTS_PER_COURSE) {
@@ -356,31 +369,34 @@ export const ClassroomService: ClassroomServiceContract = {
 				);
 			}
 
-			// Validate that all studentUuids belong to this classroom
 			const validClassStudents = classroom.students.filter((s) =>
 				data.studentUuids!.includes(s.uuid),
 			);
-
 			studentIds = validClassStudents.map((s) => s.id);
 		}
 
 		return await ClassroomRepository.createCourse({
 			name: data.name.trim(),
 			classroomId: classroom.id,
+			creatorId: teacherId,
 			teacherId,
 			studentIds,
 		});
 	},
 
 	async updateCourse(classUuid, courseUuid, teacherId, data) {
-		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
-		if (!classroom) {
-			throw new NotFoundError("Клас не знайдено");
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
 		}
 
-		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
-		if (!course || course.classroomId !== classroom.id) {
-			throw new NotFoundError("Курс не знайдено у цьому класі");
+		if (course.creatorId !== teacherId && course.teacherId !== teacherId) {
+			throw new ForbiddenError("У вас немає прав на редагування цього курсу");
+		}
+
+		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid);
+		if (!classroom) {
+			throw new NotFoundError("Клас не знайдено");
 		}
 
 		let studentIds: number[] | undefined;
@@ -413,17 +429,20 @@ export const ClassroomService: ClassroomServiceContract = {
 	},
 
 	async enrollStudents(classUuid, courseUuid, teacherId, studentUuids) {
-		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		if (course.creatorId !== teacherId && course.teacherId !== teacherId) {
+			throw new ForbiddenError("У вас немає доступу до цього курсу");
+		}
+
+		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid);
 		if (!classroom) {
 			throw new NotFoundError("Клас не знайдено");
 		}
 
-		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
-		if (!course || course.classroomId !== classroom.id) {
-			throw new NotFoundError("Курс не знайдено у цьому класі");
-		}
-
-		// Filter students belonging to this class
 		const validClassStudents = classroom.students.filter((s) =>
 			studentUuids.includes(s.uuid),
 		);
@@ -446,36 +465,294 @@ export const ClassroomService: ClassroomServiceContract = {
 	},
 
 	async unenrollStudent(classUuid, courseUuid, studentUuid, teacherId) {
-		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
-		if (!classroom) {
-			throw new NotFoundError("Клас не знайдено");
-		}
-
 		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
-		if (!course || course.classroomId !== classroom.id) {
+		if (!course || course.classroom.uuid !== classUuid) {
 			throw new NotFoundError("Курс не знайдено у цьому класі");
 		}
 
-		const student = course.students.find((s) => s.uuid === studentUuid);
-		if (!student) {
-			throw new NotFoundError("Учня не знайдено у списку учнів цього курсу");
+		if (course.creatorId !== teacherId && course.teacherId !== teacherId) {
+			throw new ForbiddenError("У вас немає доступу до цього курсу");
 		}
 
-		await ClassroomRepository.unenrollStudentFromCourse(course.id, student.id);
-		return { message: "Учня успішно відраховано з курсу" };
+		const studentToUnenroll = course.students.find((s) => s.uuid === studentUuid);
+		if (!studentToUnenroll) {
+			throw new NotFoundError("Учня не знайдено у цьому курсі");
+		}
+
+		await ClassroomRepository.unenrollStudentFromCourse(course.id, studentToUnenroll.id);
+		return { message: "Учня успішно вилучено з курсу" };
 	},
 
 	async deleteCourse(classUuid, courseUuid, teacherId) {
-		const classroom = await ClassroomRepository.findClassroomByUuid(classUuid, teacherId);
-		if (!classroom) {
-			throw new NotFoundError("Клас не знайдено");
-		}
-
 		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
-		if (!course || course.classroomId !== classroom.id) {
+		if (!course || course.classroom.uuid !== classUuid) {
 			throw new NotFoundError("Курс не знайдено у цьому класі");
 		}
 
+		if (course.creatorId !== teacherId) {
+			throw new ForbiddenError("Тільки куратор курсу може видалити його");
+		}
+
 		return await ClassroomRepository.deleteCourse(course.id);
+	},
+
+	async inviteTeacher(classUuid, courseUuid, creatorId, search) {
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		if (course.creatorId !== creatorId) {
+			throw new ForbiddenError("Тільки куратор курсу може надсилати запрошення");
+		}
+
+		const trimmedSearch = search.trim();
+		if (!trimmedSearch) {
+			throw new BadRequestError("Вкажіть логін або email викладача");
+		}
+
+		const targetUser = await ClassroomRepository.findUserByLoginOrEmail(trimmedSearch);
+
+		if (targetUser && targetUser.id === creatorId) {
+			throw new BadRequestError("Ви не можете запросити самого себе, оскільки вже є куратором курсу");
+		}
+
+		if (targetUser && course.teacherId === targetUser.id) {
+			throw new BadRequestError("Цей користувач уже є ведучим викладачем курсу");
+		}
+
+		// Cancel any existing pending invitation for this course
+		const existingPending = await ClassroomRepository.findPendingInvitationByCourse(course.id);
+		if (existingPending) {
+			await ClassroomRepository.updateInvitationStatus(existingPending.id, "CANCELED");
+		}
+
+		const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days TTL
+
+		const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedSearch);
+		let receiverId: number | null = null;
+		let invitedEmail: string | null = null;
+		let invitedLogin: string | null = null;
+
+		if (targetUser) {
+			receiverId = targetUser.id;
+			invitedEmail = targetUser.email;
+			invitedLogin = targetUser.login;
+		} else if (isEmail) {
+			invitedEmail = trimmedSearch.toLowerCase();
+		} else {
+			throw new BadRequestError(
+				"Користувача з таким логіном не знайдено. Якщо він ще не зареєстрований, введіть його email.",
+			);
+		}
+
+		const invitation = await ClassroomRepository.createCourseInvitation({
+			courseId: course.id,
+			senderId: creatorId,
+			receiverId,
+			invitedEmail,
+			invitedLogin,
+			expiresAt,
+		});
+
+		const inviter = await UserRepository.findById(creatorId);
+		const inviterName = inviter
+			? inviter.firstName && inviter.lastName
+				? `${inviter.firstName} ${inviter.lastName}`
+				: inviter.login
+			: "Куратор курсу";
+
+		if (invitedEmail) {
+			sendCourseInvitationEmail({
+				toEmail: invitedEmail,
+				courseName: course.name,
+				classroomName: course.classroom.name,
+				inviterName,
+				isRegistered: !!targetUser,
+				token: invitation.token,
+			}).catch(() => {});
+		}
+
+		return {
+			message: "Запрошення успішно надіслано",
+			invitation,
+		};
+	},
+
+	async cancelInvitation(classUuid, courseUuid, creatorId, inviteUuid) {
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		if (course.creatorId !== creatorId) {
+			throw new ForbiddenError("Тільки куратор курсу може скасувати запрошення");
+		}
+
+		const invitation = await ClassroomRepository.findInvitationByUuid(inviteUuid);
+		if (!invitation || invitation.courseId !== course.id) {
+			throw new NotFoundError("Запрошення не знайдено");
+		}
+
+		if (invitation.status !== "PENDING") {
+			throw new BadRequestError("Це запрошення вже не активне");
+		}
+
+		await ClassroomRepository.updateInvitationStatus(invitation.id, "CANCELED");
+
+		return { message: "Запрошення успішно скасовано" };
+	},
+
+	async getCourseInvitations(classUuid, courseUuid, userId) {
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		if (course.creatorId !== userId) {
+			throw new ForbiddenError("Тільки куратор курсу може переглядати історію запрошень");
+		}
+
+		return (await ClassroomRepository.findCourseInvitations(course.id)) || [];
+	},
+
+	async getMyPendingInvitations(userId) {
+		const user = await UserRepository.findById(userId);
+		if (!user) {
+			throw new NotFoundError("Користувача не знайдено");
+		}
+
+		return (
+			(await ClassroomRepository.findPendingInvitationsForTeacher(
+				userId,
+				user.email,
+				user.login,
+			)) || []
+		);
+	},
+
+	async acceptInvitation(tokenOrUuid, userId) {
+		let invitation = await ClassroomRepository.findInvitationByToken(tokenOrUuid);
+		if (!invitation) {
+			invitation = await ClassroomRepository.findInvitationByUuid(tokenOrUuid);
+		}
+
+		if (!invitation) {
+			throw new NotFoundError("Запрошення не знайдено");
+		}
+
+		if (invitation.status !== "PENDING") {
+			throw new BadRequestError(
+				invitation.status === "ACCEPTED"
+					? "Це запрошення вже було прийнято"
+					: "Це запрошення більше не дійсне",
+			);
+		}
+
+		if (new Date(invitation.expiresAt) < new Date()) {
+			await ClassroomRepository.updateInvitationStatus(invitation.id, "EXPIRED");
+			throw new BadRequestError("Термін дії запрошення закінчився");
+		}
+
+		const user = await UserRepository.findById(userId);
+		if (!user) {
+			throw new NotFoundError("Користувача не знайдено");
+		}
+
+		if (invitation.receiverId && invitation.receiverId !== userId) {
+			throw new ForbiddenError("Це запрошення призначене для іншого користувача");
+		}
+
+		if (
+			invitation.invitedEmail &&
+			invitation.invitedEmail.toLowerCase() !== user.email.toLowerCase()
+		) {
+			throw new ForbiddenError("Email вашого акаунту не збігається з адресою в запрошенні");
+		}
+
+		await ClassroomRepository.updateInvitationStatus(invitation.id, "ACCEPTED", userId);
+		await ClassroomRepository.updateCourseTeacher(invitation.course.id, userId);
+
+		return {
+			message: `Ви успішно прийняли керівництво курсом "${invitation.course.name}"`,
+			course: {
+				uuid: invitation.course.uuid,
+				name: invitation.course.name,
+				classUuid: invitation.course.classroom.uuid,
+			},
+		};
+	},
+
+	async rejectInvitation(tokenOrUuid, userId) {
+		let invitation = await ClassroomRepository.findInvitationByToken(tokenOrUuid);
+		if (!invitation) {
+			invitation = await ClassroomRepository.findInvitationByUuid(tokenOrUuid);
+		}
+
+		if (!invitation) {
+			throw new NotFoundError("Запрошення не знайдено");
+		}
+
+		if (invitation.status !== "PENDING") {
+			throw new BadRequestError("Це запрошення більше не дійсне");
+		}
+
+		await ClassroomRepository.updateInvitationStatus(invitation.id, "REJECTED", userId);
+
+		return { message: "Запрошення відхилено" };
+	},
+
+	async leaveCourse(classUuid, courseUuid, teacherId) {
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		if (course.teacherId !== teacherId) {
+			throw new ForbiddenError("Ви не є ведучим викладачем цього курсу");
+		}
+
+		if (course.creatorId === teacherId) {
+			throw new BadRequestError(
+				"Куратор курсу не може покинути його. Ви можете призначити іншого викладача або видалити курс.",
+			);
+		}
+
+		await ClassroomRepository.updateCourseTeacher(course.id, course.creatorId);
+
+		return { message: "Ви успішно покинули керівництво курсом. Керування повернуто куратору." };
+	},
+
+	async verifyInvitationToken(token) {
+		const invitation = await ClassroomRepository.findInvitationByToken(token);
+		if (!invitation) {
+			throw new NotFoundError("Запрошення не знайдено");
+		}
+
+		if (invitation.status !== "PENDING") {
+			throw new BadRequestError(
+				invitation.status === "ACCEPTED"
+					? "Це запрошення вже було прийнято"
+					: "Це запрошення більше не дійсне",
+			);
+		}
+
+		if (new Date(invitation.expiresAt) < new Date()) {
+			throw new BadRequestError("Термін дії запрошення закінчився");
+		}
+
+		const senderName =
+			invitation.sender.firstName && invitation.sender.lastName
+				? `${invitation.sender.firstName} ${invitation.sender.lastName}`
+				: invitation.sender.login;
+
+		return {
+			isValid: true,
+			courseName: invitation.course.name,
+			classroomName: invitation.course.classroom.name,
+			senderName,
+			invitedEmail: invitation.invitedEmail,
+			invitedLogin: invitation.invitedLogin,
+		};
 	},
 };

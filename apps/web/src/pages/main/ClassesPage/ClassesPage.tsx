@@ -1,18 +1,40 @@
-import { useState, type MouseEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, type MouseEvent } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   useGetClassroomsQuery,
   CreateClassModal,
+  AssignedCourseCard,
+  CourseInvitationsBanner,
+  PendingInvitationsModal,
+  LeaveCourseModal,
 } from '../../../modules/classes';
 import { CheckIcon, CopyIcon } from '../../../shared';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 export function ClassesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data, isLoading, error } = useGetClassroomsQuery();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isPendingInvitationsOpen, setIsPendingInvitationsOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
+  // Leave course state
+  const [leaveModalState, setLeaveModalState] = useState<{
+    isOpen: boolean;
+    classUuid: string;
+    courseUuid: string;
+    courseName: string;
+  }>({
+    isOpen: false,
+    classUuid: '',
+    courseUuid: '',
+    courseName: '',
+  });
+
   const classrooms = data?.classrooms || [];
+  const assignedCourses = data?.assignedCourses || [];
+  const pendingCount = data?.pendingInvitationsCount || 0;
+
   const limits = data?.limits || {
     maxClasses: 8,
     currentActiveClasses: 0,
@@ -23,6 +45,16 @@ export function ClassesPage() {
     maxStudentsPerCourse: 50,
   };
 
+  // Open invitations modal if inviteToken in search params or user clicks banner
+  useEffect(() => {
+    if (searchParams.get('inviteToken')) {
+      setIsPendingInvitationsOpen(true);
+      // Clean up param
+      searchParams.delete('inviteToken');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const handleCopyCode = (e: MouseEvent, code: string) => {
     e.preventDefault();
     e.stopPropagation();
@@ -31,8 +63,27 @@ export function ClassesPage() {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
+  const handleOpenLeaveCourse = (
+    classUuid: string,
+    courseUuid: string,
+    courseName: string,
+  ) => {
+    setLeaveModalState({
+      isOpen: true,
+      classUuid,
+      courseUuid,
+      courseName,
+    });
+  };
+
   return (
     <div className={styles['classes-container']}>
+      {/* Pending Invitations Banner */}
+      <CourseInvitationsBanner
+        count={pendingCount}
+        onOpenModal={() => setIsPendingInvitationsOpen(true)}
+      />
+
       <div className={styles['classes-header']}>
         <div>
           <h1 className={styles['classes-title']}>
@@ -155,11 +206,56 @@ export function ClassesPage() {
         </div>
       )}
 
+      {/* Section: Courses assigned to this teacher */}
+      {assignedCourses.length > 0 && (
+        <div style={{ marginTop: '2.5rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0 }}>
+              Курси під моїм керівництвом
+            </h2>
+            <p style={{ color: '#9090a8', margin: '4px 0 0 0', fontSize: '0.875rem' }}>
+              Курси в інших класах, де вас призначено ведучим викладачем
+            </p>
+          </div>
+
+          <div className={styles['classes-grid']}>
+            {assignedCourses.map((course) => (
+              <AssignedCourseCard
+                key={course.uuid}
+                course={course}
+                onLeaveCourse={handleOpenLeaveCourse}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modals */}
       <CreateClassModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         currentActiveClasses={limits.currentActiveClasses}
         maxClasses={limits.maxClasses}
+      />
+
+      <PendingInvitationsModal
+        isOpen={isPendingInvitationsOpen}
+        onClose={() => setIsPendingInvitationsOpen(false)}
+      />
+
+      <LeaveCourseModal
+        isOpen={leaveModalState.isOpen}
+        onClose={() =>
+          setLeaveModalState({
+            isOpen: false,
+            classUuid: '',
+            courseUuid: '',
+            courseName: '',
+          })
+        }
+        classUuid={leaveModalState.classUuid}
+        courseUuid={leaveModalState.courseUuid}
+        courseName={leaveModalState.courseName}
       />
     </div>
   );
