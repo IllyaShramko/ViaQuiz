@@ -1,11 +1,5 @@
-import type { ReactNode } from 'react';
+import type { FeatureCardProps } from './FeatureCard.types';
 import styles from '../Home.module.css';
-
-export interface FeatureCardProps {
-  icon: ReactNode;
-  title: string;
-  description: string;
-}
 
 export function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (

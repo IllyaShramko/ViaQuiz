@@ -1,1 +1,2 @@
-export { ProfileStatsGrid, type ProfileStatsGridProps } from './ProfileStatsGrid';
+export { ProfileStatsGrid } from './ProfileStatsGrid';
+export type { ProfileStatsGridProps } from './ProfileStatsGrid.types';

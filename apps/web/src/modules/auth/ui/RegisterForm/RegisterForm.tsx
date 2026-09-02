@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import type { RegisterFormProps } from './RegisterForm.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import {
   useRegisterMutation,
@@ -10,15 +11,12 @@ import {
 import { useUserContext } from '../../context';
 import { getUserDashboardPath, getSafeRedirectUrl } from '../../utils';
 import type { RegisterFormInputs } from '../../models';
-import { RegisterSteps } from './RegisterSteps';
-import { StepCredentials } from './StepCredentials';
-import { StepProfile } from './StepProfile';
-import { StepVerification } from './StepVerification';
-
-export interface RegisterFormProps {
-  onSuccess?: () => void;
-  onError?: (error: string) => void;
-}
+import {
+  RegisterSteps,
+  StepCredentials,
+  StepProfile,
+  StepVerification,
+} from './steps';
 
 export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
   const { t } = useLocale();

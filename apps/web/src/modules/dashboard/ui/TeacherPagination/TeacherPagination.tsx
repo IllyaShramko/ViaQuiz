@@ -1,10 +1,5 @@
+import type { TeacherPaginationProps } from './TeacherPagination.types';
 import styles from '../Dashboard.module.css';
-
-export interface TeacherPaginationProps {
-  page: number;
-  totalPages: number;
-  onPageChange: (newPage: number) => void;
-}
 
 export function TeacherPagination({
   page,

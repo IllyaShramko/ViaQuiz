@@ -1,11 +1,7 @@
-import type { QuizQuestion, QuestionVariant } from '../../models';
+import type { QuestionVariant } from '../../models';
+import type { QuizQuestionCardProps } from './QuizQuestionCard.types';
 import { TimerIcon } from '../../../../shared/ui/icons';
 import styles from '../QuizDetails.module.css';
-
-export interface QuizQuestionCardProps {
-  question: QuizQuestion;
-  index: number;
-}
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 

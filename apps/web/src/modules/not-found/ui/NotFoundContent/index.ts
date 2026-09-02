@@ -1,1 +1,2 @@
-export { NotFoundContent, type NotFoundContentProps } from './NotFoundContent';
+export { NotFoundContent } from './NotFoundContent';
+export type { NotFoundContentProps } from './NotFoundContent.types';

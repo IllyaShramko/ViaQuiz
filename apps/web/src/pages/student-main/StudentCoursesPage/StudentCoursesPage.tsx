@@ -1,4 +1,4 @@
-import { useGetStudentCoursesQuery } from '../../../modules/students/api/studentsApi';
+import { useGetStudentCoursesQuery } from '../../../modules/students';
 import styles from '../Student.module.css';
 
 export function StudentCoursesPage() {

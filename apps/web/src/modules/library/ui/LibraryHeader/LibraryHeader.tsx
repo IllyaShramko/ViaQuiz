@@ -1,8 +1,5 @@
+import type { LibraryHeaderProps } from './LibraryHeader.types';
 import styles from '../Library.module.css';
-
-export interface LibraryHeaderProps {
-  onCreateQuiz: () => void;
-}
 
 export function LibraryHeader({ onCreateQuiz }: LibraryHeaderProps) {
   return (

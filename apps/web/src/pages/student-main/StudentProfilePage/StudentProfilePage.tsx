@@ -1,4 +1,4 @@
-import { useGetStudentMeQuery } from '../../../modules/students/api/studentsApi';
+import { useGetStudentMeQuery } from '../../../modules/students';
 import styles from '../Student.module.css';
 
 export function StudentProfilePage() {

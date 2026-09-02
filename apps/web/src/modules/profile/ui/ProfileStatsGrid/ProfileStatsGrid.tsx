@@ -1,12 +1,6 @@
+import type { ProfileStatsGridProps } from './ProfileStatsGrid.types';
 import { ProfileStatCard } from '../ProfileStatCard';
 import styles from '../Profile.module.css';
-
-export interface ProfileStatsGridProps {
-  totalQuizzes: number;
-  activeClassesCount?: number;
-  gamesCount?: number;
-  isLoadingQuizzes?: boolean;
-}
 
 export function ProfileStatsGrid({
   totalQuizzes,

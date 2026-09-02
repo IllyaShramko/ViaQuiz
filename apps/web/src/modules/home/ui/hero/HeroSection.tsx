@@ -1,11 +1,8 @@
 import { Link } from 'react-router-dom';
+import type { HeroSectionProps } from './HeroSection.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { HeroCodeForm } from './HeroCodeForm';
 import styles from '../Home.module.css';
-
-export interface HeroSectionProps {
-  onEnterCode?: (code: string) => void;
-}
 
 export function HeroSection({ onEnterCode }: HeroSectionProps) {
   const { t } = useLocale();

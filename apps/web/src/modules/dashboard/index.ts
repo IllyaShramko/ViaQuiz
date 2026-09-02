@@ -22,7 +22,6 @@ export {
   TEACHER_GRADIENTS,
   type TeacherHeroSearchProps,
   type TeacherQuizCardProps,
-  type TeacherQuizSkeletonProps,
   type TeacherQuizzesHeaderProps,
   type TeacherQuizzesGridProps,
   type TeacherEmptyStateProps,

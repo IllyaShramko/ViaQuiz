@@ -1,13 +1,7 @@
-import React, { useEffect } from 'react';
-import type { EditorVariant } from '../../models/types';
+import { useEffect } from 'react';
+import type { VariantEditorProps } from './VariantEditor.types';
 import { CloseIcon, PlusIcon } from '../../../../shared';
 import styles from './VariantEditor.module.css';
-
-export interface VariantEditorProps {
-  variants: EditorVariant[];
-  questionType: 'ONE_ANSWER' | 'MANY_ANSWERS';
-  onChange: (variants: EditorVariant[]) => void;
-}
 
 const COLORS = [
   '#ef4444', '#3b82f6', '#f59e0b', '#22c55e',

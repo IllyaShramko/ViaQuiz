@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetClassroomsQuery } from '../../../classes/api/classesApi';
 import { useCreateRoomMutation } from '../../../game-session/api/gameSessionApi';
-import type { QuizDetail } from '../../models';
-
-export interface QuizLaunchCardProps {
-	quiz: QuizDetail;
-}
+import type { QuizLaunchCardProps } from './QuizLaunchCard.types';
 
 export function QuizLaunchCard({ quiz }: QuizLaunchCardProps) {
 	const navigate = useNavigate();

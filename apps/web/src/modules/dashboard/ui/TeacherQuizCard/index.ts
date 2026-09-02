@@ -1,1 +1,2 @@
-export { TeacherQuizCard, TEACHER_GRADIENTS, type TeacherQuizCardProps } from './TeacherQuizCard';
+export { TeacherQuizCard, TEACHER_GRADIENTS } from './TeacherQuizCard';
+export type { TeacherQuizCardProps } from './TeacherQuizCard.types';

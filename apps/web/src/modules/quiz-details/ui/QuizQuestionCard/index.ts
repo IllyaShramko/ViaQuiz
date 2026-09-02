@@ -1,1 +1,2 @@
-export { QuizQuestionCard, type QuizQuestionCardProps } from './QuizQuestionCard';
+export { QuizQuestionCard } from './QuizQuestionCard';
+export type { QuizQuestionCardProps } from './QuizQuestionCard.types';

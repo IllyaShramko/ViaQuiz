@@ -1,17 +1,8 @@
-import type { PublicQuizSummary } from '../../models';
+import type { TeacherQuizzesGridProps } from './TeacherQuizzesGrid.types';
 import { TeacherQuizCard } from '../TeacherQuizCard';
 import { TeacherQuizSkeleton } from '../TeacherQuizSkeleton';
 import { TeacherEmptyState } from '../TeacherEmptyState';
 import styles from '../Dashboard.module.css';
-
-export interface TeacherQuizzesGridProps {
-  quizzes: PublicQuizSummary[];
-  isLoading: boolean;
-  isError: boolean;
-  skeletonCount?: number;
-  onCardClick: (uuid: string) => void;
-  onRetry?: () => void;
-}
 
 export function TeacherQuizzesGrid({
   quizzes,

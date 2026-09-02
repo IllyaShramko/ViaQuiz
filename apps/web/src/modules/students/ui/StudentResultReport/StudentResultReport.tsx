@@ -1,11 +1,6 @@
-import type { StudentResultReportDto } from '@viaquiz/shared-types';
+import type { StudentResultReportProps } from './StudentResultReport.types';
 import { NotFoundHeader } from '../../../not-found/ui/NotFoundHeader';
 import styles from './StudentResultReport.module.css';
-
-export interface StudentResultReportProps {
-  report: StudentResultReportDto;
-  homePath?: string;
-}
 
 export function StudentResultReport({ report, homePath = '/student/dashboard' }: StudentResultReportProps) {
   const {

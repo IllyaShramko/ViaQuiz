@@ -1,8 +1,6 @@
 import styles from '../Dashboard.module.css';
 
-export interface TeacherQuizSkeletonProps {}
-
-export function TeacherQuizSkeleton(_props?: TeacherQuizSkeletonProps) {
+export function TeacherQuizSkeleton() {
   return (
     <div className={`${styles['teacher-quiz-card']} ${styles['teacher-quiz-card--skeleton']}`}>
       <div className={`${styles['teacher-quiz-card__header']} ${styles['teacher-quiz-card__header--skeleton']}`} />

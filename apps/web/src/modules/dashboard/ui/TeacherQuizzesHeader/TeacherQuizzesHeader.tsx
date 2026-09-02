@@ -1,9 +1,5 @@
+import type { TeacherQuizzesHeaderProps } from './TeacherQuizzesHeader.types';
 import styles from '../Dashboard.module.css';
-
-export interface TeacherQuizzesHeaderProps {
-  title?: string;
-  total?: number;
-}
 
 export function TeacherQuizzesHeader({
   title = 'Опубліковані вікторини',

@@ -1,23 +1,7 @@
-import React from 'react';
-import type { QuizDetail, PublicQuizSummary } from '../../models';
-import { LibraryQuizCard } from '../LibraryQuizCard/LibraryQuizCard';
-import { LibraryEmptyState } from '../LibraryEmptyState/LibraryEmptyState';
+import type { LibraryGridProps } from './LibraryGrid.types';
+import { LibraryQuizCard } from '../LibraryQuizCard';
+import { LibraryEmptyState } from '../LibraryEmptyState';
 import styles from '../Library.module.css';
-
-export interface LibraryGridProps {
-  quizzes: (QuizDetail | PublicQuizSummary)[];
-  isLoading: boolean;
-  isError: boolean;
-  isLikedTab?: boolean;
-  hasSearch?: boolean;
-  onCardClick: (uuid: string) => void;
-  onEdit?: (uuid: string) => void;
-  onDelete?: (e: React.MouseEvent, id: number) => void;
-  onUnlike?: (e: React.MouseEvent, uuid: string) => void;
-  onCreateQuiz?: () => void;
-  onExplore?: () => void;
-  onRetry?: () => void;
-}
 
 export function LibraryGrid({
   quizzes,

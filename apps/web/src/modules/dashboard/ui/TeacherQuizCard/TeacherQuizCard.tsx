@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
-import type { PublicQuizSummary } from '../../models';
+import type { TeacherQuizCardProps } from './TeacherQuizCard.types';
 import styles from '../Dashboard.module.css';
 
 export const TEACHER_GRADIENTS = [
@@ -11,12 +11,6 @@ export const TEACHER_GRADIENTS = [
   'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)',
   'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
 ];
-
-export interface TeacherQuizCardProps {
-  quiz: PublicQuizSummary;
-  index?: number;
-  onClick: (uuid: string) => void;
-}
 
 export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardProps) {
   const authorName =

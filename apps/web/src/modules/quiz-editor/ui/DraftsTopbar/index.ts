@@ -1,1 +1,2 @@
-export { DraftsTopbar, type DraftsTopbarProps } from './DraftsTopbar';
+export { DraftsTopbar } from './DraftsTopbar';
+export type { DraftsTopbarProps } from './DraftsTopbar.types';

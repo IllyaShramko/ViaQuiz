@@ -1,11 +1,5 @@
+import type { LibraryEmptyStateProps } from './LibraryEmptyState.types';
 import styles from '../Library.module.css';
-
-export interface LibraryEmptyStateProps {
-  isLikedTab?: boolean;
-  hasSearch?: boolean;
-  onCreateQuiz?: () => void;
-  onExplore?: () => void;
-}
 
 export function LibraryEmptyState({
   isLikedTab = false,

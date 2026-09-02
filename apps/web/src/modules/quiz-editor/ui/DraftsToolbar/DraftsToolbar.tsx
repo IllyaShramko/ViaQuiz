@@ -1,15 +1,5 @@
-import type { SortOrder } from '@viaquiz/shared-types';
+import type { DraftsToolbarProps } from './DraftsToolbar.types';
 import styles from '../Drafts.module.css';
-
-export type DraftSortField = 'updatedAt' | 'createdAt';
-export type DraftSortOrder = SortOrder;
-
-export interface DraftsToolbarProps {
-  sortBy: DraftSortField;
-  sortOrder: DraftSortOrder;
-  onSortByChange: (field: DraftSortField) => void;
-  onToggleOrder: () => void;
-}
 
 export function DraftsToolbar({
   sortBy,

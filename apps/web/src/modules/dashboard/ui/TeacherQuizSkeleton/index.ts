@@ -1,1 +1,1 @@
-export { TeacherQuizSkeleton, type TeacherQuizSkeletonProps } from './TeacherQuizSkeleton';
+export { TeacherQuizSkeleton } from './TeacherQuizSkeleton';

@@ -1,16 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { VariantEditor } from '../VariantEditor/VariantEditor';
-import { TypeAnswerEditor } from '../TypeAnswerEditor/TypeAnswerEditor';
+import { useEffect, useRef, useState } from 'react';
+import { VariantEditor } from '../VariantEditor';
+import { TypeAnswerEditor } from '../TypeAnswerEditor';
 import { useUploadImageMutation } from '../../api/quizEditorApi';
-import type { EditorQuestion, EditorVariant, QuestionType } from '../../models/types';
+import type { QuestionEditorProps } from './QuestionEditor.types';
 import { UploadIcon, BinIcon } from '../../../../shared';
 import styles from './QuestionEditor.module.css';
-
-export interface QuestionEditorProps {
-  question: EditorQuestion;
-  onUpdate: (data: Partial<{ text: string; media: string | null; type: QuestionType; timeLimit: number; points: number; variants: EditorVariant[] }>) => void;
-  onSave?: () => void;
-}
 
 export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpdate }) => {
   const [uploadImage, { isLoading: isUploading }] = useUploadImageMutation();

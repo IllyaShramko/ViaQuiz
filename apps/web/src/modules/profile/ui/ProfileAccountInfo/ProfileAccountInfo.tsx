@@ -1,17 +1,10 @@
-import type { User } from '../../../../modules/auth/models';
+import type { ProfileAccountInfoProps } from './ProfileAccountInfo.types';
 import styles from '../Profile.module.css';
-
-export interface ProfileAccountInfoProps {
-  user: User | null;
-  title?: string;
-  defaultEmail?: string;
-  defaultUsername?: string;
-}
 
 export function ProfileAccountInfo({
   user,
   title = 'Інформація про акаунт',
-  defaultEmail = 'shramko@example.com',
+  defaultEmail = 'mail.username@example.com',
   defaultUsername = 'username',
 }: ProfileAccountInfoProps) {
   const username = user?.login || defaultUsername;

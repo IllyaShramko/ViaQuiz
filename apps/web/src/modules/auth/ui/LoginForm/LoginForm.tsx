@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import type { LoginFormProps, AuthRole } from './LoginForm.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { useLoginMutation } from '../../api/authApi';
 import { useStudentLoginMutation } from '../../../students/api/studentsApi';
 import { useUserContext } from '../../context';
 import { getSafeRedirectUrl } from '../../utils';
-import { PasswordInput } from './PasswordInput';
+import { PasswordInput } from '../PasswordInput';
 import styles from '../Auth.module.css';
-
-export interface LoginFormProps {
-  onSuccess?: () => void;
-  onError?: (error: string) => void;
-  defaultRole?: 'teacher' | 'student';
-}
 
 export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
   const { t } = useLocale();
@@ -28,7 +23,7 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
     roleParam === 'student' ||
     (!roleParam && !defaultRole && (redirectParam.startsWith('/join') || redirectParam.startsWith('/student')));
 
-  const [authRole, setAuthRole] = useState<'teacher' | 'student'>(() => {
+  const [authRole, setAuthRole] = useState<AuthRole>(() => {
     if (roleParam === 'teacher') return 'teacher';
     if (shouldDefaultToStudent) return 'student';
     return defaultRole || 'teacher';

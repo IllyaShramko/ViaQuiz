@@ -1,9 +1,5 @@
+import type { QuizBackButtonProps } from './QuizBackButton.types';
 import styles from '../QuizDetails.module.css';
-
-export interface QuizBackButtonProps {
-  onBack: () => void;
-  label?: string;
-}
 
 export function QuizBackButton({
   onBack,

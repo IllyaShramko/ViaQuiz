@@ -1,12 +1,6 @@
-import React from 'react';
-import type { EditorQuestion, QuestionType } from '../../models/types';
+import type { QuestionType } from '../../models';
+import type { QuestionSettingsProps } from './QuestionSettings.types';
 import styles from './QuestionSettings.module.css';
-
-export interface QuestionSettingsProps {
-  question: EditorQuestion;
-  onUpdate: (data: Partial<{ type: QuestionType; timeLimit: number; points: number }>) => void;
-  onSave?: () => void;
-}
 
 export const QuestionSettings: React.FC<QuestionSettingsProps> = ({ question, onUpdate, onSave }) => {
   return (

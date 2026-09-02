@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Chart from 'react-apexcharts';
+import type { SessionReportTab } from './SessionReportPage.types';
 import { useGetSessionReportQuery } from '../../api';
 import { StudentDetailDrawer } from '../StudentDetailDrawer';
 import styles from '../Reports.module.css';
@@ -19,7 +20,7 @@ export const SessionReportPage: React.FC = () => {
 		}
 	}, [roomUuid, isError, navigate]);
 
-	const [activeTab, setActiveTab] = useState<'overview' | 'questions' | 'chart'>('overview');
+	const [activeTab, setActiveTab] = useState<SessionReportTab>('overview');
 	const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
 
 	const formatDate = (isoString: string | null) => {

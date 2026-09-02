@@ -1,2 +1,2 @@
-export { LoginForm, type LoginFormProps } from './LoginForm';
-export { PasswordInput, type PasswordInputProps } from './PasswordInput';
+export { LoginForm } from './LoginForm';
+export type { LoginFormProps, AuthRole } from './LoginForm.types';

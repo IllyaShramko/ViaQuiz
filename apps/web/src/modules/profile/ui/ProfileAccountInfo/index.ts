@@ -1,1 +1,2 @@
-export { ProfileAccountInfo, type ProfileAccountInfoProps } from './ProfileAccountInfo';
+export { ProfileAccountInfo } from './ProfileAccountInfo';
+export type { ProfileAccountInfoProps } from './ProfileAccountInfo.types';

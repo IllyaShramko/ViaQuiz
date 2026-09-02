@@ -1,1 +1,2 @@
-export { TeacherQuizzesGrid, type TeacherQuizzesGridProps } from './TeacherQuizzesGrid';
+export { TeacherQuizzesGrid } from './TeacherQuizzesGrid';
+export type { TeacherQuizzesGridProps } from './TeacherQuizzesGrid.types';

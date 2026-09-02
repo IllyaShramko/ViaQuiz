@@ -1,13 +1,7 @@
-import React from 'react';
-import type { EditorVariant } from '../../models/types';
+import type { EditorVariant } from '../../models';
+import type { TypeAnswerEditorProps } from './TypeAnswerEditor.types';
 import { CloseIcon, PlusIcon } from '../../../../shared';
 import styles from './TypeAnswerEditor.module.css';
-
-export interface TypeAnswerEditorProps {
-  variants: EditorVariant[];
-  answerType: 'TYPE_ANSWER_V1' | 'TYPE_ANSWER_V2';
-  onChange: (variants: EditorVariant[]) => void;
-}
 
 export const TypeAnswerEditor: React.FC<TypeAnswerEditorProps> = ({ variants, answerType, onChange }) => {
   if (answerType === 'TYPE_ANSWER_V1') {

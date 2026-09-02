@@ -1,10 +1,6 @@
 export { AuthCard, type AuthCardProps } from './AuthCard';
-export {
-  LoginForm,
-  PasswordInput,
-  type LoginFormProps,
-  type PasswordInputProps,
-} from './LoginForm';
+export { PasswordInput, type PasswordInputProps } from './PasswordInput';
+export { LoginForm, type LoginFormProps, type AuthRole } from './LoginForm';
 export {
   RegisterForm,
   RegisterSteps,

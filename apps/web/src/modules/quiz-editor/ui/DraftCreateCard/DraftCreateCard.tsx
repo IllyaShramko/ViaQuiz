@@ -1,13 +1,7 @@
 import React from 'react';
 import { PlusIcon } from '../../../../shared';
+import type { DraftCreateCardProps } from './DraftCreateCard.types';
 import styles from '../Drafts.module.css';
-
-export interface DraftCreateCardProps {
-  canCreateMore: boolean;
-  isCreating: boolean;
-  maxDrafts?: number;
-  onCreate: () => void;
-}
 
 export function DraftCreateCard({
   canCreateMore,

@@ -1,18 +1,6 @@
-import React from 'react';
-import type { SaveStatus } from '../../models/types';
+import type { EditorHeaderProps } from './EditorHeader.types';
 import { ArrowIcon, PublicIcon } from '../../../../shared';
 import styles from './EditorHeader.module.css';
-
-export interface EditorHeaderProps {
-  quizName: string;
-  saveStatus: SaveStatus;
-  onNameChange: (name: string) => void;
-  onPublish: () => void;
-  onBack: () => void;
-  isPublishing: boolean;
-  isDraft: boolean;
-  hasQuestions: boolean;
-}
 
 export const EditorHeader: React.FC<EditorHeaderProps> = ({
   quizName,

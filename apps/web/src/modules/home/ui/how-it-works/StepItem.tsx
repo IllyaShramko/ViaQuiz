@@ -1,10 +1,5 @@
+import type { StepItemProps } from './StepItem.types';
 import styles from '../Home.module.css';
-
-export interface StepItemProps {
-  number: number;
-  title: string;
-  description: string;
-}
 
 export function StepItem({ number, title, description }: StepItemProps) {
   return (

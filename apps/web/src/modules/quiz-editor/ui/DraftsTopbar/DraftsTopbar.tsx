@@ -1,13 +1,6 @@
 import { ArrowIcon } from '../../../../shared';
+import type { DraftsTopbarProps } from './DraftsTopbar.types';
 import styles from '../Drafts.module.css';
-
-export interface DraftsTopbarProps {
-  draftsCount: number;
-  maxDrafts: number;
-  onBack: () => void;
-  title?: string;
-  backText?: string;
-}
 
 export function DraftsTopbar({
   draftsCount,

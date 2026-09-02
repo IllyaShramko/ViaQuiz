@@ -1,0 +1,1 @@
+export { CoursePerformanceTab } from './CoursePerformanceTab';

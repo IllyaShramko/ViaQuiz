@@ -1,11 +1,5 @@
+import type { TeacherEmptyStateProps } from './TeacherEmptyState.types';
 import styles from '../Dashboard.module.css';
-
-export interface TeacherEmptyStateProps {
-  title?: string;
-  message?: string;
-  isError?: boolean;
-  onRetry?: () => void;
-}
 
 export function TeacherEmptyState({
   title = 'Нічого не знайдено',

@@ -38,6 +38,7 @@ export {
   StepVerification,
   type AuthCardProps,
   type LoginFormProps,
+  type AuthRole,
   type PasswordInputProps,
   type RegisterFormProps,
   type RegisterStepsProps,

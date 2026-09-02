@@ -1,1 +1,2 @@
-export { TeacherHeroSearch, type TeacherHeroSearchProps } from './TeacherHeroSearch';
+export { TeacherHeroSearch } from './TeacherHeroSearch';
+export type { TeacherHeroSearchProps } from './TeacherHeroSearch.types';

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { EditorHeader } from '../EditorHeader/EditorHeader';
-import { QuestionList } from '../QuestionList/QuestionList';
-import { QuestionEditor } from '../QuestionEditor/QuestionEditor';
-import { QuestionTypeSelector } from '../QuestionTypeSelector/QuestionTypeSelector';
-import { QuestionSettings } from '../QuestionSettings/QuestionSettings';
-import { PublishModal } from '../PublishModal/PublishModal';
+import { EditorHeader } from '../EditorHeader';
+import { QuestionList } from '../QuestionList';
+import { QuestionEditor } from '../QuestionEditor';
+import { QuestionTypeSelector } from '../QuestionTypeSelector';
+import { QuestionSettings } from '../QuestionSettings';
+import { PublishModal } from '../PublishModal';
 import {
   useCreateQuestionMutation,
   useUpdateQuestionMutation,
@@ -15,12 +15,9 @@ import {
   useUpdateQuizMutation,
   usePublishQuizMutation,
 } from '../../api/quizEditorApi';
-import type { EditorQuiz, EditorQuestion, QuestionType, SaveStatus } from '../../models/types';
+import type { EditorQuiz, EditorQuestion, QuestionType, SaveStatus } from '../../models';
+import type { QuizEditorLayoutProps } from './QuizEditorLayout.types';
 import styles from './QuizEditorLayout.module.css';
-
-interface QuizEditorLayoutProps {
-  quiz: EditorQuiz;
-}
 
 export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
   const [localQuiz, setLocalQuiz] = useState<EditorQuiz>(quiz);

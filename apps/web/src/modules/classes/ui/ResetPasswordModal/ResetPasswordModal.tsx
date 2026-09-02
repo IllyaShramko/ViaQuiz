@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import { useResetStudentPasswordMutation } from '../../api/classesApi';
+import type { ResetPasswordModalProps } from './ResetPasswordModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
-
-interface ResetPasswordModalProps {
-  classUuid: string;
-  studentUuid: string;
-  studentName: string;
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 export function ResetPasswordModal({
   classUuid,

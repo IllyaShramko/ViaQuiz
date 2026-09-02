@@ -1,1 +1,2 @@
-export { TeacherPagination, type TeacherPaginationProps } from './TeacherPagination';
+export { TeacherPagination } from './TeacherPagination';
+export type { TeacherPaginationProps } from './TeacherPagination.types';

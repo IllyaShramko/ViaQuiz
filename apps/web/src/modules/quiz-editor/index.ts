@@ -28,9 +28,10 @@ export type {
   PublishValidationError,
   PublishErrorResponse,
   SaveStatus,
-} from './models/types';
+} from './models';
 
 export { useAutoSave } from './hooks/useAutoSave';
+
 export {
   QuizEditorLayout,
   PublishModal,
@@ -48,6 +49,16 @@ export {
   DraftCreateCard,
   DraftsGrid,
   DEFAULT_COVER_GRADIENT,
+  type QuizEditorLayoutProps,
+  type PublishModalProps,
+  type EditorHeaderProps,
+  type QuestionEditorProps,
+  type QuestionListProps,
+  type SortableItemProps,
+  type QuestionSettingsProps,
+  type QuestionTypeSelectorProps,
+  type TypeAnswerEditorProps,
+  type VariantEditorProps,
   type DraftsTopbarProps,
   type DraftsHeroProps,
   type DraftsToolbarProps,

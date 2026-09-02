@@ -1,25 +1,7 @@
-import React from 'react';
-import type { EditorQuiz } from '../../models/types';
 import { DraftCard } from '../DraftCard';
 import { DraftCreateCard } from '../DraftCreateCard';
-import type { DraftSortField } from '../DraftsToolbar';
+import type { DraftsGridProps } from './DraftsGrid.types';
 import styles from '../Drafts.module.css';
-
-export interface DraftsGridProps {
-  drafts: EditorQuiz[];
-  isLoading?: boolean;
-  isError?: boolean;
-  isCreating?: boolean;
-  canCreateMore: boolean;
-  deletingId?: number | null;
-  isDeleting?: boolean;
-  sortBy?: DraftSortField;
-  maxDrafts?: number;
-  onRetry?: () => void;
-  onCreateNew: () => void;
-  onOpenDraft: (uuid: string) => void;
-  onDeleteDraft: (e: React.MouseEvent, id: number) => void;
-}
 
 export function DraftsGrid({
   drafts,

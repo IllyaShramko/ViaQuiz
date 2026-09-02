@@ -1,16 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import type { EditorQuiz } from '../../models/types';
+import { useState, useRef, useEffect } from 'react';
+import type { PublishModalProps } from './PublishModal.types';
 import { useUpdateQuizMutation, usePublishQuizMutation, useUploadImageMutation } from '../../api/quizEditorApi';
 import { CloseIcon, UploadIcon, BinIcon, PublicIcon } from '../../../../shared';
 import { extractPublishErrors, validateQuiz } from '../../utils/quizValidation';
 import styles from './PublishModal.module.css';
-
-export interface PublishModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  quiz: EditorQuiz;
-  onPublishSuccess: () => void;
-}
 
 export const PublishModal: React.FC<PublishModalProps> = ({
   isOpen,

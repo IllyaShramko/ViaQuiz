@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetStudentAnalyticsQuery } from '../../../modules/classes/api/classesApi';
-import { StudentProgressChart } from '../../../modules/classes/ui/Charts/StudentProgressChart';
-import { StudentGradeDistributionChart } from '../../../modules/classes/ui/Charts/StudentGradeDistributionChart';
-import { ResetPasswordModal } from '../../../modules/classes/ui/ResetPasswordModal/ResetPasswordModal';
+import {
+  useGetStudentAnalyticsQuery,
+  StudentProgressChart,
+  StudentGradeDistributionChart,
+  ResetPasswordModal,
+} from '../../../modules/classes';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 export function StudentDetailsPage() {

@@ -1,18 +1,7 @@
-import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import type { AuthCardProps } from './AuthCard.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import styles from '../Auth.module.css';
-
-export interface AuthCardProps {
-  title: string;
-  subtitle: string;
-  serverError?: string | null;
-  footerText?: string;
-  footerLinkText?: string;
-  footerLinkTo?: string;
-  isWide?: boolean;
-  children: ReactNode;
-}
 
 export function AuthCard({
   title,

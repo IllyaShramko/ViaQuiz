@@ -1,17 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useEnrollStudentsToCourseMutation } from '../../api/classesApi';
-import type { StudentDto } from '@viaquiz/shared-types';
+import type { EnrollCourseStudentsModalProps } from './EnrollCourseStudentsModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
-
-interface EnrollCourseStudentsModalProps {
-  classUuid: string;
-  courseUuid: string;
-  isOpen: boolean;
-  onClose: () => void;
-  classroomStudents: StudentDto[];
-  alreadyEnrolledUuids: string[];
-  maxCourseStudents?: number;
-}
 
 export function EnrollCourseStudentsModal({
   classUuid,

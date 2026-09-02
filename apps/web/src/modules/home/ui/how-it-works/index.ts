@@ -1,2 +1,3 @@
 export { HowItWorksSection } from './HowItWorksSection';
-export { StepItem, type StepItemProps } from './StepItem';
+export { StepItem } from './StepItem';
+export type { StepItemProps } from './StepItem.types';

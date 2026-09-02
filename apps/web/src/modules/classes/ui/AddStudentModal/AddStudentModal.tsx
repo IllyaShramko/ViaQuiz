@@ -1,13 +1,8 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useAddStudentMutation } from '../../api/classesApi';
 import { generateStudentLogin, generateSimplePassword } from '../../../../shared/tools/translit';
+import type { AddStudentModalProps } from './AddStudentModal.types';
 import styles from './AddStudentModal.module.css';
-
-interface AddStudentModalProps {
-  classUuid: string;
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 export function AddStudentModal({
   classUuid,

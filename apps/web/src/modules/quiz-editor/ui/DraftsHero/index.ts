@@ -1,1 +1,2 @@
-export { DraftsHero, type DraftsHeroProps } from './DraftsHero';
+export { DraftsHero } from './DraftsHero';
+export type { DraftsHeroProps } from './DraftsHero.types';

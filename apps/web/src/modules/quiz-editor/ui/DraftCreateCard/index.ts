@@ -1,1 +1,2 @@
-export { DraftCreateCard, type DraftCreateCardProps } from './DraftCreateCard';
+export { DraftCreateCard } from './DraftCreateCard';
+export type { DraftCreateCardProps } from './DraftCreateCard.types';

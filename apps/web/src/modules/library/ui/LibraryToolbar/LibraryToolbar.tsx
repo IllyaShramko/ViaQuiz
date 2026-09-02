@@ -1,16 +1,6 @@
-import type { LibrarySortBy, LibrarySortOrder } from '../../models';
+import type { LibrarySortBy } from '../../models';
+import type { LibraryToolbarProps } from './LibraryToolbar.types';
 import styles from '../Library.module.css';
-
-export interface LibraryToolbarProps {
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  onClearSearch: () => void;
-  sortBy: LibrarySortBy;
-  onSortByChange: (sortBy: LibrarySortBy) => void;
-  sortOrder: LibrarySortOrder;
-  onToggleSortOrder: () => void;
-  isLikedTab?: boolean;
-}
 
 export function LibraryToolbar({
   searchTerm,

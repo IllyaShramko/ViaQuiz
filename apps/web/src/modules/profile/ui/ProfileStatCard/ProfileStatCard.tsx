@@ -1,11 +1,5 @@
-import type { ReactNode } from 'react';
+import type { ProfileStatCardProps } from './ProfileStatCard.types';
 import styles from '../Profile.module.css';
-
-export interface ProfileStatCardProps {
-  icon: ReactNode;
-  value: number | string;
-  label: string;
-}
 
 export function ProfileStatCard({ icon, value, label }: ProfileStatCardProps) {
   return (

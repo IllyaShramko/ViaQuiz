@@ -1,1 +1,2 @@
-export { ProfileHeaderCard, type ProfileHeaderCardProps } from './ProfileHeaderCard';
+export { ProfileHeaderCard } from './ProfileHeaderCard';
+export type { ProfileHeaderCardProps } from './ProfileHeaderCard.types';

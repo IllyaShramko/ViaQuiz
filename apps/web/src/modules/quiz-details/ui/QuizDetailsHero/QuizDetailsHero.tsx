@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import type { QuizDetail } from '../../models';
+import type { QuizDetailsHeroProps } from './QuizDetailsHero.types';
 import { useToggleLikeMutation } from '../../api';
 import styles from '../QuizDetails.module.css';
 
 export const DEFAULT_QUIZ_HERO_GRADIENT = 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)';
-
-export interface QuizDetailsHeroProps {
-  quiz: QuizDetail;
-}
 
 export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
   const [toggleLike, { isLoading: isLiking }] = useToggleLikeMutation();

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useGetStudentResultsQuery } from '../../../modules/students/api/studentsApi';
+import { useGetStudentResultsQuery } from '../../../modules/students';
 import styles from '../Student.module.css';
 import classesStyles from '../../../modules/classes/ui/Classes.module.css';
 

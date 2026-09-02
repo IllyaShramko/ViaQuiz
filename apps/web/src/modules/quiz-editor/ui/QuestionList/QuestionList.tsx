@@ -14,29 +14,10 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { EditorQuestion } from '../../models/types';
+import type { QuestionListProps, SortableItemProps } from './QuestionList.types';
 import { OneAnswerIcon, MultipleIcon, EnterIcon, BinIcon, PlusIcon } from '../../../../shared';
 import { validateQuestion } from '../../utils/quizValidation';
 import styles from './QuestionList.module.css';
-
-export interface QuestionListProps {
-  questions: EditorQuestion[];
-  selectedId: number | null;
-  onSelect: (id: number) => void;
-  onAdd: () => void;
-  onDelete: (id: number) => void;
-  onDuplicate: (id: number) => void;
-  onReorder: (questionIds: number[]) => void;
-}
-
-interface SortableItemProps {
-  question: EditorQuestion;
-  index: number;
-  isSelected: boolean;
-  onSelect: (id: number) => void;
-  onDelete: (id: number) => void;
-  onDuplicate: (id: number) => void;
-}
 
 const restrictToVerticalAxis: Modifier = ({ transform }) => {
   return {

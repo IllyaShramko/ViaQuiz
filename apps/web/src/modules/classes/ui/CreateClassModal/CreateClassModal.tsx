@@ -1,13 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useCreateClassroomMutation } from '../../api/classesApi';
+import type { CreateClassModalProps } from './CreateClassModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
-
-interface CreateClassModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  currentActiveClasses: number;
-  maxClasses: number;
-}
 
 export function CreateClassModal({
   isOpen,

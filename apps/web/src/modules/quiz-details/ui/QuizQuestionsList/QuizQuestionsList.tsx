@@ -1,12 +1,6 @@
-import type { QuizQuestion } from '../../models';
+import type { QuizQuestionsListProps } from './QuizQuestionsList.types';
 import { QuizQuestionCard } from '../QuizQuestionCard';
 import styles from '../QuizDetails.module.css';
-
-export interface QuizQuestionsListProps {
-  questions: QuizQuestion[];
-  title?: string;
-  emptyMessage?: string;
-}
 
 export function QuizQuestionsList({
   questions,

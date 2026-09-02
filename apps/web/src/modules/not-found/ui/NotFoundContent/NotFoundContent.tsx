@@ -1,12 +1,5 @@
+import type { NotFoundContentProps } from './NotFoundContent.types';
 import styles from '../NotFound.module.css';
-
-export interface NotFoundContentProps {
-  onNavigateHome: () => void;
-  homePath?: string;
-  titleDigits?: [string, string, string];
-  message?: string;
-  buttonText?: string;
-}
 
 export function NotFoundContent({
   onNavigateHome,

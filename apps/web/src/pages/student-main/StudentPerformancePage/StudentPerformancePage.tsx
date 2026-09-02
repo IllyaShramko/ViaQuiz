@@ -1,6 +1,8 @@
-import { useGetStudentResultsQuery } from '../../../modules/students/api/studentsApi';
-import { StudentProgressChart } from '../../../modules/classes/ui/Charts/StudentProgressChart';
-import { StudentGradeDistributionChart } from '../../../modules/classes/ui/Charts/StudentGradeDistributionChart';
+import { useGetStudentResultsQuery } from '../../../modules/students';
+import {
+  StudentProgressChart,
+  StudentGradeDistributionChart,
+} from '../../../modules/classes';
 import styles from '../Student.module.css';
 import classesStyles from '../../../modules/classes/ui/Classes.module.css';
 

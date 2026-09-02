@@ -1,0 +1,1 @@
+export { QuizSkeletonCard } from './QuizSkeletonCard';

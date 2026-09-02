@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useGetStudentDashboardQuery } from '../../../modules/students/api/studentsApi';
+import { useGetStudentDashboardQuery } from '../../../modules/students';
 import styles from '../Student.module.css';
 import classesStyles from '../../../modules/classes/ui/Classes.module.css';
 

@@ -1,12 +1,5 @@
+import type { TeacherHeroSearchProps } from './TeacherHeroSearch.types';
 import styles from '../Dashboard.module.css';
-
-export interface TeacherHeroSearchProps {
-  title?: string;
-  placeholder?: string;
-  searchTerm: string;
-  onSearchChange: (value: string) => void;
-  onClear: () => void;
-}
 
 export function TeacherHeroSearch({
   title = 'Що ви бажаєте викладати сьогодні?',

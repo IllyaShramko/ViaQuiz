@@ -1,11 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { HeroCodeFormProps } from './HeroCodeForm.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import styles from '../Home.module.css';
-
-export interface HeroCodeFormProps {
-  onSubmitCode?: (code: string) => void;
-}
 
 export function HeroCodeForm({ onSubmitCode }: HeroCodeFormProps) {
   const { t } = useLocale();

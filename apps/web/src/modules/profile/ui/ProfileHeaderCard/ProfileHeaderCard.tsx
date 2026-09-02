@@ -1,10 +1,5 @@
-import type { User } from '../../../../modules/auth/models';
+import type { ProfileHeaderCardProps } from './ProfileHeaderCard.types';
 import styles from '../Profile.module.css';
-
-export interface ProfileHeaderCardProps {
-  user: User | null;
-  roleLabel?: string;
-}
 
 export function ProfileHeaderCard({
   user,

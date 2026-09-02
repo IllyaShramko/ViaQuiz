@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
+import type { NotFoundHeaderProps } from './NotFoundHeader.types';
 import styles from '../NotFound.module.css';
-
-export interface NotFoundHeaderProps {
-  homePath: string;
-}
 
 export function NotFoundHeader({ homePath }: NotFoundHeaderProps) {
   return (

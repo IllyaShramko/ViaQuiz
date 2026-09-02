@@ -1,5 +1,2 @@
-export {
-  QuizDetailsHero,
-  DEFAULT_QUIZ_HERO_GRADIENT,
-  type QuizDetailsHeroProps,
-} from './QuizDetailsHero';
+export { QuizDetailsHero, DEFAULT_QUIZ_HERO_GRADIENT } from './QuizDetailsHero';
+export type { QuizDetailsHeroProps } from './QuizDetailsHero.types';

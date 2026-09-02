@@ -1,15 +1,12 @@
-import React from 'react';
-import type { QuestionType } from '../../models/types';
+import type { ReactNode } from 'react';
+import type { QuestionType } from '../../models';
+import type { QuestionTypeSelectorProps } from './QuestionTypeSelector.types';
 import { OneAnswerIcon, MultipleIcon, EnterIcon } from '../../../../shared';
 import styles from './QuestionTypeSelector.module.css';
 
-export interface QuestionTypeSelectorProps {
-  onSelect: (type: QuestionType) => void;
-}
-
 const types: {
   type: QuestionType;
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   description: string;
 }[] = [

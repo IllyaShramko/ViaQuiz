@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useGetResultReportByUuidQuery } from '../../../modules/game-session';
-import { StudentResultReport } from '../../../modules/students/ui/StudentResultReport';
+import { StudentResultReport } from '../../../modules/students';
 import { NotFoundHeader } from '../../../modules/not-found/ui/NotFoundHeader';
 import styles from '../../../modules/students/ui/StudentResultReport/StudentResultReport.module.css';
 import { getAuthToken } from '../../../shared/api/headers';

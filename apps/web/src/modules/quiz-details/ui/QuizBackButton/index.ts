@@ -1,1 +1,2 @@
-export { QuizBackButton, type QuizBackButtonProps } from './QuizBackButton';
+export { QuizBackButton } from './QuizBackButton';
+export type { QuizBackButtonProps } from './QuizBackButton.types';

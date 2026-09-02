@@ -1,6 +1,6 @@
-export {
-  DraftsToolbar,
-  type DraftsToolbarProps,
-  type DraftSortField,
-  type DraftSortOrder,
-} from './DraftsToolbar';
+export { DraftsToolbar } from './DraftsToolbar';
+export type {
+  DraftsToolbarProps,
+  DraftSortField,
+  DraftSortOrder,
+} from './DraftsToolbar.types';

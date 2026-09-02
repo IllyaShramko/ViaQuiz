@@ -1,19 +1,9 @@
 import React from 'react';
 import { BinIcon, OneAnswerIcon } from '../../../../shared';
-import type { EditorQuiz } from '../../models/types';
-import type { DraftSortField } from '../DraftsToolbar';
+import type { DraftCardProps } from './DraftCard.types';
 import styles from '../Drafts.module.css';
 
 export const DEFAULT_COVER_GRADIENT = 'linear-gradient(135deg, #863bff 0%, #3b82f6 100%)';
-
-export interface DraftCardProps {
-  draft: EditorQuiz;
-  index?: number;
-  isDeleting?: boolean;
-  sortBy?: DraftSortField;
-  onOpen: (uuid: string) => void;
-  onDelete: (e: React.MouseEvent, id: number) => void;
-}
 
 export function DraftCard({
   draft,

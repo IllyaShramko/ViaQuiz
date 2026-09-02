@@ -1,6 +1,6 @@
-export * from './LibraryHeader/LibraryHeader';
-export * from './LibraryTabs/LibraryTabs';
-export * from './LibraryToolbar/LibraryToolbar';
-export * from './LibraryQuizCard/LibraryQuizCard';
-export * from './LibraryEmptyState/LibraryEmptyState';
-export * from './LibraryGrid/LibraryGrid';
+export { LibraryHeader, type LibraryHeaderProps } from './LibraryHeader';
+export { LibraryTabs, type LibraryTabsProps } from './LibraryTabs';
+export { LibraryToolbar, type LibraryToolbarProps } from './LibraryToolbar';
+export { LibraryQuizCard, LIBRARY_GRADIENTS, type LibraryQuizCardProps } from './LibraryQuizCard';
+export { LibraryEmptyState, type LibraryEmptyStateProps } from './LibraryEmptyState';
+export { LibraryGrid, type LibraryGridProps } from './LibraryGrid';

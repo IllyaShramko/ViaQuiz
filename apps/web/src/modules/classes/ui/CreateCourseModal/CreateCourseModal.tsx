@@ -1,16 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useCreateCourseMutation } from '../../api/classesApi';
-import type { StudentDto } from '@viaquiz/shared-types';
+import type { CreateCourseModalProps } from './CreateCourseModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
-
-interface CreateCourseModalProps {
-  classUuid: string;
-  isOpen: boolean;
-  onClose: () => void;
-  students: StudentDto[];
-  currentClassCourses: number;
-  maxClassCourses: number;
-}
 
 export function CreateCourseModal({
   classUuid,

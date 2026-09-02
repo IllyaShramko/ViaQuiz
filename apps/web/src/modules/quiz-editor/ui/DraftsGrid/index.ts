@@ -1,1 +1,2 @@
-export { DraftsGrid, type DraftsGridProps } from './DraftsGrid';
+export { DraftsGrid } from './DraftsGrid';
+export type { DraftsGridProps } from './DraftsGrid.types';

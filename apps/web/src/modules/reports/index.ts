@@ -1,3 +1,8 @@
 export * from './api';
-export { ReportsListPage } from './ui/ReportsListPage/ReportsListPage';
-export { SessionReportPage } from './ui/SessionReportPage/SessionReportPage';
+export {
+  ReportsListPage,
+  SessionReportPage,
+  StudentDetailDrawer,
+  type SessionReportTab,
+  type StudentDetailDrawerProps,
+} from './ui';

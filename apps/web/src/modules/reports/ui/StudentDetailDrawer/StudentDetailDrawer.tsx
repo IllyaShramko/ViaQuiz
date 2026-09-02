@@ -1,14 +1,8 @@
 import React, { useEffect } from 'react';
 import Chart from 'react-apexcharts';
+import type { StudentDetailDrawerProps } from './StudentDetailDrawer.types';
 import { useGetParticipantReportQuery } from '../../api';
 import styles from '../Reports.module.css';
-
-interface StudentDetailDrawerProps {
-	isOpen: boolean;
-	onClose: () => void;
-	roomUuid: string;
-	participantId: number | null;
-}
 
 export const StudentDetailDrawer: React.FC<StudentDetailDrawerProps> = ({
 	isOpen,

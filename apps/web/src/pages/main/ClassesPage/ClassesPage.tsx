@@ -1,7 +1,9 @@
 import { useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useGetClassroomsQuery } from '../../../modules/classes/api/classesApi';
-import { CreateClassModal } from '../../../modules/classes/ui/CreateClassModal/CreateClassModal';
+import {
+  useGetClassroomsQuery,
+  CreateClassModal,
+} from '../../../modules/classes';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 export function ClassesPage() {

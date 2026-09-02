@@ -1,1 +1,2 @@
-export { QuizQuestionsList, type QuizQuestionsListProps } from './QuizQuestionsList';
+export { QuizQuestionsList } from './QuizQuestionsList';
+export type { QuizQuestionsListProps } from './QuizQuestionsList.types';

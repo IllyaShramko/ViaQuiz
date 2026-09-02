@@ -1,11 +1,5 @@
+import type { QuizDetailsErrorProps } from './QuizDetailsError.types';
 import styles from '../QuizDetails.module.css';
-
-export interface QuizDetailsErrorProps {
-  onGoHome: () => void;
-  onRetry: () => void;
-  title?: string;
-  message?: string;
-}
 
 export function QuizDetailsError({
   onGoHome,

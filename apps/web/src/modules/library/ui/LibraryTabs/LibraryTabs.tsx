@@ -1,12 +1,5 @@
-import type { LibraryTab } from '../../models';
+import type { LibraryTabsProps } from './LibraryTabs.types';
 import styles from '../Library.module.css';
-
-export interface LibraryTabsProps {
-  activeTab: LibraryTab;
-  onTabChange: (tab: LibraryTab) => void;
-  myTotal: number;
-  likedTotal: number;
-}
 
 export function LibraryTabs({
   activeTab,

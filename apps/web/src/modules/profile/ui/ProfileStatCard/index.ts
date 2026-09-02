@@ -1,1 +1,2 @@
-export { ProfileStatCard, type ProfileStatCardProps } from './ProfileStatCard';
+export { ProfileStatCard } from './ProfileStatCard';
+export type { ProfileStatCardProps } from './ProfileStatCard.types';

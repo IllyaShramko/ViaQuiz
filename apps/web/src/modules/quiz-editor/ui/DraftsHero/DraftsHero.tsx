@@ -1,10 +1,5 @@
+import type { DraftsHeroProps } from './DraftsHero.types';
 import styles from '../Drafts.module.css';
-
-export interface DraftsHeroProps {
-  title?: string;
-  subtitle?: string;
-  maxDrafts?: number;
-}
 
 export function DraftsHero({
   title = 'Ваші чернетки вікторин',

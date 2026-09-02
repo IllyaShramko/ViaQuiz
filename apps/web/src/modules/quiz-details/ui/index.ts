@@ -31,5 +31,4 @@ export {
 export {
   QuizLaunchCard,
   type QuizLaunchCardProps,
-} from './QuizLaunchCard/QuizLaunchCard';
-
+} from './QuizLaunchCard';

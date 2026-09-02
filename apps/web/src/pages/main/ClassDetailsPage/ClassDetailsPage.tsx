@@ -3,11 +3,11 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   useGetClassroomQuery,
   useDeleteStudentMutation,
-} from '../../../modules/classes/api/classesApi';
+  AddStudentModal,
+  ResetPasswordModal,
+  CreateCourseModal,
+} from '../../../modules/classes';
 import { useGetTeacherSessionsQuery } from '../../../modules/reports';
-import { AddStudentModal } from '../../../modules/classes/ui/AddStudentModal/AddStudentModal';
-import { ResetPasswordModal } from '../../../modules/classes/ui/ResetPasswordModal/ResetPasswordModal';
-import { CreateCourseModal } from '../../../modules/classes/ui/CreateCourseModal/CreateCourseModal';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 type TabType = 'students' | 'courses' | 'performance' | 'history';

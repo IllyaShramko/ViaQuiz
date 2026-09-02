@@ -1,5 +1,12 @@
-export { RegisterForm, type RegisterFormProps } from './RegisterForm';
-export { RegisterSteps, type RegisterStepsProps } from './RegisterSteps';
-export { StepCredentials, type StepCredentialsProps } from './StepCredentials';
-export { StepProfile, type StepProfileProps } from './StepProfile';
-export { StepVerification, type StepVerificationProps } from './StepVerification';
+export { RegisterForm } from './RegisterForm';
+export type { RegisterFormProps } from './RegisterForm.types';
+export {
+  RegisterSteps,
+  StepCredentials,
+  StepProfile,
+  StepVerification,
+  type RegisterStepsProps,
+  type StepCredentialsProps,
+  type StepProfileProps,
+  type StepVerificationProps,
+} from './steps';

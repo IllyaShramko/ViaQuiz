@@ -1,7 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
-import type { QuizDetail, PublicQuizSummary } from '../../models';
+import type { LibraryQuizCardProps } from './LibraryQuizCard.types';
 import styles from '../Library.module.css';
 
 export const LIBRARY_GRADIENTS = [
@@ -12,16 +11,6 @@ export const LIBRARY_GRADIENTS = [
   'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)',
   'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
 ];
-
-export interface LibraryQuizCardProps {
-  quiz: QuizDetail | PublicQuizSummary;
-  isLikedTab?: boolean;
-  index?: number;
-  onClick: (uuid: string) => void;
-  onEdit?: (uuid: string) => void;
-  onDelete?: (e: React.MouseEvent, id: number) => void;
-  onUnlike?: (e: React.MouseEvent, uuid: string) => void;
-}
 
 export function LibraryQuizCard({
   quiz,
