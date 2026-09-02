@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { VariantEditorProps } from './VariantEditor.types';
-import { CloseIcon, PlusIcon } from '../../../../shared';
+import { CloseIcon, PlusIcon, CheckIcon } from '../../../../shared';
 import styles from './VariantEditor.module.css';
 
 const COLORS = [
@@ -31,29 +31,21 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
   };
 
   const handleToggleCorrect = (index: number) => {
-    const isCurrentlyCorrect = Boolean(variants[index]?.isCorrect);
-    const newVariants = variants.map((v, i) => {
-      if (questionType === 'ONE_ANSWER') {
-        return {
-          ...v,
-          isCorrect: i === index ? !isCurrentlyCorrect : false,
-        };
-      } else {
-        return {
-          ...v,
-          isCorrect: i === index ? !isCurrentlyCorrect : Boolean(v.isCorrect),
-        };
-      }
-    });
-
-    onChange(newVariants);
+    if (questionType === 'ONE_ANSWER') {
+      const newVariants = variants.map((v, i) => ({
+        ...v,
+        isCorrect: i === index
+      }));
+      onChange(newVariants);
+    } else {
+      const newVariants = variants.map((v, i) => (i === index ? { ...v, isCorrect: !v.isCorrect } : v));
+      onChange(newVariants);
+    }
   };
 
   const handleDelete = (index: number) => {
     if (variants.length <= 2) return;
-    const newVariants = variants
-      .filter((_, i) => i !== index)
-      .map((v, i) => ({ ...v, order: i }));
+    const newVariants = variants.filter((_, i) => i !== index);
     onChange(newVariants);
   };
 
@@ -61,7 +53,12 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
     if (variants.length >= 8) return;
     onChange([
       ...variants,
-      { text: '', type: 'TEXT', isCorrect: false, order: variants.length }
+      {
+        text: '',
+        type: 'TEXT',
+        isCorrect: false,
+        order: variants.length
+      }
     ]);
   };
 
@@ -69,12 +66,12 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
     <div className={styles['variant-editor']}>
       <div className={styles['variant-grid']}>
         {variants.map((variant, index) => {
+          const isCorrect = variant.isCorrect;
           const color = COLORS[index % COLORS.length];
-          const isCorrect = Boolean(variant.isCorrect);
 
           return (
             <div
-              key={variant.id ?? `temp-var-${index}`}
+              key={index}
               className={`${styles['variant-card']} ${isCorrect ? styles['is-correct'] : ''}`}
               style={{ '--variant-color': color } as React.CSSProperties}
             >
@@ -96,11 +93,11 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
                 >
                   {questionType === 'ONE_ANSWER' ? (
                     <div className={`${styles['radio-indicator']} ${isCorrect ? styles['active'] : ''}`}>
-                      {isCorrect && <span className={styles['indicator-check']}>✓</span>}
+                      {isCorrect && <CheckIcon size={14} className={styles['indicator-check']} />}
                     </div>
                   ) : (
                     <div className={`${styles['checkbox-indicator']} ${isCorrect ? styles['active'] : ''}`}>
-                      {isCorrect && <span className={styles['indicator-check']}>✓</span>}
+                      {isCorrect && <CheckIcon size={14} className={styles['indicator-check']} />}
                     </div>
                   )}
                 </button>

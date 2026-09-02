@@ -1,5 +1,6 @@
 import type { RegisterStepsProps } from './RegisterSteps.types';
 import { useLocale } from '../../../../../../shared/i18n/useLocale';
+import { CheckIcon } from '../../../../../../shared';
 import styles from '../../../Auth.module.css';
 
 export function RegisterSteps({ currentStep }: RegisterStepsProps) {
@@ -26,7 +27,7 @@ export function RegisterSteps({ currentStep }: RegisterStepsProps) {
               } ${isUpcoming ? styles['register-step--upcoming'] : ''}`}
             >
               <div className={styles['register-step__number']}>
-                {isCompleted ? '✓' : step + 1}
+                {isCompleted ? <CheckIcon size={18} /> : step + 1}
               </div>
               <div className={styles['register-step__label']}>{labels[step]}</div>
             </div>

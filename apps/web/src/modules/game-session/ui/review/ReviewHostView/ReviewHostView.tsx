@@ -7,7 +7,7 @@ import correctIcon from '../../../../../assets/icons/correct_answers.svg';
 import wrongIcon from '../../../../../assets/icons/wrong_answers.svg';
 import skippedIcon from '../../../../../assets/icons/skipped_answers.svg';
 import nextIcon from '../../../../../assets/icons/next.svg';
-import { TimerIcon } from '../../../../../shared/ui/icons';
+import { TimerIcon, CheckIcon } from '../../../../../shared/ui/icons';
 import styles from '../../GameSession.module.css';
 
 export function ReviewHostView({
@@ -317,7 +317,7 @@ export function ReviewHostView({
 																<span
 																	className={`${styles['student-status-badge']} ${styles['status-correct']}`}
 																>
-																	✓ Правильно {student.scoreEarned > 0 ? `(+${student.scoreEarned})` : ''}
+																	<CheckIcon size={12} /> Правильно {student.scoreEarned > 0 ? `(+${student.scoreEarned})` : ''}
 																</span>
 															) : (
 																<span
@@ -338,12 +338,12 @@ export function ReviewHostView({
 																		<span
 																			style={{
 																				color: 'var(--color-success, #22c55e)',
-																				fontSize: '0.75rem',
-																				fontWeight: 700,
 																				marginLeft: 'auto',
+																				display: 'inline-flex',
+																				alignItems: 'center',
 																			}}
 																		>
-																			✓
+																			<CheckIcon size={14} />
 																		</span>
 																	)}
 																</div>
@@ -370,12 +370,12 @@ export function ReviewHostView({
 																					<span
 																						style={{
 																							color: 'var(--color-success, #22c55e)',
-																							fontSize: '0.75rem',
-																							fontWeight: 700,
 																							marginLeft: 'auto',
+																							display: 'inline-flex',
+																							alignItems: 'center',
 																						}}
 																					>
-																						✓
+																						<CheckIcon size={14} />
 																					</span>
 																				)}
 																			</div>

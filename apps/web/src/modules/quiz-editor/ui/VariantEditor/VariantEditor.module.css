@@ -115,9 +115,9 @@
 
 .indicator-check {
   color: #ffffff;
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
 }
 

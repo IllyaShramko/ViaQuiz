@@ -50,6 +50,17 @@ export {
   PublicIcon,
   UploadIcon,
   ViewEyeIcon,
+  CopyIcon,
+  CheckIcon,
+  PlayIcon,
+  SettingsIcon,
+  SparkleIcon,
+  ExpandIcon,
+  NeutralCheckIcon,
+  CorrectCheckIcon,
+  IncorrectCrossIcon,
+  LogoIcon,
+  TimerIcon,
   type IconProps,
 } from './ui';
 export {

@@ -1,5 +1,5 @@
 import type { EditorHeaderProps } from './EditorHeader.types';
-import { ArrowIcon, PublicIcon } from '../../../../shared';
+import { ArrowIcon, PublicIcon, CheckIcon } from '../../../../shared';
 import styles from './EditorHeader.module.css';
 
 export const EditorHeader: React.FC<EditorHeaderProps> = ({
@@ -17,7 +17,11 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
       case 'saving':
         return <span className={`${styles['save-status']} ${styles['saving']}`}>Зберігається...</span>;
       case 'saved':
-        return <span className={`${styles['save-status']} ${styles['saved']}`}>✓ Збережено</span>;
+        return (
+          <span className={`${styles['save-status']} ${styles['saved']}`}>
+            <CheckIcon size={14} /> Збережено
+          </span>
+        );
       case 'error':
         return <span className={`${styles['save-status']} ${styles['error']}`}>Помилка збереження</span>;
       default:
