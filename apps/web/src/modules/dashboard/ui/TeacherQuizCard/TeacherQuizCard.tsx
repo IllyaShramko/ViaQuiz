@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
+import { OneAnswerIcon, ViewEyeIcon, pluralizeQuestions } from '../../../../shared';
 import type { TeacherQuizCardProps } from './TeacherQuizCard.types';
 import styles from '../Dashboard.module.css';
 
@@ -67,9 +67,7 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
           <div className={styles['teacher-quiz-card__stats-row']}>
             <span className={styles['teacher-quiz-card__stat']}>
               <OneAnswerIcon size={16} />
-              <span>
-                {questionsCount} {questionsCount === 1 ? 'запитання' : questionsCount >= 2 && questionsCount <= 4 ? 'запитання' : 'запитань'}
-              </span>
+              <span>{pluralizeQuestions(questionsCount, true)}</span>
             </span>
             <span className={styles['teacher-quiz-card__stat']}>
               <ViewEyeIcon size={16} />

@@ -1,0 +1,161 @@
+.studentsTableCard {
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.studentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.studentsTable th {
+  background: var(--color-bg-elevated, #12121a);
+  padding: 14px 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-secondary, #9090a8);
+  border-bottom: 1px solid var(--color-border, #2a2a3a);
+}
+
+.studentsTable td {
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  color: var(--color-text-primary, #f0f0f5);
+  border-bottom: 1px solid var(--color-border, #2a2a3a);
+  transition: background 0.15s;
+}
+
+.studentsTable tr:hover td {
+  background: var(--color-bg-hover, #22222e);
+}
+
+.studentsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.colNumber {
+  width: 60px;
+}
+
+.studentNumber {
+  color: var(--color-text-secondary, #9090a8);
+  font-weight: 600;
+}
+
+.studentLink {
+  color: var(--color-text-primary, #f0f0f5);
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.studentLink:hover {
+  color: var(--color-accent, #863bff);
+  text-decoration: underline;
+}
+
+.studentAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #863bff, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #fff;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.studentLogin {
+  font-family: monospace;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.9rem;
+}
+
+.passedQuizes {
+  color: var(--color-success, #22c55e);
+  font-weight: 700;
+}
+
+.tableActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.actionIconBtn {
+  background: transparent;
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.actionIconBtn:hover {
+  background: var(--color-bg-hover, #22222e);
+  color: var(--color-text-primary, #f0f0f5);
+  border-color: var(--color-border-focus, #863bff);
+}
+
+.actionIconBtn.danger:hover {
+  border-color: var(--color-error, #ef4444);
+  color: var(--color-error, #ef4444);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.actionIconBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.emptyCard {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.emptyText {
+  font-size: 1.05rem;
+  margin: 0 0 14px 0;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.btnEnroll {
+  background: var(--color-success, #22c55e);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+  margin: 0 auto;
+}
+
+.btnEnroll:hover:not(:disabled) {
+  background: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.35);
+}

@@ -89,6 +89,12 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		});
 	},
 
+	async findUserById(userId) {
+		return PRISMA_CLIENT.user.findUnique({
+			where: { id: userId },
+		});
+	},
+
 	async findCourseById(id) {
 		return PRISMA_CLIENT.course.findUnique({
 			where: { id },

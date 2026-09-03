@@ -6,6 +6,9 @@ import type {
 
 export interface ReviewHostViewProps {
   question: GameQuestionDto;
+  questionIndex?: number;
+  totalQuestions?: number;
+  isLastQuestion?: boolean;
   reviewData: GameReviewDataDto;
   participants: ParticipantDto[];
   remainingSeconds: number;

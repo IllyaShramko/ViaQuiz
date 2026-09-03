@@ -1,5 +1,5 @@
 import React from 'react';
-import { BinIcon, OneAnswerIcon } from '../../../../shared';
+import { BinIcon, OneAnswerIcon, pluralizeQuestions } from '../../../../shared';
 import type { DraftCardProps } from './DraftCard.types';
 import styles from '../Drafts.module.css';
 
@@ -79,14 +79,7 @@ export function DraftCard({
         <div className={styles['draft-card__meta']}>
           <span className={styles['meta-questions']}>
             <OneAnswerIcon size={15} />
-            <span>
-              {questionsCount}{' '}
-              {questionsCount === 1
-                ? 'питання'
-                : questionsCount >= 2 && questionsCount <= 4
-                ? 'питання'
-                : 'питань'}
-            </span>
+            <span>{pluralizeQuestions(questionsCount, true)}</span>
           </span>
           <span className={styles['meta-date']} title={`Створено: ${createdFormatted}`}>
             {sortBy === 'createdAt' ? `📅 ${createdFormatted}` : `🕒 ${updatedFormatted}`}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { ImageLightboxModal } from '../../modals';
 import { ParticipantsSidebar } from '../../sidebar';
@@ -8,18 +8,32 @@ import wrongIcon from '../../../../../assets/icons/wrong_answers.svg';
 import skippedIcon from '../../../../../assets/icons/skipped_answers.svg';
 import nextIcon from '../../../../../assets/icons/next.svg';
 import { TimerIcon, CheckIcon } from '../../../../../shared/ui/icons';
+import { pluralizeAnswers } from '../../../../../shared';
 import styles from '../../GameSession.module.css';
 
 export function ReviewHostView({
 	question,
+	questionIndex,
+	totalQuestions,
+	isLastQuestion: isLastQuestionProp,
 	reviewData,
 	participants,
 	remainingSeconds,
 	onNextQuestion,
 	onKickParticipant,
 }: ReviewHostViewProps) {
+	const isLastQuestion =
+		isLastQuestionProp ??
+		(questionIndex !== undefined && totalQuestions !== undefined && totalQuestions > 0
+			? questionIndex >= totalQuestions - 1
+			: false);
 	const [activeTab, setActiveTab] = useState<'overview' | 'answers'>('overview');
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+	const renderedCardsRef = useRef<Set<string>>(new Set());
+
+	useEffect(() => {
+		renderedCardsRef.current.clear();
+	}, [questionIndex]);
 
 	const distribution = reviewData.answersDistribution || {};
 	const totalParticipants = participants.length || 1;
@@ -92,20 +106,6 @@ export function ReviewHostView({
 			width: 5,
 			colors: ['#2B2B2B'],
 		},
-	};
-
-	// Helper to get the text for answer count
-	const getAnswerText = (n: number): string => {
-		if (n === 0) return `${n} відповідей`;
-		const lastDigit = n % 10;
-		const lastTwoDigits = n % 100;
-		if (lastDigit === 1 && lastTwoDigits !== 11) {
-			return `${n} відповідь`;
-		} else if (lastDigit >= 2 && lastDigit <= 4 && (lastTwoDigits < 10 || lastTwoDigits >= 20)) {
-			return `${n} відповіді`;
-		} else {
-			return `${n} відповідей`;
-		}
 	};
 
 	const isTypeV1 = question.type === 'TYPE_ANSWER_V1';
@@ -212,6 +212,10 @@ export function ReviewHostView({
 										{question.variants.map((v, idx) => {
 											const count = distribution[v.id] || 0;
 											const isCorrect = correctIds.includes(v.id);
+											const pct =
+												participants.length > 0
+													? Math.min(100, Math.round((count / participants.length) * 100))
+													: 0;
 
 											return (
 												<div
@@ -239,13 +243,24 @@ export function ReviewHostView({
 														</span>
 													</div>
 
-													<span
+													<div
 														className={`${styles['teacher-variant-badge-count']} ${
 															count > 0 ? styles['has-answers'] : ''
 														}`}
 													>
-														{getAnswerText(count)}
-													</span>
+														<div
+															className={styles['teacher-variant-badge-fill']}
+															style={
+																{
+																	'--badge-target-width': `${pct}%`,
+																	width: `${pct}%`,
+																} as React.CSSProperties
+															}
+														/>
+														<span className={styles['teacher-variant-badge-text']}>
+															{pluralizeAnswers(count, true)}
+														</span>
+													</div>
 												</div>
 											);
 										})}
@@ -256,7 +271,7 @@ export function ReviewHostView({
 
 						{/* Tab 2: Individual Answers */}
 						{activeTab === 'answers' && (
-							<div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+							<div className={styles['review-tab-content']} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
 								{(() => {
 									if (participants.length === 0) {
 										return (
@@ -301,12 +316,16 @@ export function ReviewHostView({
 												const cardStatusClass = student.isCorrect
 													? styles['is-correct']
 													: styles['is-wrong'];
+												const isNew = !renderedCardsRef.current.has(student.participantId);
+												if (isNew) {
+													renderedCardsRef.current.add(student.participantId);
+												}
 
 												return (
 													<div
 														key={student.participantId}
-														className={`${styles['student-answer-card']} ${cardStatusClass}`}
-														style={{ animationDelay: `${Math.min(idx * 0.03, 0.3)}s` }}
+														className={`${styles['student-answer-card']} ${cardStatusClass}${isNew ? ` ${styles['animate-in']}` : ''}`}
+														style={isNew ? { animationDelay: `${Math.min(idx * 0.03, 0.3)}s` } : undefined}
 													>
 														<div className={styles['student-answer-header']}>
 															<div className={styles['student-answer-name']}>
@@ -437,10 +456,14 @@ export function ReviewHostView({
 							type="button"
 							className={styles['bottom-control-btn']}
 							onClick={onNextQuestion}
-							title="Перейти до наступного"
+							title={isLastQuestion ? 'Завершити вікторину' : 'Перейти до наступного'}
 						>
 							<div className={styles['bottom-control-btn-inner']}>
-								<img src={nextIcon} alt="Далі" className={styles['bottom-next-icon']} />
+								{isLastQuestion ? (
+									<p style={{ fontWeight: 600, fontSize: '0.85rem' }}>Кінець</p>
+								) : (
+									<img src={nextIcon} alt="Далі" className={styles['bottom-next-icon']} />
+								)}
 							</div>
 						</button>
 					</div>

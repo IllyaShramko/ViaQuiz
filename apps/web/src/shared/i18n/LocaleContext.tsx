@@ -9,12 +9,14 @@ import {
 } from 'react';
 import {
   type Locale,
+  type PluralWords,
   getLocale as getStoredLocale,
   setLocale as setStoredLocale,
   toggleLocale as toggleStoredLocale,
   subscribe,
   t as translateKey,
   pluralize as pluralizeKey,
+  formatPlural as formatPluralKey,
 } from './index';
 
 export interface LocaleContextType {
@@ -22,10 +24,8 @@ export interface LocaleContextType {
   setLocale: (locale: Locale) => void;
   toggleLocale: () => void;
   t: (key: string) => string;
-  pluralize: (
-    count: number,
-    words: { uk: [string, string, string]; en: [string, string] },
-  ) => string;
+  pluralize: (count: number, words: PluralWords) => string;
+  formatPlural: (count: number, words: PluralWords) => string;
 }
 
 export const LocaleContext = createContext<LocaleContextType | null>(null);
@@ -60,11 +60,15 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   );
 
   const pluralize = useCallback(
-    (
-      count: number,
-      words: { uk: [string, string, string]; en: [string, string] },
-    ): string => {
+    (count: number, words: PluralWords): string => {
       return pluralizeKey(count, words, locale);
+    },
+    [locale],
+  );
+
+  const formatPlural = useCallback(
+    (count: number, words: PluralWords): string => {
+      return formatPluralKey(count, words, locale);
     },
     [locale],
   );
@@ -76,8 +80,9 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       toggleLocale,
       t,
       pluralize,
+      formatPlural,
     }),
-    [locale, setLocale, toggleLocale, t, pluralize],
+    [locale, setLocale, toggleLocale, t, pluralize, formatPlural],
   );
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
@@ -96,5 +101,6 @@ export function useLocale(): LocaleContextType {
     toggleLocale: toggleStoredLocale,
     t: (key: string) => translateKey(key),
     pluralize: (count, words) => pluralizeKey(count, words),
+    formatPlural: (count, words) => formatPluralKey(count, words),
   };
 }

@@ -8,6 +8,7 @@ import type {
 	Question,
 	Variant,
 	Student,
+	User,
 } from "../../../generated/prisma";
 import type {
 	CreateRoomDto,
@@ -34,6 +35,7 @@ export interface GameSessionsRepositoryContract {
 	updateRoomStatus(id: number, status: RoomStatus, currentQuestionIndex?: number): Promise<Room>;
 	findQuizWithQuestions(quizId: number): Promise<FullQuizSession | null>;
 	findStudentById(studentId: number): Promise<Student | null>;
+	findUserById(userId: number): Promise<User | null>;
 	findCourseById(courseId: number): Promise<any | null>;
 	isStudentEnrolledInCourse(studentId: number, courseId: number): Promise<boolean>;
 	createParticipant(data: {
@@ -67,10 +69,18 @@ export interface GameSessionsRepositoryContract {
 	findResultByUuid(uuid: string): Promise<any | null>;
 }
 
+export interface UserAuthContext {
+	studentId?: number | null | undefined;
+	userId?: number | null | undefined;
+}
+
 export interface GameSessionsServiceContract {
 	createRoom(hostId: number, data: CreateRoomDto): Promise<Room>;
 	validateJoinCode(joinCode: string): Promise<Room>;
-	joinRoom(data: JoinByCodeDto, currentUserId?: number): Promise<{
+	joinRoom(
+		data: JoinByCodeDto,
+		authContext?: UserAuthContext | number,
+	): Promise<{
 		participant: Participant;
 		token: string;
 		room: Room;

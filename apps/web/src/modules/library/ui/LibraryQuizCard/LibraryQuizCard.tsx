@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import React from 'react';
 import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
 import type { LibraryQuizCardProps } from './LibraryQuizCard.types';
 import styles from '../Library.module.css';
@@ -32,19 +32,20 @@ export function LibraryQuizCard({
       ? `${author.firstName} ${author.lastName}`
       : author?.firstName || author?.login || null;
 
-  const toUrl = ('isDraft' in quiz && quiz.isDraft) ? `/quiz/${quiz.uuid}/edit` : `/quiz/${quiz.uuid}`;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick(quiz.uuid);
+    }
+  };
 
   return (
-    <Link
-      to={toUrl}
+    <article
       className={styles['library-card']}
-      onClick={(e) => {
-        // Only trigger custom click if it wasn't a modifier click that opened a new tab
-        if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-          e.preventDefault();
-          onClick(quiz.uuid);
-        }
-      }}
+      onClick={() => onClick(quiz.uuid)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
     >
       {/* Cover Header */}
       <div className={styles['library-card__header']}>
@@ -175,6 +176,6 @@ export function LibraryQuizCard({
           </div>
         </div>
       </div>
-    </Link>
+    </article>
   );
 }

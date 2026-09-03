@@ -29,8 +29,10 @@ export const GameSessionsController: GameSessionsControllerContract = {
 
 	async join(req, res, next) {
 		try {
-			const currentUserId = res.locals.studentId ?? res.locals.userId;
-			const result = await GameSessionsService.joinRoom(req.body, currentUserId);
+			const result = await GameSessionsService.joinRoom(req.body, {
+				studentId: res.locals.studentId,
+				userId: res.locals.userId,
+			});
 			res.status(200).json(result);
 		} catch (error) {
 			next(error);

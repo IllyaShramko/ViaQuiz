@@ -1,5 +1,6 @@
 import type { StudentResultReportProps } from './StudentResultReport.types';
 import { NotFoundHeader } from '../../../not-found/ui/NotFoundHeader';
+import { pluralizeQuestions } from '../../../../shared';
 import styles from './StudentResultReport.module.css';
 
 export function StudentResultReport({ report, homePath = '/student/dashboard' }: StudentResultReportProps) {
@@ -36,7 +37,7 @@ export function StudentResultReport({ report, homePath = '/student/dashboard' }:
 
             <div className={styles['questions-badge']}>
               <div className={styles['questions-badge__num']}>{totalQuestionsCount}</div>
-              <div className={styles['questions-badge__label']}>запитань</div>
+              <div className={styles['questions-badge__label']}>{pluralizeQuestions(totalQuestionsCount)}</div>
             </div>
           </div>
 

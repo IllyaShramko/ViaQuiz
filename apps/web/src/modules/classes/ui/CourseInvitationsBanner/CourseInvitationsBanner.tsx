@@ -1,3 +1,4 @@
+import { pluralize } from '../../../../shared';
 import type { CourseInvitationsBannerProps } from './CourseInvitationsBanner.types';
 import styles from './CourseInvitationsBanner.module.css';
 
@@ -18,9 +19,12 @@ export function CourseInvitationsBanner({
         </div>
         <div className={styles.textContent}>
           <h4 className={styles.title}>
-            {count === 1
-              ? 'У вас є 1 нове запрошення на керівництво курсом'
-              : `У вас є ${count} нових запрошень на керівництво курсами`}
+            У вас є {count}{' '}
+            {pluralize(count, {
+              uk: ['нове запрошення', 'нові запрошення', 'нових запрошень'],
+              en: ['new invitation', 'new invitations'],
+            })}{' '}
+            на керівництво {count === 1 ? 'курсом' : 'курсами'}
           </h4>
           <p className={styles.subtitle}>
             Куратори запросили вас стати ведучим викладачем у своїх курсах.

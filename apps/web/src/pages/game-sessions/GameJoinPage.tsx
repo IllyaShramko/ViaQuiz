@@ -125,7 +125,7 @@ export function GameJoinPage() {
 			<header className={styles['game-topbar']}>
 				<Link to="/" className={styles['game-logo']}>
 					<LogoIcon size={24} className={styles['game-logo-icon']} />
-					<span>ViaQuiz</span>
+					<span className={styles['game-logo-text']}>ViaQuiz</span>
 				</Link>
 			</header>
 

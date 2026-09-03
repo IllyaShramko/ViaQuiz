@@ -96,7 +96,7 @@ export function GamePlayPage() {
 			<header className={styles['game-topbar']}>
 				<div className={styles['game-logo']}>
 					<LogoIcon size={24} className={styles['game-logo-icon']} />
-					<span>ViaQuiz</span>
+					<span className={styles['game-logo-text']}>ViaQuiz</span>
 				</div>
 
 				<div className={styles['game-topbar-center']}>

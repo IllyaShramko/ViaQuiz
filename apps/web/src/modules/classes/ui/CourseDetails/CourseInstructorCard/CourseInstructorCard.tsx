@@ -21,6 +21,12 @@ export function CourseInstructorCard({
       : `@${currentTeacher.login}`
     : 'Не призначено';
 
+  const curatorDisplayName = course.creator
+    ? course.creator.firstName && course.creator.lastName
+      ? `${course.creator.firstName} ${course.creator.lastName}`
+      : course.creator.firstName || course.creator.lastName || `@${course.creator.login}`
+    : '';
+
   const pendingInvitation = course.invitations?.find((i) => i.status === 'PENDING');
 
   const handleCancelInvite = async (inviteUuid: string) => {
@@ -49,7 +55,7 @@ export function CourseInstructorCard({
             <h4 className={styles.title}>Керівництво курсом</h4>
             <p className={styles.subtitle}>
               {isDelegatedTeacher
-                ? `Курс веде призначений викладач (Куратор: @${course.creator?.login})`
+                ? `Курс веде призначений викладач (Куратор: ${curatorDisplayName})`
                 : 'Курс веде куратор класу'}
             </p>
           </div>

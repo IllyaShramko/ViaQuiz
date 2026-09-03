@@ -57,21 +57,84 @@ export function t(key: string, locale?: Locale): string {
   return getNestedValue(translations[activeLocale], key);
 }
 
+export type PluralWords =
+  | { uk: [string, string, string]; en: [string, string] }
+  | [string, string, string];
+
+/**
+ * Ukrainian pluralization logic:
+ * [1, 2-4, 5+] (1 запитання, 2-4 запитання, 5+ запитань)
+ */
+export function pluralizeUk(
+  count: number,
+  forms: [string, string, string],
+): string {
+  const abs = Math.abs(count);
+  const mod10 = abs % 10;
+  const mod100 = abs % 100;
+
+  if (mod10 === 1 && mod100 !== 11) {
+    return forms[0];
+  }
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+    return forms[1];
+  }
+  return forms[2];
+}
+
 export function pluralize(
   count: number,
-  words: { uk: [string, string, string]; en: [string, string] },
+  words: PluralWords,
   locale?: Locale,
 ): string {
+  if (Array.isArray(words)) {
+    return pluralizeUk(count, words);
+  }
   const activeLocale = locale || currentLocale;
   if (activeLocale === 'en') {
-    return count === 1 ? words.en[0] : words.en[1];
+    return Math.abs(count) === 1 ? words.en[0] : words.en[1];
   }
-  // Ukrainian pluralization rules
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-  if (mod10 === 1 && mod100 !== 11) return words.uk[0];
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return words.uk[1];
-  return words.uk[2];
+  return pluralizeUk(count, words.uk);
+}
+
+export function formatPlural(
+  count: number,
+  words: PluralWords,
+  locale?: Locale,
+): string {
+  return `${count} ${pluralize(count, words, locale)}`;
+}
+
+export function pluralizeQuestions(count: number, withCount = false): string {
+  const word = pluralize(count, {
+    uk: ['запитання', 'запитання', 'запитань'],
+    en: ['question', 'questions'],
+  });
+  return withCount ? `${count} ${word}` : word;
+}
+
+export function pluralizeAnswers(count: number, withCount = false): string {
+  const word = pluralize(count, {
+    uk: ['відповідь', 'відповіді', 'відповідей'],
+    en: ['answer', 'answers'],
+  });
+  return withCount ? `${count} ${word}` : word;
+}
+
+export function pluralizePoints(count: number, withCount = false): string {
+  const word = pluralize(count, {
+    uk: ['бал', 'бали', 'балів'],
+    en: ['point', 'points'],
+  });
+  return withCount ? `${count} ${word}` : word;
+}
+
+export function pluralizeParticipants(count: number, withCount = false): string {
+  const word = pluralize(count, {
+    uk: ['учасник', 'учасники', 'учасників'],
+    en: ['participant', 'participants'],
+  });
+  return withCount ? `${count} ${word}` : word;
 }
 
 export function subscribe(fn: () => void): () => void {

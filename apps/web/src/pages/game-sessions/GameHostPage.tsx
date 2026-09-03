@@ -113,6 +113,8 @@ export function GameHostPage() {
 				currentQuestion && reviewData ? (
 					<ReviewHostView
 						question={currentQuestion}
+						questionIndex={currentQuestionIndex}
+						totalQuestions={totalQuestions}
 						reviewData={reviewData}
 						participants={participants}
 						remainingSeconds={remainingSeconds}

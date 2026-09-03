@@ -4,6 +4,7 @@ import Chart from 'react-apexcharts';
 import type { SessionReportTab } from './SessionReportPage.types';
 import { useGetSessionReportQuery } from '../../api';
 import { StudentDetailDrawer } from '../StudentDetailDrawer';
+import { pluralize, pluralizeAnswers } from '../../../../shared';
 import styles from '../Reports.module.css';
 import type { SessionQuestionStatsDto, SessionParticipantSummaryDto } from '@viaquiz/shared-types';
 
@@ -362,8 +363,12 @@ const ChartTab: React.FC<{ questions: SessionQuestionStatsDto[] }> = ({ question
 					const idx = opts?.dataPointIndex ?? 0;
 					const seriesIdx = opts?.seriesIndex ?? 0;
 					const count = seriesIdx === 0 ? correctValues[idx] : wrongValues[idx];
-					const label = seriesIdx === 0 ? 'правильних' : 'неправильних';
-					return `${count} відповідей (${val}% ${label})`;
+					const label =
+						seriesIdx === 0
+							? pluralize(count, { uk: ['правильна', 'правильні', 'правильних'], en: ['correct', 'correct'] })
+							: pluralize(count, { uk: ['неправильна', 'неправильні', 'неправильних'], en: ['incorrect', 'incorrect'] });
+					const answersWord = pluralizeAnswers(count);
+					return `${count} ${label} ${answersWord} (${val}%)`;
 				},
 			},
 		},

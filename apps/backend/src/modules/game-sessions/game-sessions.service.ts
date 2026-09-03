@@ -88,15 +88,32 @@ export const GameSessionsService: GameSessionsServiceContract = {
 		return room;
 	},
 
-	async joinRoom(data, currentUserId) {
+	async joinRoom(data, authContext) {
 		const room = await this.validateJoinCode(data.joinCode);
+
+		let studentIdParam: number | undefined;
+		let userIdParam: number | undefined;
+
+		if (typeof authContext === "number") {
+			studentIdParam = authContext;
+		} else if (authContext && typeof authContext === "object") {
+			studentIdParam = authContext.studentId ?? undefined;
+			userIdParam = authContext.userId ?? undefined;
+		}
 
 		let nickname = data.nickname?.trim() || "Participant";
 		let studentId: number | null = null;
 		let role: "STUDENT" | "ANONYMOUS" = "ANONYMOUS";
 
-		const student = currentUserId
-			? await GameSessionsRepository.findStudentById(currentUserId)
+		const student = studentIdParam
+			? await GameSessionsRepository.findStudentById(studentIdParam)
+			: null;
+
+		const resolvedUserId =
+			userIdParam ??
+			(!student && typeof authContext === "number" ? authContext : undefined);
+		const user = resolvedUserId
+			? await GameSessionsRepository.findUserById(resolvedUserId)
 			: null;
 
 		// Якщо кімната закріплена за курсом/класом
@@ -153,6 +170,9 @@ export const GameSessionsService: GameSessionsServiceContract = {
 
 				return { participant: existingParticipant, token, room };
 			}
+		} else if (user) {
+			const fullName = `${user.lastName || ""} ${user.firstName || ""}`.trim();
+			nickname = fullName || user.login || data.nickname?.trim() || "Participant";
 		}
 
 		const participant = await GameSessionsRepository.createParticipant({

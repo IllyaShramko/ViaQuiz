@@ -227,7 +227,13 @@ export function QuestionStudentView({
 					</form>
 				) : (
 					/* Horizontal Squares Variants Grid */
-					<div className={styles['variants-grid']}>
+					<div
+						className={`${styles['variants-grid']} ${
+							(question.variants?.length || 0) > 4
+								? styles['variants-grid--column-mobile']
+								: ''
+						}`}
+					>
 						{question.variants.map((v, idx) => {
 							const colorIndex = idx % 8;
 							const isSelected = selectedVariantIds.includes(v.id);

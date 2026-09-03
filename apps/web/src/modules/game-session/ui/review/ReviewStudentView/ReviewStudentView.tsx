@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ImageLightboxModal } from '../../modals';
 import { getRandomCaption } from '../../../utils/captions';
+import { pluralizePoints } from '../../../../../shared';
 import type { ReviewStudentViewProps } from './ReviewStudentView.types';
 import styles from '../../GameSession.module.css';
 
@@ -78,7 +79,7 @@ export function ReviewStudentView({
 								styles['review-banner-correct']
 							} ${isMinimized ? styles['is-minimized'] : ''}`}
 						>
-							<span>Правильно! +{res?.pointsEarned ?? 1000} балів</span>
+							<span>Правильно! +{pluralizePoints(res?.pointsEarned ?? 1000, true)}</span>
 						</div>
 						<span
 							className={`${styles['review-banner-quote']} ${
@@ -153,7 +154,13 @@ export function ReviewStudentView({
 						</div>
 					</div>
 				) : (
-					<div className={styles['variants-grid']}>
+					<div
+						className={`${styles['variants-grid']} ${
+							(question.variants?.length || 0) > 4
+								? styles['variants-grid--column-mobile']
+								: ''
+						}`}
+					>
 						{question.variants.map((v, idx) => {
 							const colorIndex = idx % 8;
 							const isThisCorrect = correctIds.includes(v.id);
