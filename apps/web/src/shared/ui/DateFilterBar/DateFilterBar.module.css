@@ -1,0 +1,103 @@
+.dateFilterBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3, 12px);
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.inputsWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+}
+
+.dateInput {
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #f0f0f5);
+  padding: 8px 14px;
+  border-radius: var(--radius-md, 10px);
+  font-size: var(--text-sm, 0.9rem);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  color-scheme: dark;
+}
+
+.dateInput:focus {
+  border-color: var(--color-accent, #863bff);
+  box-shadow: 0 0 0 2px var(--color-accent-subtle, rgba(134, 59, 255, 0.2));
+}
+
+.separator {
+  color: var(--color-text-secondary, #9090a8);
+  font-weight: 700;
+  user-select: none;
+}
+
+.btnSubmit {
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: var(--radius-md, 10px);
+  font-weight: 700;
+  font-size: var(--text-sm, 0.9rem);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btnSubmit:hover:not(:disabled) {
+  background: #0369a1;
+}
+
+.btnSubmit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btnSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnReset {
+  background: transparent;
+  color: var(--color-text-secondary, #9090a8);
+  border: 1px solid var(--color-border, #2a2a3a);
+  padding: 8px 14px;
+  border-radius: var(--radius-md, 10px);
+  font-weight: 600;
+  font-size: var(--text-sm, 0.9rem);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnReset:hover {
+  background: var(--color-bg-hover, #22222e);
+  color: var(--color-text-primary, #f0f0f5);
+  border-color: var(--color-text-secondary, #9090a8);
+}
+
+@media (max-width: 768px) {
+  .dateFilterBar {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .inputsWrapper {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dateInput {
+    flex: 1;
+    width: 100%;
+  }
+
+  .btnSubmit,
+  .btnReset {
+    width: 100%;
+  }
+}

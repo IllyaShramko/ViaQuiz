@@ -7,7 +7,8 @@
 }
 
 .student-sidebar {
-  width: 250px;
+  width: 240px;
+  min-width: 240px;
   background: var(--bg-elevated, #12121a);
   border-right: 1px solid var(--border, #2a2a3a);
   display: flex;
@@ -18,8 +19,9 @@
 }
 
 .student-sidebar__header {
-  padding: 22px 20px;
-  border-bottom: 1px solid var(--border, #2a2a3a);
+  height: 70px;
+  min-height: 70px;
+  padding: 0 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -28,7 +30,7 @@
 .student-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.65rem;
   text-decoration: none;
   color: inherit;
 }
@@ -40,21 +42,10 @@
 }
 
 .student-logo__text {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--text-primary, #f0f0f5);
-}
-
-.student-badge {
-  background: rgba(34, 197, 94, 0.15);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: var(--success, #22c55e);
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  margin-left: 6px;
 }
 
 .mobile-close-btn {
@@ -75,10 +66,10 @@
 }
 
 .student-sidebar__nav {
-  padding: 18px 12px;
+  padding: 0 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.4rem;
   flex: 1;
 }
 
@@ -88,12 +79,14 @@
   gap: 12px;
   padding: 12px 14px;
   border-radius: 10px;
+  border: 1px solid transparent;
   color: var(--text-secondary, #9090a8);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 600;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   min-height: 44px;
+  outline: none;
 }
 
 .student-nav-item:hover {
@@ -101,10 +94,15 @@
   color: var(--text-primary, #f0f0f5);
 }
 
+.student-nav-item:focus-visible {
+  outline: 2px solid var(--accent, #863bff);
+  outline-offset: 2px;
+}
+
 .student-nav-item.is-active {
   background: rgba(134, 59, 255, 0.14);
   color: var(--text-primary, #f0f0f5);
-  border: 1px solid rgba(134, 59, 255, 0.3);
+  border-color: rgba(134, 59, 255, 0.3);
 }
 
 .student-nav-icon {
@@ -128,16 +126,17 @@
 }
 
 .student-topbar {
-  height: 66px;
-  background: var(--bg-elevated, #12121a);
-  border-bottom: 1px solid var(--border, #2a2a3a);
+  height: 70px;
+  min-height: 70px;
+  background-color: var(--color-bg-elevated, #12121a);
+  border-bottom: 1px solid var(--color-border, #2a2a3a);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 2rem;
   position: sticky;
   top: 0;
-  z-index: 900;
+  z-index: 10;
 }
 
 .student-topbar__left {
@@ -149,86 +148,94 @@
 .mobile-menu-btn {
   display: none;
   background: transparent;
-  border: 1px solid var(--border, #2a2a3a);
-  color: var(--text-primary, #f0f0f5);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #f0f0f5);
   cursor: pointer;
   padding: 8px;
-  border-radius: 10px;
+  border-radius: var(--radius-md, 0.375rem);
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: all var(--transition-fast, 150ms ease-in-out);
   min-width: 40px;
   min-height: 40px;
 }
 
 .mobile-menu-btn:hover {
-  background: var(--bg-hover, #22222e);
-  border-color: var(--accent, #863bff);
+  background-color: var(--color-bg-hover, #22222e);
+  border-color: var(--color-accent, #863bff);
 }
 
 .student-topbar__title {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary, #f0f0f5);
+  color: var(--color-text-primary, #f0f0f5);
   margin: 0;
 }
 
 .student-topbar__actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 1rem;
 }
 
 .btn-enter-code {
-  background: transparent;
-  border: 1px solid var(--border, #2a2a3a);
-  color: var(--text-primary, #f0f0f5);
-  padding: 8px 14px;
-  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #f0f0f5);
+  font-size: 0.875rem;
   font-weight: 600;
-  font-size: 0.88rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md, 0.375rem);
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all var(--transition-fast, 150ms ease-in-out);
   white-space: nowrap;
 }
 
 .btn-enter-code:hover {
-  border-color: var(--accent, #863bff);
-  background: rgba(134, 59, 255, 0.1);
+  border-color: var(--color-text-muted, #606078);
+  background-color: var(--color-bg-hover, #22222e);
 }
 
 .student-user-profile-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
   text-decoration: none;
-  color: var(--text-primary, #f0f0f5);
+  color: var(--color-text-primary, #f0f0f5);
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  max-width: 140px;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-md, 0.375rem);
+  transition: color var(--transition-fast, 150ms ease-in-out);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.student-user-profile-link:hover {
+  color: var(--color-accent, #863bff);
 }
 
 .student-logout-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted, #606078);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  min-width: 36px;
-  min-height: 36px;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #9090a8);
+  padding: 0.5rem;
+  border-radius: var(--radius-md, 0.375rem);
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms ease-in-out);
 }
 
 .student-logout-btn:hover {
-  color: var(--error, #ef4444);
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error, #ef4444);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.student-logout-btn svg {
+  width: 22px;
+  height: 22px;
 }
 
 .student-content {

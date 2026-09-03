@@ -54,7 +54,6 @@ export function StudentLayout() {
               </g>
             </svg>
             <span className={styles['student-logo__text']}>ViaQuiz</span>
-            <span className={styles['student-badge']}>Учень</span>
           </Link>
 
           <button
@@ -71,18 +70,6 @@ export function StudentLayout() {
         </div>
 
         <nav className={styles['student-sidebar__nav']}>
-          <Link
-            to="/student/dashboard"
-            className={`${styles['student-nav-item']} ${location.pathname === '/student/dashboard' ? styles['is-active'] : ''}`}
-            onClick={() => setIsMobileNavOpen(false)}
-          >
-            <svg className={styles['student-nav-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            <span>Головна</span>
-          </Link>
-
           <Link
             to="/student/class"
             className={`${styles['student-nav-item']} ${location.pathname === '/student/class' ? styles['is-active'] : ''}`}
@@ -199,7 +186,7 @@ export function StudentLayout() {
               title="Вийти з акаунту"
               aria-label="Вийти"
             >
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />

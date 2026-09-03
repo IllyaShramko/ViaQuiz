@@ -20,8 +20,14 @@ export interface StudentRepositoryContract {
 		studentId: number,
 		take?: number,
 		skip?: number,
+		fromDate?: Date,
+		toDate?: Date,
 	): Promise<RawParticipantResult[]>;
-	countStudentResults(studentId: number): Promise<number>;
+	countStudentResults(
+		studentId: number,
+		fromDate?: Date,
+		toDate?: Date,
+	): Promise<number>;
 	findStudentCourses(studentId: number): Promise<StudentCourse[]>;
 }
 
@@ -33,6 +39,8 @@ export interface StudentServiceContract {
 		studentId: number,
 		take?: number,
 		skip?: number,
+		from?: string,
+		to?: string,
 	): Promise<StudentResultsResponse>;
 	getCourses(studentId: number): Promise<StudentCourse[]>;
 }

@@ -1,30 +1,74 @@
+import { useState, useMemo, type FormEvent } from 'react';
 import { useGetStudentResultsQuery } from '../../../modules/students';
 import {
   StudentProgressChart,
   StudentGradeDistributionChart,
 } from '../../../modules/classes';
-import styles from '../Student.module.css';
-import classesStyles from '../../../modules/classes/ui/Classes.module.css';
+import { DateFilterBar } from '../../../shared/ui';
+import type { PerformanceDateFilterState } from './StudentPerformancePage.types';
+import styles from './StudentPerformancePage.module.css';
+
+const formatDateToInput = (d: Date): string => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getDefaultDateRange = (): PerformanceDateFilterState => {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(to.getDate() - 30);
+  return {
+    from: formatDateToInput(from),
+    to: formatDateToInput(to),
+  };
+};
 
 export function StudentPerformancePage() {
-  const { data, isLoading } = useGetStudentResultsQuery({ take: 50, skip: 0 });
+  const defaultDates = useMemo(() => getDefaultDateRange(), []);
+  const [fromDate, setFromDate] = useState(defaultDates.from);
+  const [toDate, setToDate] = useState(defaultDates.to);
+  const [appliedFilter, setAppliedFilter] = useState<PerformanceDateFilterState>(defaultDates);
 
-  if (isLoading) {
-    return (
-      <div className={styles['student-dashboard-container']}>
-        <div style={{ textAlign: 'center', padding: '60px', color: '#9090a8' }}>
-          Завантаження графіків успішності...
-        </div>
-      </div>
+  const { data, isLoading, isFetching } = useGetStudentResultsQuery({
+    take: 100,
+    skip: 0,
+    from: appliedFilter.from,
+    to: appliedFilter.to,
+  });
+
+  const handleApplyFilter = (e?: FormEvent) => {
+    e?.preventDefault();
+    setAppliedFilter({
+      from: fromDate,
+      to: toDate,
+    });
+  };
+
+  const handleReset = () => {
+    const defaults = getDefaultDateRange();
+    setFromDate(defaults.from);
+    setToDate(defaults.to);
+    setAppliedFilter(defaults);
+  };
+
+  const rawResults = data?.results || [];
+
+  // Filter chronologically and ensure results strictly match selected range
+  const filteredResults = useMemo(() => {
+    return rawResults.filter((r) => {
+      if (appliedFilter.from && r.fullDate && r.fullDate < appliedFilter.from) return false;
+      if (appliedFilter.to && r.fullDate && r.fullDate > appliedFilter.to) return false;
+      return true;
+    });
+  }, [rawResults, appliedFilter]);
+
+  const sortedResults = useMemo(() => {
+    return [...filteredResults].sort(
+      (a, b) => new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime(),
     );
-  }
-
-  const results = data?.results || [];
-
-  // Build chart datasets from results (sorted chronologically)
-  const sortedResults = [...results].sort(
-    (a, b) => new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime(),
-  );
+  }, [filteredResults]);
 
   const categories = sortedResults.map((r) => r.date);
   const grades = sortedResults.map((r) => r.grade);
@@ -37,30 +81,48 @@ export function StudentPerformancePage() {
   });
 
   return (
-    <div className={styles['student-dashboard-container']}>
-      <div style={{ textAlign: 'center', margin: '0 0 10px 0' }}>
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#f0f0f5', margin: 0 }}>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>
           Аналітика моєї успішності
         </h2>
-        <p style={{ color: '#9090a8', fontSize: '0.9rem', margin: '4px 0 0 0' }}>
+        <p className={styles.subtitle}>
           Динаміка оцінок та загальний розподіл за результатами тестувань
         </p>
       </div>
 
-      <div className={classesStyles['charts-grid']}>
-        <StudentProgressChart
-          categories={categories}
-          grades={grades}
-          quizTitles={quizTitles}
-          title="Мій прогрес"
-        />
+      {isLoading ? (
+        <div className={styles.loadingWrapper}>
+          Завантаження графіків успішності...
+        </div>
+      ) : (
+        <div className={styles.chartsGrid}>
+          <StudentProgressChart
+            categories={categories}
+            grades={grades}
+            quizTitles={quizTitles}
+            title="Мій прогрес"
+          />
 
-        <StudentGradeDistributionChart
-          labels={Object.keys(gradeCounts)}
-          series={Object.values(gradeCounts)}
-          title="Розподіл моїх оцінок"
+          <StudentGradeDistributionChart
+            labels={Object.keys(gradeCounts)}
+            series={Object.values(gradeCounts)}
+            title="Розподіл моїх оцінок"
+          />
+        </div>
+      )}
+
+      <div className={styles.filterSection}>
+        <DateFilterBar
+          fromDate={fromDate}
+          toDate={toDate}
+          onFromDateChange={setFromDate}
+          onToDateChange={setToDate}
+          onSubmit={handleApplyFilter}
+          onReset={handleReset}
+          isLoading={isFetching}
         />
       </div>
     </div>
   );
-};
+}

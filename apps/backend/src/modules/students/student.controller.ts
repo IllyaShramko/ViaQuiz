@@ -36,7 +36,9 @@ export const StudentController: StudentControllerContract = {
 			const studentId = res.locals.studentId as number;
 			const take = req.query.take ? Number(req.query.take) : 20;
 			const skip = req.query.skip ? Number(req.query.skip) : 0;
-			const results = await StudentService.getResults(studentId, take, skip);
+			const from = req.query.from ? String(req.query.from) : undefined;
+			const to = req.query.to ? String(req.query.to) : undefined;
+			const results = await StudentService.getResults(studentId, take, skip, from, to);
 			res.status(200).json(results);
 		} catch (error) {
 			next(error);

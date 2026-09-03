@@ -67,11 +67,23 @@ export const StudentRepository: StudentRepositoryContract = {
 		}
 	},
 
-	async findStudentResults(studentId, take = 20, skip = 0) {
+	async findStudentResults(studentId, take = 20, skip = 0, fromDate, toDate) {
 		try {
+			const dateFilter = {
+				...(fromDate || toDate
+					? {
+							joinedAt: {
+								...(fromDate ? { gte: fromDate } : {}),
+								...(toDate ? { lte: toDate } : {}),
+							},
+						}
+					: {}),
+			};
+
 			return await PRISMA_CLIENT.participant.findMany({
 				where: {
 					studentId,
+					...dateFilter,
 					result: { isNot: null },
 				},
 				include: {
@@ -107,11 +119,23 @@ export const StudentRepository: StudentRepositoryContract = {
 		}
 	},
 
-	async countStudentResults(studentId) {
+	async countStudentResults(studentId, fromDate, toDate) {
 		try {
+			const dateFilter = {
+				...(fromDate || toDate
+					? {
+							joinedAt: {
+								...(fromDate ? { gte: fromDate } : {}),
+								...(toDate ? { lte: toDate } : {}),
+							},
+						}
+					: {}),
+			};
+
 			return await PRISMA_CLIENT.participant.count({
 				where: {
 					studentId,
+					...dateFilter,
 					result: { isNot: null },
 				},
 			});

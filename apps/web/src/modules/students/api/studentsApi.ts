@@ -41,6 +41,13 @@ export interface StudentResultsResponse {
   total: number;
 }
 
+export interface GetStudentResultsParams {
+  take?: number;
+  skip?: number;
+  from?: string;
+  to?: string;
+}
+
 export const studentsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     studentLogin: builder.mutation<StudentLoginResponse, StudentLoginRequest>({
@@ -61,8 +68,18 @@ export const studentsApi = baseApi.injectEndpoints({
       providesTags: ['Student'],
     }),
 
-    getStudentResults: builder.query<StudentResultsResponse, { take?: number; skip?: number }>({
-      query: ({ take = 20, skip = 0 }) => `/students/results?take=${take}&skip=${skip}`,
+    getStudentResults: builder.query<StudentResultsResponse, GetStudentResultsParams | void>({
+      query: (params) => {
+        const take = params?.take ?? 20;
+        const skip = params?.skip ?? 0;
+        const searchParams = new URLSearchParams({
+          take: String(take),
+          skip: String(skip),
+        });
+        if (params?.from) searchParams.set('from', params.from);
+        if (params?.to) searchParams.set('to', params.to);
+        return `/students/results?${searchParams.toString()}`;
+      },
       providesTags: ['Student'],
     }),
 

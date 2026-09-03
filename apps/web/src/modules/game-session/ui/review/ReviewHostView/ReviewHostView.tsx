@@ -29,7 +29,7 @@ export function ReviewHostView({
 			: false);
 	const [activeTab, setActiveTab] = useState<'overview' | 'answers'>('overview');
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-	const renderedCardsRef = useRef<Set<string>>(new Set());
+	const renderedCardsRef = useRef<Set<string | number>>(new Set());
 
 	useEffect(() => {
 		renderedCardsRef.current.clear();

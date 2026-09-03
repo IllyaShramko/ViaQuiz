@@ -141,10 +141,15 @@ export const StudentService: StudentServiceContract = {
 		};
 	},
 
-	async getResults(studentId, take = 20, skip = 0) {
+	async getResults(studentId, take = 20, skip = 0, from, to) {
+		const fromDate = from ? new Date(from) : undefined;
+		const toDate = to
+			? new Date(to.includes("T") ? to : `${to}T23:59:59.999Z`)
+			: undefined;
+
 		const [quizzes, total] = await Promise.all([
-			StudentRepository.findStudentResults(studentId, take, skip),
-			StudentRepository.countStudentResults(studentId),
+			StudentRepository.findStudentResults(studentId, take, skip, fromDate, toDate),
+			StudentRepository.countStudentResults(studentId, fromDate, toDate),
 		]);
 
 		const results: StudentDetailedResultItem[] = (quizzes || []).map((p) => {

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useMemo, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useGetStudentAnalyticsQuery,
@@ -6,15 +6,34 @@ import {
   StudentGradeDistributionChart,
   ResetPasswordModal,
 } from '../../../modules/classes';
+import { DateFilterBar } from '../../../shared/ui';
 import styles from '../../../modules/classes/ui/Classes.module.css';
+
+const formatDateToInput = (d: Date): string => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getDefaultDateRange = () => {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(to.getDate() - 30);
+  return {
+    from: formatDateToInput(from),
+    to: formatDateToInput(to),
+  };
+};
 
 export function StudentDetailsPage() {
   const { classUuid, studentUuid } = useParams<{ classUuid: string; studentUuid: string }>();
   const navigate = useNavigate();
 
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [appliedFilter, setAppliedFilter] = useState<{ from?: string; to?: string }>({});
+  const defaultDates = useMemo(() => getDefaultDateRange(), []);
+  const [fromDate, setFromDate] = useState(defaultDates.from);
+  const [toDate, setToDate] = useState(defaultDates.to);
+  const [appliedFilter, setAppliedFilter] = useState<{ from?: string; to?: string }>(defaultDates);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   const { data, isLoading, error, refetch } = useGetStudentAnalyticsQuery(
@@ -27,12 +46,20 @@ export function StudentDetailsPage() {
     { skip: !classUuid || !studentUuid },
   );
 
-  const handleApplyFilter = (e: FormEvent) => {
-    e.preventDefault();
+  const handleApplyFilter = (e?: FormEvent) => {
+    e?.preventDefault();
     setAppliedFilter({
       from: fromDate || undefined,
       to: toDate || undefined,
     });
+    refetch();
+  };
+
+  const handleReset = () => {
+    const defaults = getDefaultDateRange();
+    setFromDate(defaults.from);
+    setToDate(defaults.to);
+    setAppliedFilter(defaults);
     refetch();
   };
 
@@ -109,27 +136,16 @@ export function StudentDetailsPage() {
         />
       </div>
 
-      {/* Date Filter Bar matching Screenshot 1 */}
-      <form className={styles['date-filter-bar']} onSubmit={handleApplyFilter}>
-        <input
-          type="date"
-          className={styles['date-input']}
-          value={fromDate}
-          onChange={(e) => setFromDate(e.target.value)}
-          aria-label="Початкова дата"
-        />
-        <span style={{ color: '#9090a8', fontWeight: 700 }}>—</span>
-        <input
-          type="date"
-          className={styles['date-input']}
-          value={toDate}
-          onChange={(e) => setToDate(e.target.value)}
-          aria-label="Кінцева дата"
-        />
-        <button type="submit" className={styles['btn-update-data']}>
-          Оновити дані
-        </button>
-      </form>
+      {/* Date Filter Bar */}
+      <DateFilterBar
+        fromDate={fromDate}
+        toDate={toDate}
+        onFromDateChange={setFromDate}
+        onToDateChange={setToDate}
+        onSubmit={handleApplyFilter}
+        onReset={handleReset}
+        className={styles['student-detail-filter-wrapper']}
+      />
 
       {/* Test History Section matching Screenshot 1 */}
       <div className={styles['history-section']}>

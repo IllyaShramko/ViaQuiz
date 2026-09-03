@@ -212,7 +212,9 @@ export const ClassroomService: ClassroomServiceContract = {
 		}
 
 		const fromDate = filter?.from ? new Date(filter.from) : undefined;
-		const toDate = filter?.to ? new Date(filter.to) : undefined;
+		const toDate = filter?.to
+			? new Date(filter.to.includes("T") ? filter.to : `${filter.to}T23:59:59.999Z`)
+			: undefined;
 
 		const quizParticipants = await ClassroomRepository.findStudentQuizResults(
 			student.id,
