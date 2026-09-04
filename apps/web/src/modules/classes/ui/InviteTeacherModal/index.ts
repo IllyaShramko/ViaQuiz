@@ -1,2 +1,4 @@
 export { InviteTeacherModal } from './InviteTeacherModal';
-export type { InviteTeacherModalProps } from './InviteTeacherModal.types';
+export { inviteTeacherSchema } from './InviteTeacherModal.types';
+export type { InviteTeacherModalProps, InviteTeacherFormData } from './InviteTeacherModal.types';
+

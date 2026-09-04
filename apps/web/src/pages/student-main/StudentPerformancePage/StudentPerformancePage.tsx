@@ -1,4 +1,4 @@
-import { useState, useMemo, type FormEvent } from 'react';
+import { useState, useMemo } from 'react';
 import { useGetStudentResultsQuery } from '../../../modules/students';
 import {
   StudentProgressChart,
@@ -38,8 +38,7 @@ export function StudentPerformancePage() {
     to: appliedFilter.to,
   });
 
-  const handleApplyFilter = (e?: FormEvent) => {
-    e?.preventDefault();
+  const handleApplyFilter = () => {
     setAppliedFilter({
       from: fromDate,
       to: toDate,

@@ -1,0 +1,106 @@
+.card {
+  background: var(--bg-surface, #1a1a26);
+  border: 1px solid var(--border, #2a2a3a);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.card:hover {
+  border-color: var(--accent, #863bff);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(134, 59, 255, 0.15);
+}
+
+.card--me {
+  border-color: rgba(134, 59, 255, 0.4);
+  background: linear-gradient(135deg, rgba(134, 59, 255, 0.08) 0%, rgba(26, 26, 38, 0.95) 100%);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #863bff 0%, #6366f1 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.card--me .avatar {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.name {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--text-primary, #f0f0f5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.me-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  flex-shrink: 0;
+}
+
+.meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #9090a8);
+  margin: 0;
+}
+
+.chevron {
+  color: var(--text-secondary, #9090a8);
+  font-size: 1.2rem;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 12px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.card:hover .chevron {
+  color: var(--accent, #863bff);
+  transform: translateX(3px);
+}

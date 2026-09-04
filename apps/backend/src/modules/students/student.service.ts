@@ -189,4 +189,12 @@ export const StudentService: StudentServiceContract = {
 	async getCourses(studentId) {
 		return await StudentRepository.findStudentCourses(studentId);
 	},
+
+	async getClassroom(studentId) {
+		return await StudentRepository.findClassroomDetails(studentId);
+	},
+
+	async getClassmateProfile(studentId, classmateUuid) {
+		return await StudentRepository.findClassmateProfile(studentId, classmateUuid);
+	},
 };

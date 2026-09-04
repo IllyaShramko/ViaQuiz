@@ -1,2 +1,9 @@
 export { LoginForm } from './LoginForm';
-export type { LoginFormProps, AuthRole } from './LoginForm.types';
+export { teacherLoginSchema, studentLoginSchema } from './LoginForm.types';
+export type {
+  LoginFormProps,
+  AuthRole,
+  TeacherLoginFormData,
+  StudentLoginFormData,
+} from './LoginForm.types';
+

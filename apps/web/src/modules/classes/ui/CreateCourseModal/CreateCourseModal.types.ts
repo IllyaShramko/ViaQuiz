@@ -1,4 +1,5 @@
 import type { StudentDto } from '@viaquiz/shared-types';
+export { createCourseSchema, type CreateCourseFormData } from '../../models/validators';
 
 export interface CreateCourseModalProps {
   classUuid: string;

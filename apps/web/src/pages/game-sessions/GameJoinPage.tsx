@@ -84,13 +84,13 @@ export function GameJoinPage() {
 	}, [codeFromUrl, processJoinCode]);
 
 	// Step 1: Validate PIN code manually
-	const handleStepOneSubmit = async (e: React.FormEvent) => {
+	const handleStepOneSubmit = async (e: React.SyntheticEvent) => {
 		e.preventDefault();
 		await processJoinCode(joinCode);
 	};
 
 	// Step 2: Guest joins with Nickname
-	const handleStepTwoSubmit = async (e: React.FormEvent) => {
+	const handleStepTwoSubmit = async (e: React.SyntheticEvent) => {
 		e.preventDefault();
 		const cleanNick = nickname.trim();
 		if (!cleanNick) {

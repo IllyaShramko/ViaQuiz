@@ -8,6 +8,8 @@ import type {
 	StudentResultsResponse,
 	StudentCourse,
 	RawParticipantResult,
+	StudentClassroomDetailsDto,
+	ClassmateProfileDto,
 } from "./students.types";
 
 export interface StudentRepositoryContract {
@@ -29,6 +31,11 @@ export interface StudentRepositoryContract {
 		toDate?: Date,
 	): Promise<number>;
 	findStudentCourses(studentId: number): Promise<StudentCourse[]>;
+	findClassroomDetails(studentId: number): Promise<StudentClassroomDetailsDto>;
+	findClassmateProfile(
+		studentId: number,
+		classmateUuid: string,
+	): Promise<ClassmateProfileDto>;
 }
 
 export interface StudentServiceContract {
@@ -43,6 +50,11 @@ export interface StudentServiceContract {
 		to?: string,
 	): Promise<StudentResultsResponse>;
 	getCourses(studentId: number): Promise<StudentCourse[]>;
+	getClassroom(studentId: number): Promise<StudentClassroomDetailsDto>;
+	getClassmateProfile(
+		studentId: number,
+		classmateUuid: string,
+	): Promise<ClassmateProfileDto>;
 }
 
 export interface StudentControllerContract {
@@ -55,4 +67,10 @@ export interface StudentControllerContract {
 	): Promise<void>;
 	getResults(req: Request, res: Response, next: NextFunction): Promise<void>;
 	getCourses(req: Request, res: Response, next: NextFunction): Promise<void>;
+	getClassroom(req: Request, res: Response, next: NextFunction): Promise<void>;
+	getClassmateProfile(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
 }

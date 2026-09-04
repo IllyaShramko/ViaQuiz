@@ -1,0 +1,1 @@
+export { StudentClassPage } from './StudentClassPage';

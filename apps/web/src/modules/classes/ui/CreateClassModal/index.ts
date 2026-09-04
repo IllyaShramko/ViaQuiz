@@ -1,2 +1,4 @@
 export { CreateClassModal } from './CreateClassModal';
-export type { CreateClassModalProps } from './CreateClassModal.types';
+export { createClassSchema } from './CreateClassModal.types';
+export type { CreateClassModalProps, CreateClassFormData } from './CreateClassModal.types';
+

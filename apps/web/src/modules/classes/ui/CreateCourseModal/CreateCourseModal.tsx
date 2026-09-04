@@ -1,6 +1,12 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateCourseMutation } from '../../api/classesApi';
-import type { CreateCourseModalProps } from './CreateCourseModal.types';
+import {
+  createCourseSchema,
+  type CreateCourseFormData,
+  type CreateCourseModalProps,
+} from './CreateCourseModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
 
 export function CreateCourseModal({
@@ -11,14 +17,29 @@ export function CreateCourseModal({
   currentClassCourses,
   maxClassCourses,
 }: CreateCourseModalProps) {
-  const [name, setName] = useState('');
   const [search, setSearch] = useState('');
-  const [selectedUuids, setSelectedUuids] = useState<string[]>([]);
 
   const [createCourse, { isLoading, error }] = useCreateCourseMutation();
 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<CreateCourseFormData>({
+    resolver: zodResolver(createCourseSchema),
+    defaultValues: {
+      name: '',
+      studentUuids: [],
+    },
+  });
+
   if (!isOpen) return null;
 
+  const watchedName = watch('name');
+  const selectedUuids = watch('studentUuids') || [];
   const isCourseLimitReached = currentClassCourses >= maxClassCourses;
 
   const filteredStudents = students.filter((s) => {
@@ -27,40 +48,47 @@ export function CreateCourseModal({
   });
 
   const handleToggleStudent = (uuid: string) => {
-    setSelectedUuids((prev) => {
-      if (prev.includes(uuid)) {
-        return prev.filter((id) => id !== uuid);
-      }
-      if (prev.length >= 50) {
-        return prev;
-      }
-      return [...prev, uuid];
-    });
+    if (selectedUuids.includes(uuid)) {
+      setValue(
+        'studentUuids',
+        selectedUuids.filter((id) => id !== uuid),
+        { shouldValidate: true },
+      );
+      return;
+    }
+    if (selectedUuids.length >= 50) {
+      return;
+    }
+    setValue('studentUuids', [...selectedUuids, uuid], { shouldValidate: true });
   };
 
   const handleSelectAll = () => {
     if (selectedUuids.length === students.length) {
-      setSelectedUuids([]);
+      setValue('studentUuids', [], { shouldValidate: true });
     } else {
-      setSelectedUuids(students.slice(0, 50).map((s) => s.uuid));
+      setValue('studentUuids', students.slice(0, 50).map((s) => s.uuid), { shouldValidate: true });
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || isCourseLimitReached) return;
+  const handleClose = () => {
+    reset();
+    setSearch('');
+    onClose();
+  };
+
+  const onSubmit = async (data: CreateCourseFormData) => {
+    if (isCourseLimitReached) return;
 
     try {
       await createCourse({
         classUuid,
         body: {
-          name: name.trim(),
-          studentUuids: selectedUuids,
+          name: data.name.trim(),
+          studentUuids: data.studentUuids,
         },
       }).unwrap();
 
-      setName('');
-      setSelectedUuids([]);
+      reset();
       setSearch('');
       onClose();
     } catch {
@@ -76,14 +104,14 @@ export function CreateCourseModal({
       : null;
 
   return (
-    <div className={styles['modal-backdrop']} onClick={onClose}>
+    <div className={styles['modal-backdrop']} onClick={handleClose}>
       <div className={styles['modal-content']} style={{ maxWidth: 560 }} onClick={(e) => e.stopPropagation()}>
         <div className={styles['modal-header']}>
           <h2 className={styles['modal-title']}>Створити курс для класу</h2>
           <button
             type="button"
             className={styles['modal-close-btn']}
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Закрити"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -93,7 +121,7 @@ export function CreateCourseModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles['modal-body']}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1a1a26', padding: '10px 14px', borderRadius: '10px', border: '1px solid #2a2a3a' }}>
               <span style={{ fontSize: '0.85rem', color: '#9090a8' }}>Курсів у цьому класі:</span>
@@ -117,13 +145,16 @@ export function CreateCourseModal({
               <input
                 id="course-name"
                 type="text"
-                required
                 disabled={isCourseLimitReached}
                 placeholder="наприклад, Алгебра, Геометрія, Англійська мова"
-                className={styles['form-input']}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                className={`${styles['form-input']} ${errors.name ? styles['input--error'] : ''}`}
+                {...register('name')}
               />
+              {errors.name && (
+                <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
+                  {errors.name.message}
+                </span>
+              )}
             </div>
 
             <div className={styles['form-group']}>
@@ -210,12 +241,12 @@ export function CreateCourseModal({
           </div>
 
           <div className={styles['modal-footer']}>
-            <button type="button" className={styles['btn-secondary']} onClick={onClose}>
+            <button type="button" className={styles['btn-secondary']} onClick={handleClose}>
               Скасувати
             </button>
             <button
               type="submit"
-              disabled={isLoading || isCourseLimitReached || !name.trim()}
+              disabled={isLoading || isCourseLimitReached || !watchedName?.trim()}
               className={styles['btn-primary']}
             >
               {isLoading ? 'Створення...' : 'Створити курс'}
@@ -225,4 +256,4 @@ export function CreateCourseModal({
       </div>
     </div>
   );
-};
+}

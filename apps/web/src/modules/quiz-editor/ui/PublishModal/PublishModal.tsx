@@ -113,7 +113,7 @@ export const PublishModal: React.FC<PublishModalProps> = ({
     setKeywords(keywords.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     setValidationErrors([]);
 

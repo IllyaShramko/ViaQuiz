@@ -1,3 +1,5 @@
+export { inviteTeacherSchema, type InviteTeacherFormData } from '../../models/validators';
+
 export interface InviteTeacherModalProps {
   isOpen: boolean;
   onClose: () => void;

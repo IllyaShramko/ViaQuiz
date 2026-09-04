@@ -1,7 +1,13 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAddStudentMutation } from '../../api/classesApi';
 import { generateStudentLogin, generateSimplePassword } from '../../../../shared/tools/translit';
-import type { AddStudentModalProps } from './AddStudentModal.types';
+import {
+  addStudentSchema,
+  type AddStudentFormData,
+  type AddStudentModalProps,
+} from './AddStudentModal.types';
 import styles from './AddStudentModal.module.css';
 
 export function AddStudentModal({
@@ -9,10 +15,6 @@ export function AddStudentModal({
   isOpen,
   onClose,
 }: AddStudentModalProps) {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState(() => generateSimplePassword(8));
   const [isCustomLogin, setIsCustomLogin] = useState(false);
   const [createdCredentials, setCreatedCredentials] = useState<{
     login: string;
@@ -24,32 +26,49 @@ export function AddStudentModal({
 
   const [addStudent, { isLoading, error }] = useAddStudentMutation();
 
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<AddStudentFormData>({
+    resolver: zodResolver(addStudentSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      login: '',
+      password: generateSimplePassword(8),
+    },
+  });
+
+  const firstName = watch('firstName');
+  const lastName = watch('lastName');
+
   // Auto-generate login based on first & last name unless customized by teacher
   useEffect(() => {
     if (!isCustomLogin && (firstName || lastName)) {
-      const generated = generateStudentLogin(firstName, lastName);
-      setLogin(generated);
+      const generated = generateStudentLogin(firstName || '', lastName || '');
+      setValue('login', generated, { shouldValidate: true });
     }
-  }, [firstName, lastName, isCustomLogin]);
+  }, [firstName, lastName, isCustomLogin, setValue]);
 
   if (!isOpen) return null;
 
   const handleRegeneratePassword = () => {
-    setPassword(generateSimplePassword(8));
+    setValue('password', generateSimplePassword(8), { shouldValidate: true });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!firstName.trim() || !lastName.trim()) return;
-
+  const onSubmit = async (data: AddStudentFormData) => {
     try {
       const res = await addStudent({
         classUuid,
         body: {
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          login: login.trim() || undefined,
-          password: password.trim() || undefined,
+          firstName: data.firstName.trim(),
+          lastName: data.lastName.trim(),
+          login: data.login?.trim() || undefined,
+          password: data.password?.trim() || undefined,
         },
       }).unwrap();
 
@@ -68,10 +87,12 @@ export function AddStudentModal({
   };
 
   const handleResetAndClose = () => {
-    setFirstName('');
-    setLastName('');
-    setLogin('');
-    setPassword(generateSimplePassword(8));
+    reset({
+      firstName: '',
+      lastName: '',
+      login: '',
+      password: generateSimplePassword(8),
+    });
     setIsCustomLogin(false);
     setCreatedCredentials(null);
     setCopied(false);
@@ -156,10 +177,13 @@ export function AddStudentModal({
                 className={styles['btn-secondary']}
                 onClick={() => {
                   setCreatedCredentials(null);
-                  setFirstName('');
-                  setLastName('');
-                  setLogin('');
-                  setPassword(generateSimplePassword(8));
+                  setCreatedCredentials(null);
+                  reset({
+                    firstName: '',
+                    lastName: '',
+                    login: '',
+                    password: generateSimplePassword(8),
+                  });
                   setIsCustomLogin(false);
                 }}
               >
@@ -175,7 +199,7 @@ export function AddStudentModal({
             </div>
           </>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className={styles['modal-body']}>
               {errorMessage && <div className={styles['error-banner']}>{errorMessage}</div>}
 
@@ -187,12 +211,15 @@ export function AddStudentModal({
                   <input
                     id="student-lastName"
                     type="text"
-                    required
                     placeholder="Введіть прізвище"
-                    className={styles['form-input']}
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    className={`${styles['form-input']} ${errors.lastName ? styles['input--error'] : ''}`}
+                    {...register('lastName')}
                   />
+                  {errors.lastName && (
+                    <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
+                      {errors.lastName.message}
+                    </span>
+                  )}
                 </div>
 
                 <div className={styles['form-group']}>
@@ -202,12 +229,15 @@ export function AddStudentModal({
                   <input
                     id="student-firstName"
                     type="text"
-                    required
                     placeholder="Введіть ім'я"
-                    className={styles['form-input']}
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    className={`${styles['form-input']} ${errors.firstName ? styles['input--error'] : ''}`}
+                    {...register('firstName')}
                   />
+                  {errors.firstName && (
+                    <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
+                      {errors.firstName.message}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -220,14 +250,17 @@ export function AddStudentModal({
                     id="student-login"
                     type="text"
                     placeholder="Генерується автоматично"
-                    className={styles['form-input']}
-                    value={login}
-                    onChange={(e) => {
-                      setLogin(e.target.value);
-                      setIsCustomLogin(true);
-                    }}
+                    className={`${styles['form-input']} ${errors.login ? styles['input--error'] : ''}`}
+                    {...register('login', {
+                      onChange: () => setIsCustomLogin(true),
+                    })}
                   />
                 </div>
+                {errors.login && (
+                  <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
+                    {errors.login.message}
+                  </span>
+                )}
                 <span className={styles['hint-text']}>
                   Можна змінити вручну або залишити автоматичний
                 </span>
@@ -241,9 +274,8 @@ export function AddStudentModal({
                   <input
                     id="student-password"
                     type="text"
-                    className={styles['form-input']}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    className={`${styles['form-input']} ${errors.password ? styles['input--error'] : ''}`}
+                    {...register('password')}
                   />
                   <button
                     type="button"
@@ -256,6 +288,11 @@ export function AddStudentModal({
                     </svg>
                   </button>
                 </div>
+                {errors.password && (
+                  <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
+                    {errors.password.message}
+                  </span>
+                )}
                 <span className={styles['hint-text']}>
                   Простий надійний код для швидкого входу учня
                 </span>
@@ -272,7 +309,7 @@ export function AddStudentModal({
               </button>
               <button
                 type="submit"
-                disabled={isLoading || !firstName.trim() || !lastName.trim()}
+                disabled={isLoading || !firstName?.trim() || !lastName?.trim()}
                 className={styles['btn-primary']}
               >
                 {isLoading ? 'Створення...' : 'Створити учня'}
@@ -283,4 +320,4 @@ export function AddStudentModal({
       </div>
     </div>
   );
-};
+}

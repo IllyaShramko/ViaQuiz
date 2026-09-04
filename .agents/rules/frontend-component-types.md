@@ -18,6 +18,11 @@ description: Rules and conventions for structuring React components, dedicated c
    - **Do NOT** dump component-specific classes into a large monolithic shared CSS module (e.g. `GameSession.module.css`, `Classes.module.css`, `Drafts.module.css`).
    - Each component owns its own styles and imports its own `./ComponentName.module.css`.
 
+4. **Centralized Module Validators (`modules/<currentModule>/models/validators/`)**:
+   All form validation schemas (Zod validators, etc.) for components, modals, and forms **MUST** reside in the module's `models/validators/` directory (e.g., `modules/<moduleName>/models/validators/`).
+   - Do **NOT** declare Zod schemas inside component folders or inline in `ComponentName.types.ts`.
+   - Export schemas and their inferred types from `models/validators/` and import them into component types or components.
+
 ---
 
 ## File Structure Conventions
@@ -128,6 +133,24 @@ export type { ButtonProps, ButtonVariant, ButtonSize } from './Button.types';
 ### 8. Exceptions: Trivial Components
 - If a component does not accept any props and has no local types (e.g., static page wrapper `NotFoundPage`, simple static skeleton), a `.types.ts` file **should not be created** to avoid empty boilerplate files.
 - If a component does not require custom CSS, a `.module.css` file **should not be created**.
+
+### 9. Form Validators & Schemas (`modules/<moduleName>/models/validators/`)
+- All form validation schemas (e.g. Zod validators) for components, modals, and forms **MUST** reside in the module's `models/validators/` directory:
+  ```
+  modules/<moduleName>/
+  ├── models/
+  │   ├── validators/
+  │   │   ├── <featureName>.validator.ts   # Zod schema and inferred types
+  │   │   └── index.ts                     # Public validator exports
+  │   └── ...
+  ├── ui/
+  │   └── ComponentName/
+  │       ├── ComponentName.tsx
+  │       ├── ComponentName.types.ts       # Imports types from ../../models/validators
+  │       └── ...
+  ```
+- **Do NOT** define Zod schemas directly inside component `.tsx` or `ComponentName.types.ts`. Keep them centralized and reusable in `models/validators/`.
+
 
 ---
 

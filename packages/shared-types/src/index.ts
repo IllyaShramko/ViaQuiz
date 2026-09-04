@@ -25,6 +25,9 @@ export type {
 	StudentAnalyticsDto,
 	StudentDashboardDto,
 	VerifyInvitationResponseDto,
+	ClassmateSummaryDto,
+	StudentClassroomDetailsDto,
+	ClassmateProfileDto,
 } from "./classroom";
 export type {
 	RoomStatus,

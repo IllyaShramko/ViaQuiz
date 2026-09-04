@@ -18,3 +18,6 @@ studentRouter.get("/me", authenticate, StudentController.getMe);
 studentRouter.get("/dashboard", authenticate, StudentController.getDashboard);
 studentRouter.get("/results", authenticate, StudentController.getResults);
 studentRouter.get("/courses", authenticate, StudentController.getCourses);
+studentRouter.get("/classroom", authenticate, StudentController.getClassroom);
+studentRouter.get("/classmates/:uuid", authenticate, StudentController.getClassmateProfile);
+

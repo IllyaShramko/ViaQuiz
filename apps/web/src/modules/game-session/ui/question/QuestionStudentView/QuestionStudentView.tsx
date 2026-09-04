@@ -49,7 +49,7 @@ export function QuestionStudentView({
 		onSubmitAnswer(selectedVariantIds);
 	};
 
-	const handleSubmitTyped = (e?: React.FormEvent) => {
+	const handleSubmitTyped = (e?: React.SyntheticEvent) => {
 		if (e) e.preventDefault();
 		const trimmed = typedInput.trim();
 		if (!trimmed || alreadyAnswered) return;

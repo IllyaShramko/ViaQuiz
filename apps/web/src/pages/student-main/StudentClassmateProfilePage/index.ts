@@ -1,0 +1,1 @@
+export { StudentClassmateProfilePage } from './StudentClassmateProfilePage';

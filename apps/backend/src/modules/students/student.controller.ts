@@ -54,4 +54,28 @@ export const StudentController: StudentControllerContract = {
 			next(error);
 		}
 	},
+
+	async getClassroom(_req, res, next) {
+		try {
+			const studentId = res.locals.studentId as number;
+			const classroom = await StudentService.getClassroom(studentId);
+			res.status(200).json(classroom);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async getClassmateProfile(req, res, next) {
+		try {
+			const studentId = res.locals.studentId as number;
+			const classmateUuid = req.params.uuid as string;
+			const profile = await StudentService.getClassmateProfile(
+				studentId,
+				classmateUuid,
+			);
+			res.status(200).json(profile);
+		} catch (error) {
+			next(error);
+		}
+	},
 };

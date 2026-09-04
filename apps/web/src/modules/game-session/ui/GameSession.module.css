@@ -260,7 +260,6 @@
    LOBBY SCREENS
    ========================================================================== */
 
-/* Teacher Host Lobby Card (Matches Screenshot 183420.png) */
 .lobby-host-card {
   background: var(--color-bg-elevated, #16161e);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1767,7 +1766,6 @@
   transform: translateY(-1px);
 }
 
-/* QR Code Modal (Matches Screenshot 3) */
 .qr-modal-backdrop {
   position: fixed;
   inset: 0;

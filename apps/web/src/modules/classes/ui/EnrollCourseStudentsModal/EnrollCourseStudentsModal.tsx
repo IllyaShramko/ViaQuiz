@@ -1,6 +1,12 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useEnrollStudentsToCourseMutation } from '../../api/classesApi';
-import type { EnrollCourseStudentsModalProps } from './EnrollCourseStudentsModal.types';
+import {
+  enrollCourseStudentsSchema,
+  type EnrollCourseStudentsFormData,
+  type EnrollCourseStudentsModalProps,
+} from './EnrollCourseStudentsModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
 
 export function EnrollCourseStudentsModal({
@@ -13,12 +19,20 @@ export function EnrollCourseStudentsModal({
   maxCourseStudents = 50,
 }: EnrollCourseStudentsModalProps) {
   const [search, setSearch] = useState('');
-  const [selectedUuids, setSelectedUuids] = useState<string[]>([]);
 
   const [enrollStudents, { isLoading, error }] = useEnrollStudentsToCourseMutation();
 
+  const { handleSubmit, reset, watch, setValue } =
+    useForm<EnrollCourseStudentsFormData>({
+      resolver: zodResolver(enrollCourseStudentsSchema),
+      defaultValues: {
+        studentUuids: [],
+      },
+    });
+
   if (!isOpen) return null;
 
+  const selectedUuids = watch('studentUuids') || [];
   const currentEnrolledCount = alreadyEnrolledUuids.length;
   const availableSlots = Math.max(0, maxCourseStudents - currentEnrolledCount);
 
@@ -33,37 +47,47 @@ export function EnrollCourseStudentsModal({
   });
 
   const handleToggleStudent = (uuid: string) => {
-    setSelectedUuids((prev) => {
-      if (prev.includes(uuid)) {
-        return prev.filter((id) => id !== uuid);
-      }
-      if (prev.length >= availableSlots) {
-        return prev;
-      }
-      return [...prev, uuid];
-    });
+    if (selectedUuids.includes(uuid)) {
+      setValue(
+        'studentUuids',
+        selectedUuids.filter((id) => id !== uuid),
+        { shouldValidate: true },
+      );
+      return;
+    }
+    if (selectedUuids.length >= availableSlots) {
+      return;
+    }
+    setValue('studentUuids', [...selectedUuids, uuid], { shouldValidate: true });
   };
 
   const handleSelectAll = () => {
     if (selectedUuids.length === filteredStudents.length && filteredStudents.length > 0) {
-      setSelectedUuids([]);
+      setValue('studentUuids', [], { shouldValidate: true });
     } else {
-      setSelectedUuids(filteredStudents.slice(0, availableSlots).map((s) => s.uuid));
+      setValue(
+        'studentUuids',
+        filteredStudents.slice(0, availableSlots).map((s) => s.uuid),
+        { shouldValidate: true },
+      );
     }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (selectedUuids.length === 0) return;
+  const handleClose = () => {
+    reset();
+    setSearch('');
+    onClose();
+  };
 
+  const onSubmit = async (data: EnrollCourseStudentsFormData) => {
     try {
       await enrollStudents({
         classUuid,
         courseUuid,
-        studentUuids: selectedUuids,
+        studentUuids: data.studentUuids,
       }).unwrap();
 
-      setSelectedUuids([]);
+      reset();
       setSearch('');
       onClose();
     } catch {
@@ -79,7 +103,7 @@ export function EnrollCourseStudentsModal({
       : null;
 
   return (
-    <div className={styles['modal-backdrop']} onClick={onClose}>
+    <div className={styles['modal-backdrop']} onClick={handleClose}>
       <div
         className={styles['modal-content']}
         style={{ maxWidth: 560 }}
@@ -90,7 +114,7 @@ export function EnrollCourseStudentsModal({
           <button
             type="button"
             className={styles['modal-close-btn']}
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Закрити"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -100,7 +124,7 @@ export function EnrollCourseStudentsModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles['modal-body']}>
             <div
               style={{
@@ -267,7 +291,7 @@ export function EnrollCourseStudentsModal({
           </div>
 
           <div className={styles['modal-footer']}>
-            <button type="button" className={styles['btn-secondary']} onClick={onClose}>
+            <button type="button" className={styles['btn-secondary']} onClick={handleClose}>
               Скасувати
             </button>
             <button

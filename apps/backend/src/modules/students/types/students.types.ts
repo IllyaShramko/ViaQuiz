@@ -152,3 +152,10 @@ export interface StudentDashboardResponse {
 		roomsCount: number;
 	}>;
 }
+
+export type {
+	StudentClassroomDetailsDto,
+	ClassmateProfileDto,
+	ClassmateSummaryDto,
+} from "@viaquiz/shared-types";
+

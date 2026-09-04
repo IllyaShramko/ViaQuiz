@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import type { DateFilterBarProps } from './DateFilterBar.types';
 import styles from './DateFilterBar.module.css';
 
@@ -14,9 +14,9 @@ export function DateFilterBar({
   isLoading = false,
   className,
 }: DateFilterBarProps) {
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    onSubmit(e);
+    onSubmit();
   };
 
   return (

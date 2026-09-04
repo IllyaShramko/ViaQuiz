@@ -1,6 +1,11 @@
-import { useState, type FormEvent } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateClassroomMutation } from '../../api/classesApi';
-import type { CreateClassModalProps } from './CreateClassModal.types';
+import {
+  createClassSchema,
+  type CreateClassFormData,
+  type CreateClassModalProps,
+} from './CreateClassModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
 
 export function CreateClassModal({
@@ -9,27 +14,42 @@ export function CreateClassModal({
   currentActiveClasses,
   maxClasses,
 }: CreateClassModalProps) {
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-
   const [createClassroom, { isLoading, error }] = useCreateClassroomMutation();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<CreateClassFormData>({
+    resolver: zodResolver(createClassSchema),
+    defaultValues: {
+      name: '',
+      code: '',
+    },
+  });
 
   if (!isOpen) return null;
 
   const isLimitReached = currentActiveClasses >= maxClasses;
+  const watchedName = watch('name');
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!name.trim() || isLimitReached) return;
+  const handleClose = () => {
+    reset();
+    onClose();
+  };
+
+  const onSubmit = async (data: CreateClassFormData) => {
+    if (isLimitReached) return;
 
     try {
       await createClassroom({
-        name: name.trim(),
-        code: code.trim() || undefined,
+        name: data.name.trim(),
+        code: data.code?.trim() || undefined,
       }).unwrap();
 
-      setName('');
-      setCode('');
+      reset();
       onClose();
     } catch {
       // Handled by RTK Query error
@@ -44,14 +64,14 @@ export function CreateClassModal({
       : null;
 
   return (
-    <div className={styles['modal-backdrop']} onClick={onClose}>
+    <div className={styles['modal-backdrop']} onClick={handleClose}>
       <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
         <div className={styles['modal-header']}>
           <h2 className={styles['modal-title']}>Створити новий клас</h2>
           <button
             type="button"
             className={styles['modal-close-btn']}
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Закрити"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -61,7 +81,7 @@ export function CreateClassModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className={styles['modal-body']}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1a1a26', padding: '10px 14px', borderRadius: '10px', border: '1px solid #2a2a3a' }}>
               <span style={{ fontSize: '0.85rem', color: '#9090a8' }}>Активні класи:</span>
@@ -85,13 +105,16 @@ export function CreateClassModal({
               <input
                 id="class-name"
                 type="text"
-                required
                 disabled={isLimitReached}
                 placeholder="наприклад, 9-А або Фізика-101"
-                className={styles['form-input']}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                className={`${styles['form-input']} ${errors.name ? styles['input--error'] : ''}`}
+                {...register('name')}
               />
+              {errors.name && (
+                <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
+                  {errors.name.message}
+                </span>
+              )}
             </div>
 
             <div className={styles['form-group']}>
@@ -103,10 +126,18 @@ export function CreateClassModal({
                 type="text"
                 disabled={isLimitReached}
                 placeholder="Авто-генерація, якщо не вказано"
-                className={styles['form-input']}
-                value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                className={`${styles['form-input']} ${errors.code ? styles['input--error'] : ''}`}
+                {...register('code', {
+                  onChange: (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                  },
+                })}
               />
+              {errors.code && (
+                <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
+                  {errors.code.message}
+                </span>
+              )}
               <span className={styles['hint-text']}>
                 Унікальний код для швидкого пошуку або приєднання
               </span>
@@ -114,12 +145,12 @@ export function CreateClassModal({
           </div>
 
           <div className={styles['modal-footer']}>
-            <button type="button" className={styles['btn-secondary']} onClick={onClose}>
+            <button type="button" className={styles['btn-secondary']} onClick={handleClose}>
               Скасувати
             </button>
             <button
               type="submit"
-              disabled={isLoading || isLimitReached || !name.trim()}
+              disabled={isLoading || isLimitReached || !watchedName?.trim()}
               className={styles['btn-primary']}
             >
               {isLoading ? 'Створення...' : 'Створити клас'}
@@ -129,4 +160,4 @@ export function CreateClassModal({
       </div>
     </div>
   );
-};
+}

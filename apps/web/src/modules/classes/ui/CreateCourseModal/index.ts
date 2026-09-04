@@ -1,2 +1,4 @@
 export { CreateCourseModal } from './CreateCourseModal';
-export type { CreateCourseModalProps } from './CreateCourseModal.types';
+export { createCourseSchema } from './CreateCourseModal.types';
+export type { CreateCourseModalProps, CreateCourseFormData } from './CreateCourseModal.types';
+

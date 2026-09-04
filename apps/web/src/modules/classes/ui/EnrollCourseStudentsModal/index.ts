@@ -1,2 +1,7 @@
 export { EnrollCourseStudentsModal } from './EnrollCourseStudentsModal';
-export type { EnrollCourseStudentsModalProps } from './EnrollCourseStudentsModal.types';
+export { enrollCourseStudentsSchema } from './EnrollCourseStudentsModal.types';
+export type {
+  EnrollCourseStudentsModalProps,
+  EnrollCourseStudentsFormData,
+} from './EnrollCourseStudentsModal.types';
+

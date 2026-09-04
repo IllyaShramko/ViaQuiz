@@ -1,38 +1,47 @@
-import { useState, type FormEvent } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import type { HeroCodeFormProps } from './HeroCodeForm.types';
+import {
+  heroCodeSchema,
+  type HeroCodeFormData,
+  type HeroCodeFormProps,
+} from './HeroCodeForm.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import styles from '../Home.module.css';
 
 export function HeroCodeForm({ onSubmitCode }: HeroCodeFormProps) {
   const { t } = useLocale();
   const navigate = useNavigate();
-  const [code, setCode] = useState('');
 
-  const handleCodeSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const { register, handleSubmit } = useForm<HeroCodeFormData>({
+    resolver: zodResolver(heroCodeSchema),
+    defaultValues: {
+      code: '',
+    },
+  });
+
+  const onSubmit = (data: HeroCodeFormData) => {
+    const trimmed = data.code.trim();
     if (onSubmitCode) {
-      onSubmitCode(code.trim());
+      onSubmitCode(trimmed);
       return;
     }
 
-    if (code.trim()) {
-      navigate(`/join?code=${encodeURIComponent(code.trim())}`);
+    if (trimmed) {
+      navigate(`/join?code=${encodeURIComponent(trimmed)}`);
     } else {
       navigate('/join');
     }
   };
 
-
   return (
-    <form id="enter-code" className={styles['hero__code-form']} onSubmit={handleCodeSubmit}>
+    <form id="enter-code" className={styles['hero__code-form']} onSubmit={handleSubmit(onSubmit)}>
       <input
         type="text"
         placeholder={t('hero.codePlaceholder')}
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
         className={styles['hero__code-input']}
         maxLength={12}
+        {...register('code')}
       />
       <button type="submit" className={styles['hero__code-submit']} aria-label={t('hero.submitCode')}>
         <svg

@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import type { LoginFormProps, AuthRole } from './LoginForm.types';
+import {
+  teacherLoginSchema,
+  studentLoginSchema,
+  type LoginFormProps,
+  type AuthRole,
+  type TeacherLoginFormData,
+  type StudentLoginFormData,
+} from './LoginForm.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { useLoginMutation } from '../../api/authApi';
 import { useStudentLoginMutation } from '../../../students/api/studentsApi';
@@ -23,13 +31,9 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
     roleParam === 'student' ||
     (!roleParam && !defaultRole && (redirectParam.startsWith('/join') || redirectParam.startsWith('/student')));
 
-  const [authRole, setAuthRole] = useState<AuthRole>(() => {
-    if (roleParam === 'teacher') return 'teacher';
-    if (shouldDefaultToStudent) return 'student';
-    return defaultRole || 'teacher';
-  });
-
+  const [authRole, setAuthRole] = useState<AuthRole>(shouldDefaultToStudent ? 'student' : 'teacher');
   const [serverError, setServerError] = useState<string | null>(null);
+  const [studentError, setStudentError] = useState<string | null>(null);
 
   useEffect(() => {
     if (roleParam === 'student' || roleParam === 'teacher') {
@@ -41,16 +45,28 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
   const [loginStudent, { isLoading: isStudentLoading }] = useStudentLoginMutation();
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<{ email: string; password: string }>();
+    register: registerTeacher,
+    handleSubmit: handleTeacherSubmit,
+    formState: { errors: teacherErrors },
+  } = useForm<TeacherLoginFormData>({
+    resolver: zodResolver(teacherLoginSchema),
+    defaultValues: { email: '', password: '' },
+  });
 
-  const [studentLoginValue, setStudentLoginValue] = useState('');
-  const [studentPasswordValue, setStudentPasswordValue] = useState('');
-  const [studentError, setStudentError] = useState<string | null>(null);
+  const {
+    register: registerStudent,
+    handleSubmit: handleStudentSubmit,
+    watch: watchStudent,
+    formState: { errors: studentErrors },
+  } = useForm<StudentLoginFormData>({
+    resolver: zodResolver(studentLoginSchema),
+    defaultValues: { login: '', password: '' },
+  });
 
-  const onSubmitTeacher = async (data: { email: string; password: string }) => {
+  const studentLoginValue = watchStudent('login');
+  const studentPasswordValue = watchStudent('password');
+
+  const onSubmitTeacher = async (data: TeacherLoginFormData) => {
     try {
       setServerError(null);
       const response = await loginTeacher(data).unwrap();
@@ -86,18 +102,12 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
     }
   };
 
-  const onSubmitStudent = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!studentLoginValue.trim() || !studentPasswordValue.trim()) {
-      setStudentError('Введіть логін та пароль');
-      return;
-    }
-
+  const onSubmitStudent = async (data: StudentLoginFormData) => {
     try {
       setStudentError(null);
       const response = await loginStudent({
-        login: studentLoginValue.trim(),
-        password: studentPasswordValue.trim(),
+        login: data.login.trim(),
+        password: data.password.trim(),
       }).unwrap();
 
       setAuthContext(response.token, {
@@ -199,7 +209,7 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
         <>
           {serverError && <div className={styles['auth-error']}>{serverError}</div>}
 
-          <form className={styles['auth-form']} onSubmit={handleSubmit(onSubmitTeacher)}>
+          <form className={styles['auth-form']} onSubmit={handleTeacherSubmit(onSubmitTeacher)}>
             <div className="input-group">
               <label className="input-label" htmlFor="email">
                 {t('login.email_label')}
@@ -207,18 +217,12 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
               <input
                 id="email"
                 type="text"
-                className={`input-field ${errors.email ? 'input--error' : ''}`}
+                className={`input-field ${teacherErrors.email ? 'input--error' : ''}`}
                 placeholder={t('login.email_placeholder')}
-                {...register('email', {
-                  required: t('login.error_email_required'),
-                  pattern: {
-                    value: /^\S+@\S+\.\S+$/,
-                    message: t('login.error_email_invalid'),
-                  },
-                })}
+                {...registerTeacher('email')}
               />
-              {errors.email && (
-                <span className="input-error">{errors.email.message}</span>
+              {teacherErrors.email && (
+                <span className="input-error">{teacherErrors.email.message}</span>
               )}
             </div>
 
@@ -229,15 +233,13 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
               <PasswordInput
                 id="password"
                 placeholder={t('login.password_placeholder')}
-                registration={register('password', {
-                  required: t('login.error_password_required'),
-                })}
-                error={errors.password?.message}
+                registration={registerTeacher('password')}
+                error={teacherErrors.password?.message}
                 showPasswordLabel={t('login.show_password')}
                 hidePasswordLabel={t('login.hide_password')}
               />
-              {errors.password && (
-                <span className="input-error">{errors.password.message}</span>
+              {teacherErrors.password && (
+                <span className="input-error">{teacherErrors.password.message}</span>
               )}
             </div>
 
@@ -258,7 +260,7 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
         <>
           {studentError && <div className={styles['auth-error']}>{studentError}</div>}
 
-          <form className={styles['auth-form']} onSubmit={onSubmitStudent}>
+          <form className={styles['auth-form']} onSubmit={handleStudentSubmit(onSubmitStudent)}>
             <div className="input-group">
               <label className="input-label" htmlFor="student-login-input">
                 Логін учня
@@ -266,27 +268,30 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
               <input
                 id="student-login-input"
                 type="text"
-                required
-                className="input-field"
+                className={`input-field ${studentErrors.login ? 'input--error' : ''}`}
                 placeholder="Введіть логін учня"
-                value={studentLoginValue}
-                onChange={(e) => setStudentLoginValue(e.target.value)}
+                {...registerStudent('login')}
               />
+              {studentErrors.login && (
+                <span className="input-error">{studentErrors.login.message}</span>
+              )}
             </div>
 
             <div className="input-group">
               <label className="input-label" htmlFor="student-password-input">
                 Пароль
               </label>
-              <input
+              <PasswordInput
                 id="student-password-input"
-                type="password"
-                required
-                className="input-field"
                 placeholder="Пароль, наданий вчителем"
-                value={studentPasswordValue}
-                onChange={(e) => setStudentPasswordValue(e.target.value)}
+                registration={registerStudent('password')}
+                error={studentErrors.password?.message}
+                showPasswordLabel={t('login.show_password')}
+                hidePasswordLabel={t('login.hide_password')}
               />
+              {studentErrors.password && (
+                <span className="input-error">{studentErrors.password.message}</span>
+              )}
             </div>
 
             <span style={{ fontSize: '0.8rem', color: '#9090a8', marginTop: '-6px' }}>
@@ -296,7 +301,7 @@ export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
             <button
               type="submit"
               className={styles['auth-submit-btn']}
-              disabled={isStudentLoading || !studentLoginValue.trim() || !studentPasswordValue.trim()}
+              disabled={isStudentLoading || !studentLoginValue?.trim() || !studentPasswordValue?.trim()}
             >
               {isStudentLoading ? 'Вхід...' : 'Увійти як учень'}
             </button>

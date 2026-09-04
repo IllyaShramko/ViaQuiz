@@ -1,4 +1,4 @@
-import { useState, useMemo, type FormEvent } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useGetStudentAnalyticsQuery,
@@ -46,8 +46,7 @@ export function StudentDetailsPage() {
     { skip: !classUuid || !studentUuid },
   );
 
-  const handleApplyFilter = (e?: FormEvent) => {
-    e?.preventDefault();
+  const handleApplyFilter = () => {
     setAppliedFilter({
       from: fromDate || undefined,
       to: toDate || undefined,
@@ -96,7 +95,6 @@ export function StudentDetailsPage() {
 
   return (
     <div className={styles['classes-container']}>
-      {/* Header matching Screenshot 1 */}
       <div className={styles['student-detail-header']}>
         <h1 className={styles['student-detail-title']}>
           Учень: {student.lastName} {student.firstName}
@@ -120,7 +118,6 @@ export function StudentDetailsPage() {
         </p>
       </div>
 
-      {/* Charts Block with ApexCharts matching Screenshot 1 */}
       <div className={styles['charts-grid']}>
         <StudentProgressChart
           categories={charts.progress.categories}
@@ -147,7 +144,6 @@ export function StudentDetailsPage() {
         className={styles['student-detail-filter-wrapper']}
       />
 
-      {/* Test History Section matching Screenshot 1 */}
       <div className={styles['history-section']}>
         <h3 className={styles['history-title']}>Історія проходжень тестувань:</h3>
 

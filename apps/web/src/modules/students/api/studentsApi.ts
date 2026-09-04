@@ -1,5 +1,9 @@
 import { baseApi } from '../../../shared/api/base-api';
-import type { StudentDashboardDto } from '@viaquiz/shared-types';
+import type {
+  StudentDashboardDto,
+  StudentClassroomDetailsDto,
+  ClassmateProfileDto,
+} from '@viaquiz/shared-types';
 
 export interface StudentLoginRequest {
   login: string;
@@ -87,6 +91,16 @@ export const studentsApi = baseApi.injectEndpoints({
       query: () => '/students/courses',
       providesTags: ['Student'],
     }),
+
+    getStudentClassroom: builder.query<StudentClassroomDetailsDto, void>({
+      query: () => '/students/classroom',
+      providesTags: ['Student'],
+    }),
+
+    getClassmateProfile: builder.query<ClassmateProfileDto, string>({
+      query: (uuid) => `/students/classmates/${uuid}`,
+      providesTags: ['Student'],
+    }),
   }),
 });
 
@@ -96,4 +110,7 @@ export const {
   useGetStudentMeQuery,
   useGetStudentResultsQuery,
   useGetStudentCoursesQuery,
+  useGetStudentClassroomQuery,
+  useGetClassmateProfileQuery,
 } = studentsApi;
+

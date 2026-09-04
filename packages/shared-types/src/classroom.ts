@@ -226,3 +226,42 @@ export interface VerifyInvitationResponseDto {
 	invitedEmail: string | null;
 	invitedLogin: string | null;
 }
+
+export interface ClassmateSummaryDto {
+	uuid: string;
+	firstName: string;
+	lastName: string;
+	createdAt: string;
+	isMe: boolean;
+	totalQuizzesPassed: number;
+}
+
+export interface StudentClassroomDetailsDto {
+	id: number;
+	uuid: string;
+	name: string;
+	code: string | null;
+	teacher: {
+		id: number;
+		firstName: string | null;
+		lastName: string | null;
+	};
+	courses: Array<{
+		id: number;
+		uuid: string;
+		name: string;
+	}>;
+	classmates: ClassmateSummaryDto[];
+}
+
+export interface ClassmateProfileDto {
+	uuid: string;
+	firstName: string;
+	lastName: string;
+	createdAt: string;
+	classroomName: string;
+	stats: {
+		totalQuizzesPassed: number;
+	};
+}
+
