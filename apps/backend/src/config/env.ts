@@ -19,6 +19,7 @@ export const env = cleanEnv(process.env, {
 	BREVO_SMTP_SENDER: str(),
 	BREVO_SMTP_KEY: str(),
 	BREVO_SMTP_LOGIN: str(),
+	BREVO_SMTP_PORT: port({ default: 2525 }),
 	CLOUDINARY_CLOUD_NAME: str(),
 	CLOUDINARY_API_KEY: str(),
 	CLOUDINARY_API_SECRET: str(),
