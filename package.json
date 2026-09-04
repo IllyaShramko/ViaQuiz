@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
+	"packageManager": "pnpm@11.21.0",
 	"scripts": {
 		"dev": "pnpm --parallel --recursive run dev",
 		"dev:backend": "pnpm --filter backend dev",

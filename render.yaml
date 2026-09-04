@@ -5,7 +5,7 @@ services:
     region: frankfurt
     plan: free
     branch: master
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter backend run db:generate && pnpm --filter backend run build
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter backend run db:generate && pnpm --filter backend run build
     startCommand: pnpm --filter backend start
     buildFilter:
       paths:
@@ -17,6 +17,8 @@ services:
       ignoredPaths:
         - apps/web/**
     envVars:
+      - key: NODE_VERSION
+        value: 22
       - key: NODE_ENV
         value: production
       - key: HOST
@@ -49,7 +51,7 @@ services:
     name: viaquiz-frontend
     runtime: static
     branch: master
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter web run build
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter web run build
     staticPublishPath: apps/web/dist
     buildFilter:
       paths:
@@ -61,6 +63,8 @@ services:
       ignoredPaths:
         - apps/backend/**
     envVars:
+      - key: NODE_VERSION
+        value: 22
       - key: VITE_API_URL
         value: https://viaquiz-backend.onrender.com
     routes:
