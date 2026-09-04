@@ -42,14 +42,12 @@ services:
       - key: CLOUDINARY_API_SECRET
         sync: false
       - key: CLIENT_URL
-        value: https://viaquiz.onrender.com
+        value: https://viaquiz-frontend.onrender.com
       - key: CORS_ORIGIN
-        value: https://viaquiz.onrender.com
+        value: https://viaquiz-frontend.onrender.com,https://viaquiz.onrender.com
   - type: web
     name: viaquiz-frontend
     runtime: static
-    region: frankfurt
-    plan: free
     branch: master
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter web run build
     staticPublishPath: apps/web/dist
