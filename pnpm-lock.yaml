@@ -240,6 +240,9 @@ importers:
       cloudinary:
         specifier: ^2.10.0
         version: 2.10.0
+      cors:
+        specifier: ^2.8.6
+        version: 2.8.6
       envalid:
         specifier: ^8.2.0
         version: 8.2.0
@@ -274,6 +277,9 @@ importers:
       '@repo/ts-config':
         specifier: workspace:*
         version: link:../../packages/ts-config
+      '@types/cors':
+        specifier: ^2.8.19
+        version: 2.8.19
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.25

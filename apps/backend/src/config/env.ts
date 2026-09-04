@@ -28,4 +28,7 @@ export const env = cleanEnv(process.env, {
 	CLIENT_URL: str({
 		default: "http://localhost:5173",
 	}),
+	CORS_ORIGIN: str({
+		default: "*",
+	}),
 });

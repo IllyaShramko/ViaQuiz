@@ -1,0 +1,71 @@
+services:
+  - type: web
+    name: viaquiz-backend
+    runtime: node
+    region: frankfurt
+    plan: free
+    branch: master
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter backend run db:generate && pnpm --filter backend run build
+    startCommand: pnpm --filter backend start
+    buildFilter:
+      paths:
+        - apps/backend/**
+        - packages/**
+        - pnpm-lock.yaml
+        - package.json
+        - pnpm-workspace.yaml
+      ignoredPaths:
+        - apps/web/**
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: BREVO_SMTP_SENDER
+        sync: false
+      - key: BREVO_SMTP_LOGIN
+        sync: false
+      - key: BREVO_SMTP_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLIENT_URL
+        value: https://viaquiz.onrender.com
+      - key: CORS_ORIGIN
+        value: https://viaquiz.onrender.com
+  - type: web
+    name: viaquiz-frontend
+    runtime: static
+    region: frankfurt
+    plan: free
+    branch: master
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter web run build
+    staticPublishPath: apps/web/dist
+    buildFilter:
+      paths:
+        - apps/web/**
+        - packages/**
+        - pnpm-lock.yaml
+        - package.json
+        - pnpm-workspace.yaml
+      ignoredPaths:
+        - apps/backend/**
+    envVars:
+      - key: VITE_API_URL
+        value: https://viaquiz-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

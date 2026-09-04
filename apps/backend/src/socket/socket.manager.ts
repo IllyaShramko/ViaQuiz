@@ -4,6 +4,7 @@ import { Server, type BroadcastOperator } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
 import { redis, createRedisClient } from "../config/redis";
 import { env } from "../config/env";
+import { corsOptions } from "../middlewares/corsMiddleware";
 import { logger } from "../tools/logger";
 import type {
 	ServerSocket,
@@ -27,11 +28,7 @@ export class SocketManager {
 		const subClient = createRedisClient();
 
 		this.ioServer = new Server(httpServer, {
-			cors: {
-				origin: "*",
-				methods: ["GET", "POST"],
-				credentials: true,
-			},
+			cors: corsOptions,
 			adapter: createAdapter(pubClient, subClient),
 		}) as ServerSocket;
 
