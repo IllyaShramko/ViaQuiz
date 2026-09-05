@@ -31,7 +31,14 @@ export {
 } from './constants';
 export { useLocale } from './hooks';
 export { FONTS } from './theme';
-export { pickImage, type PickImageOptions } from './tools';
+export {
+  copyToClipboard,
+  pickImage,
+  transliterate,
+  generateStudentLogin,
+  generateSimplePassword,
+  type PickImageOptions,
+} from './tools';
 export {
   Layout,
   TeacherLayout,
@@ -81,4 +88,3 @@ export {
   LocaleContext,
   LocaleProvider,
 } from './i18n';
-

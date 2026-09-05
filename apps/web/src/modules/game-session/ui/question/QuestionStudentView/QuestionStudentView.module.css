@@ -1,0 +1,529 @@
+/* ==========================================================================
+   QuestionStudentView Scoped Styles
+   ========================================================================== */
+
+.gameMainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.questionContainer {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  position: relative;
+  transition: filter 0.4s ease, -webkit-filter 0.4s ease;
+}
+
+/* Bulletproof blur effect for Android & iOS */
+.isBlurred {
+  filter: blur(10px);
+  -webkit-filter: blur(10px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Top Section: Question Header Card */
+.questionHeaderCard {
+  width: 100%;
+  min-height: 180px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-2xl, 1.25rem);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.questionText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #fff;
+  word-break: break-word;
+}
+
+.questionMediaImg {
+  max-height: 240px;
+  border-radius: var(--radius-lg);
+  margin: 1rem auto 0;
+  cursor: pointer;
+  transition: transform var(--transition-fast, 150ms ease);
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border, #2a2a3a);
+}
+
+.questionMediaImg:hover {
+  transform: scale(1.02);
+}
+
+.questionMultiHint {
+  color: var(--color-accent, #863bff);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+/* Bottom Section: Variants & Actions */
+.variantsSectionBottom {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Multi-Choice Submit Button */
+.multiSubmitBtn {
+  order: 2; /* On desktop, below variants */
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-success, #22c55e);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.125rem;
+  padding: 1rem;
+  border-radius: var(--radius-xl, 0.875rem);
+  letter-spacing: 0.05em;
+  transition: all var(--transition-fast, 150ms ease);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+  border: none;
+  cursor: pointer;
+}
+
+.multiSubmitBtn:hover:not(:disabled) {
+  background: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.5);
+}
+
+.multiSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-muted, #606078);
+}
+
+/* Horizontal Squares Variants Grid (Desktop) */
+.variantsGrid {
+  order: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+/* Student Big Colored Option Button */
+.studentVariantBtn {
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  max-width: 260px;
+  border-radius: var(--radius-xl, 1rem);
+  border: 3px solid transparent;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease), filter var(--transition-fast, 150ms ease);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.studentVariantBtn:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.1);
+}
+
+.studentVariantBtn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+
+.studentVariantBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.studentVariantBtn.isSelected {
+  box-shadow: 0 0 0 3px #fff, 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+  transform: scale(0.98);
+  border-color: #fff;
+}
+
+.studentVariantBtn span {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.variantBadgeCorner {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: var(--radius-md, 0.375rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Variant 8-color palette */
+.variantColor0 { background: #2563eb; }
+.variantColor0:hover { background: #3b82f6; }
+.variantColor1 { background: #d97706; }
+.variantColor1:hover { background: #f59e0b; }
+.variantColor2 { background: #16a34a; }
+.variantColor2:hover { background: #22c55e; }
+.variantColor3 { background: #db2777; }
+.variantColor3:hover { background: #ec4899; }
+.variantColor4 { background: #7c3aed; }
+.variantColor4:hover { background: #8b5cf6; }
+.variantColor5 { background: #0891b2; }
+.variantColor5:hover { background: #06b6d4; }
+.variantColor6 { background: #ca8a04; }
+.variantColor6:hover { background: #eab308; }
+.variantColor7 { background: #dc2626; }
+.variantColor7:hover { background: #ef4444; }
+
+/* Typed Answer Form (V1/V2) */
+.typedAnswerWrapper {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.typedAnswerInputBox {
+  display: flex;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.typedAnswerTextInput {
+  flex: 1;
+  background: var(--color-bg-elevated, #12121a);
+  border: 2px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-xl, 0.875rem);
+  padding: 1rem 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  outline: none;
+  transition: border-color var(--transition-fast, 150ms ease);
+}
+
+.typedAnswerTextInput:focus {
+  border-color: var(--color-accent, #863bff);
+}
+
+.typedAnswerSubmitBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-accent, #863bff);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 0 1.5rem;
+  border-radius: var(--radius-xl, 0.875rem);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+}
+
+.typedAnswerSubmitBtn:hover:not(:disabled) {
+  background: var(--color-accent-hover, #9b5cff);
+}
+
+.typedAnswerSubmitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.typedV2Boxes {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.typedV2LetterBox {
+  width: 44px;
+  height: 48px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 2px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-md, 0.375rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.typedV2LetterBox.isFilled {
+  border-color: var(--color-accent, #863bff);
+  background: rgba(134, 59, 255, 0.15);
+}
+
+/* ==========================================================================
+   MOBILE LAYOUT: Question Near Top, Variants Towards Bottom
+   ========================================================================== */
+@media (max-width: 768px) {
+  .gameMainContent {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(0.5rem, 1.5vh, 0.75rem) 0.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .questionContainer {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  /* Question Header Card: positioned near top with proper padding and readable size */
+  .questionHeaderCard {
+    margin-top: 0;
+    width: 100%;
+    min-height: clamp(95px, 14vh, 150px);
+    padding: clamp(1rem, 2.2vh, 1.5rem) 1.25rem;
+    border-radius: var(--radius-2xl, 1.25rem);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    gap: 0.35rem;
+  }
+
+  .questionText {
+    font-size: clamp(1.1rem, 3.8vw, 1.35rem);
+    font-weight: 700;
+    line-height: 1.35;
+    color: #fff;
+    text-align: center;
+  }
+
+  .questionMediaImg {
+    max-height: clamp(100px, 18vh, 160px);
+    margin: 0.5rem auto 0;
+    border-radius: var(--radius-lg);
+  }
+
+  .questionMultiHint {
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+  }
+
+  /* Variants container takes full width */
+  .variantsSectionBottom {
+    margin-top: auto;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    max-height: 65vh;
+  }
+
+  /* On mobile: Submit button docked above variants */
+  .multiSubmitBtn {
+    order: 0;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0;
+    margin-bottom: 0.35rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border-radius: var(--radius-lg, 0.625rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+  }
+
+  /* Standard variants grid: 2 columns taking full width */
+  .variantsGrid {
+    order: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* 2-4 variants: large square-like cards */
+  .studentVariantBtn {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    min-height: clamp(100px, 15vh, 145px);
+    max-height: clamp(135px, 22vh, 190px);
+    padding: 1.5rem 0.75rem 0.75rem;
+    border-radius: var(--radius-xl, 1rem);
+    font-size: clamp(0.95rem, 3.6vw, 1.25rem);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .studentVariantBtn .variantBadgeCorner {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-md, 0.375rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .studentVariantBtn span {
+    text-align: center;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+
+  /* If 3 variants: make the 3rd variant span both columns */
+  .variantsGrid:not(.variantsGridColumnMobile) > .studentVariantBtn:last-child:nth-child(odd) {
+    grid-column: span 2;
+    aspect-ratio: auto;
+    min-height: clamp(65px, 9vh, 85px);
+  }
+
+  /* When > 4 variants: 1-column full-width vertical list (like photo_4 and photo_5) */
+  .variantsGrid.variantsGridColumnMobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    box-sizing: border-box;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    min-height: clamp(52px, 7.5vh, 64px);
+    max-height: none;
+    padding: 0.65rem 1.15rem 0.65rem 3.5rem;
+    border-radius: var(--radius-xl, 0.875rem);
+    font-size: clamp(0.95rem, 3.6vw, 1.125rem);
+    font-weight: 700;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn .variantBadgeCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+    width: 26px;
+    height: 26px;
+    font-size: 0.875rem;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn span {
+    text-align: left;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Typed answers on mobile pinned to bottom */
+  .typedAnswerWrapper {
+    margin-top: auto;
+    width: 100%;
+    max-width: 100%;
+    flex-shrink: 0;
+  }
+
+  .typedAnswerTextInput {
+    font-size: 1.05rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .typedAnswerSubmitBtn {
+    font-size: 0.95rem;
+    padding: 0 1rem;
+  }
+}

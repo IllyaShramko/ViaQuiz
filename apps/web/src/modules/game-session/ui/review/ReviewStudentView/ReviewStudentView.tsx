@@ -3,7 +3,7 @@ import { ImageLightboxModal } from '../../modals';
 import { getRandomCaption } from '../../../utils/captions';
 import { pluralizePoints } from '../../../../../shared';
 import type { ReviewStudentViewProps } from './ReviewStudentView.types';
-import styles from '../../GameSession.module.css';
+import styles from './ReviewStudentView.module.css';
 
 export function ReviewStudentView({
 	question,
@@ -43,30 +43,30 @@ export function ReviewStudentView({
 		'—';
 
 	return (
-		<div className={styles['game-main-content']}>
+		<div className={styles.gameMainContent}>
 			{/* Overlay to add blur and backdrop */}
 			<div
-				className={`${styles['review-student-overlay']} ${styles['is-active']}`}
+				className={`${styles.reviewStudentOverlay} ${styles.isActive}`}
 			/>
 
 			{/* Status Banner Container */}
 			<div
-				className={`${styles['review-student-banner-container']} ${
-					isMinimized ? styles['is-minimized'] : ''
+				className={`${styles.reviewStudentBannerContainer} ${
+					isMinimized ? styles.isMinimized : ''
 				}`}
 			>
 				{!isAnswered ? (
 					<>
 						<div
-							className={`${styles['review-student-banner']} ${
-								styles['review-banner-skipped']
-							} ${isMinimized ? styles['is-minimized'] : ''}`}
+							className={`${styles.reviewStudentBanner} ${
+								styles.reviewBannerSkipped
+							} ${isMinimized ? styles.isMinimized : ''}`}
 						>
 							<span>Пропущено</span>
 						</div>
 						<span
-							className={`${styles['review-banner-quote']} ${
-								isMinimized ? styles['is-hidden'] : ''
+							className={`${styles.reviewBannerQuote} ${
+								isMinimized ? styles.isHidden : ''
 							}`}
 						>
 							{quote}
@@ -75,15 +75,15 @@ export function ReviewStudentView({
 				) : isCorrect ? (
 					<>
 						<div
-							className={`${styles['review-student-banner']} ${
-								styles['review-banner-correct']
-							} ${isMinimized ? styles['is-minimized'] : ''}`}
+							className={`${styles.reviewStudentBanner} ${
+								styles.reviewBannerCorrect
+							} ${isMinimized ? styles.isMinimized : ''}`}
 						>
 							<span>Правильно! +{pluralizePoints(res?.pointsEarned ?? 1000, true)}</span>
 						</div>
 						<span
-							className={`${styles['review-banner-quote']} ${
-								isMinimized ? styles['is-hidden'] : ''
+							className={`${styles.reviewBannerQuote} ${
+								isMinimized ? styles.isHidden : ''
 							}`}
 						>
 							{quote}
@@ -92,15 +92,15 @@ export function ReviewStudentView({
 				) : (
 					<>
 						<div
-							className={`${styles['review-student-banner']} ${
-								styles['review-banner-wrong']
-							} ${isMinimized ? styles['is-minimized'] : ''}`}
+							className={`${styles.reviewStudentBanner} ${
+								styles.reviewBannerWrong
+							} ${isMinimized ? styles.isMinimized : ''}`}
 						>
 							<span>Не правильно</span>
 						</div>
 						<span
-							className={`${styles['review-banner-quote']} ${
-								isMinimized ? styles['is-hidden'] : ''
+							className={`${styles.reviewBannerQuote} ${
+								isMinimized ? styles.isHidden : ''
 							}`}
 						>
 							{quote}
@@ -109,82 +109,92 @@ export function ReviewStudentView({
 				)}
 			</div>
 
-			<div className={styles['question-container']}>
-				{/* Question Card */}
-				<div className={styles['question-header-card']}>
-					<h2 className={styles['question-text']}>{question.text}</h2>
+			{/* Question and variants remain blurred in review screen */}
+			<div
+				className={`${styles.questionContainer} ${styles.isBlurred}`}
+			>
+				{/* Top Section: Question Card (pinned to top on mobile) */}
+				<div className={styles.questionHeaderCard}>
+					<h2 className={styles.questionText}>{question.text}</h2>
 
 					{question.media && (
 						<img
 							src={question.media}
 							alt="Question media"
-							className={styles['question-media-img']}
+							className={styles.questionMediaImg}
 							onClick={() => setLightboxImage(question.media || null)}
 						/>
 					)}
 				</div>
 
-				{/* Highlighted Variants Grid OR Typed Review Card */}
+				{/* Bottom Section: Highlighted Variants Grid OR Typed Review Card (pinned to bottom on mobile) */}
 				{isTyped ? (
-					<div className={styles['typed-review-card']}>
-						<div className={styles['typed-review-row']}>
-							<span className={styles['typed-review-label']}>Ваша відповідь</span>
+					<div className={styles.typedReviewCard}>
+						<div className={styles.typedReviewRow}>
+							<span className={styles.typedReviewLabel}>Ваша відповідь</span>
 							<div
-								className={`${styles['typed-review-value']} ${
+								className={`${styles.typedReviewValue} ${
 									!isAnswered
-										? styles['is-skipped']
+										? styles.isSkipped
 										: isCorrect
-											? styles['is-correct']
-											: styles['is-wrong']
+											? styles.isCorrect
+											: styles.isWrong
 								}`}
 							>
 								{isAnswered ? studentTypedAnswer || '—' : 'Пропущено (без відповіді)'}
 							</div>
 						</div>
 
-						<div className={styles['typed-review-row']}>
-							<span className={styles['typed-review-label']}>
+						<div className={styles.typedReviewRow}>
+							<span className={styles.typedReviewLabel}>
 								Правильна відповідь
 							</span>
 							<div
-								className={`${styles['typed-review-value']} ${styles['is-correct']}`}
+								className={`${styles.typedReviewValue} ${styles.isCorrect}`}
 							>
 								{correctAnswersText}
 							</div>
 						</div>
 					</div>
 				) : (
-					<div
-						className={`${styles['variants-grid']} ${
-							(question.variants?.length || 0) > 4
-								? styles['variants-grid--column-mobile']
-								: ''
-						}`}
-					>
-						{question.variants.map((v, idx) => {
-							const colorIndex = idx % 8;
-							const isThisCorrect = correctIds.includes(v.id);
-							const isThisSelected = selectedIds.includes(v.id);
+					<div className={styles.variantsSectionBottom}>
+						<div
+							className={`${styles.variantsGrid} ${
+								(question.variants?.length || 0) > 4
+									? styles.variantsGridColumnMobile
+									: ''
+							}`}
+						>
+							{question.variants.map((v, idx) => {
+								const colorIndex = idx % 8;
+								const isThisCorrect = correctIds.includes(v.id);
+								const isThisSelected = selectedIds.includes(v.id);
 
-							let reviewClass = '';
-							if (isThisCorrect) {
-								reviewClass = styles['review-variant-correct'];
-							} else if (isThisSelected && !isThisCorrect) {
-								reviewClass = styles['review-variant-wrong'];
-							} else {
-								reviewClass = styles['review-variant-dimmed'];
-							}
+								let reviewClass = '';
+								if (isThisCorrect) {
+									reviewClass = styles.reviewVariantCorrect;
+								} else if (isThisSelected && !isThisCorrect) {
+									reviewClass = styles.reviewVariantWrong;
+								} else {
+									reviewClass = styles.reviewVariantDimmed;
+								}
 
-							return (
-								<div
-									key={v.id}
-									className={`${styles['student-variant-btn']} ${styles[`variant-color-${colorIndex}`]} ${reviewClass}`}
-								>
-									<div className={styles['variant-badge-corner']}>{idx + 1}</div>
-									<span>{v.text || 'Варіант без тексту'}</span>
-								</div>
-							);
-						})}
+								const colorClass =
+									styles[
+										`variantColor${colorIndex}` as keyof typeof styles
+									] || '';
+
+								return (
+									<div
+										key={v.id}
+										className={`${styles.studentVariantBtn} ${colorClass} ${reviewClass}`}
+									>
+										<div className={styles.variantBadgeCorner}>{idx + 1}</div>
+										<span>{v.text || 'Варіант без тексту'}</span>
+									</div>
+								);
+							})}
+						</div>
 					</div>
 				)}
 			</div>

@@ -4,6 +4,7 @@
 
 .game-root {
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   background: var(--color-bg, #0a0a0f);
   color: var(--color-text-primary, #f0f0f5);
@@ -56,9 +57,26 @@
 }
 
 @media (max-width: 768px) {
+  .game-root {
+    height: 100dvh;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
   .game-topbar {
-    padding: 0.75rem 1rem;
-    min-height: 54px;
+    padding: 0.5rem 0.75rem;
+    min-height: 48px;
+    flex-shrink: 0;
+  }
+
+  .game-topbar-center {
+    font-size: 0.95rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .game-topbar-right {
+    font-size: 0.95rem;
   }
 
   .game-logo span,
@@ -67,7 +85,10 @@
   }
 
   .game-main-content {
-    padding: 1rem 0.75rem;
+    padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
   }
 }
 
@@ -1204,24 +1225,35 @@
 .review-student-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(10, 10, 15, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: backdrop-filter;
   z-index: 90; /* below banner (100) but above everything else */
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 0.8s ease, -webkit-backdrop-filter 0.8s ease;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .review-student-overlay.is-active {
   pointer-events: all;
   opacity: 1;
-  animation: overlayFadeIn 0.6s ease-out;
+  animation: overlayFadeIn 0.4s ease-out;
 }
 
 .review-student-overlay.is-hidden {
   opacity: 0;
   pointer-events: none;
+}
+
+.question-container.is-blurred {
+  filter: blur(10px);
+  -webkit-filter: blur(10px);
+  pointer-events: none;
+  user-select: none;
+  transition: filter 0.5s ease, -webkit-filter 0.5s ease;
 }
 
 @keyframes overlayFadeIn {

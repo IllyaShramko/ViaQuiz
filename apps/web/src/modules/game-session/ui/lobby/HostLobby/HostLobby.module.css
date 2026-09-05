@@ -1,0 +1,222 @@
+/* ==========================================================================
+   HostLobby Scoped Styles
+   ========================================================================== */
+
+.game-layout-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+}
+
+.game-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
+.lobby-host-card {
+  background: var(--color-bg-elevated, #16161e);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.5rem 1.75rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lobby-step-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lobby-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lobby-step-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.lobby-step-badge {
+  background: var(--color-accent, #863bff);
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full, 9999px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.lobby-step-title {
+  color: var(--color-text-secondary, #b0b0c4);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.lobby-copy-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted, #707088);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm, 0.25rem);
+  transition: all var(--transition-fast, 0.2s ease);
+}
+
+.lobby-copy-icon-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.lobby-copy-icon-btn:focus-visible {
+  outline: 2px solid var(--color-accent, #863bff);
+  outline-offset: 2px;
+}
+
+.lobby-copy-icon-btn.is-copied {
+  color: var(--color-success, #22c55e);
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.lobby-url-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.15rem 0;
+}
+
+.lobby-url-text {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  word-break: break-all;
+  letter-spacing: -0.02em;
+  user-select: all;
+  transition: color var(--transition-fast, 0.2s ease);
+}
+
+.lobby-url-text:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.lobby-qr-preview-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lobby-qr-preview-thumb {
+  background: #ffffff;
+  padding: 3px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast, 0.2s ease), box-shadow var(--transition-fast, 0.2s ease);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.lobby-qr-preview-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 14px rgba(134, 59, 255, 0.5);
+}
+
+.lobby-pin-display {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.28em;
+  text-align: center;
+  margin: 0.25rem 0;
+  user-select: all;
+  cursor: pointer;
+  transition: transform var(--transition-fast, 0.2s ease), color var(--transition-fast, 0.2s ease);
+  padding-left: 0.28em;
+}
+
+.lobby-pin-display:hover {
+  color: #ffffff;
+  transform: scale(1.03);
+}
+
+.lobby-start-btn {
+  width: 100%;
+  padding: 0.95rem 1.5rem;
+  background: var(--color-accent, #863bff);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1)), 0 0 20px rgba(134, 59, 255, 0.35);
+  transition: all var(--transition-fast, 0.2s ease);
+  margin-top: 0.25rem;
+}
+
+.lobby-start-btn:hover {
+  background: var(--color-accent-hover, #7328ee);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1)), 0 0 28px rgba(134, 59, 255, 0.5);
+}
+
+.lobby-start-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .game-main-content {
+    padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .lobby-host-card {
+    padding: 1.25rem 1rem;
+    gap: 1rem;
+  }
+
+  .lobby-url-text {
+    font-size: 1.5rem;
+  }
+
+  .lobby-pin-display {
+    font-size: 1.75rem;
+  }
+}

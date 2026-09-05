@@ -93,12 +93,14 @@ export const GameSessionsService: GameSessionsServiceContract = {
 
 		let studentIdParam: number | undefined;
 		let userIdParam: number | undefined;
+		let participantIdParam: number | undefined;
 
 		if (typeof authContext === "number") {
 			studentIdParam = authContext;
 		} else if (authContext && typeof authContext === "object") {
 			studentIdParam = authContext.studentId ?? undefined;
 			userIdParam = authContext.userId ?? undefined;
+			participantIdParam = authContext.participantId ?? undefined;
 		}
 
 		let nickname = data.nickname?.trim() || "Participant";
@@ -116,7 +118,7 @@ export const GameSessionsService: GameSessionsServiceContract = {
 			? await GameSessionsRepository.findUserById(resolvedUserId)
 			: null;
 
-		// Якщо кімната закріплена за курсом/класом
+		// If room is assigned to a course/classroom
 		if (room.courseId) {
 			if (!student) {
 				throw new ForbiddenError(
@@ -141,7 +143,7 @@ export const GameSessionsService: GameSessionsServiceContract = {
 			studentId = student.id;
 			role = "STUDENT";
 
-			// Перевіряємо, чи студент уже приєднувався до цієї кімнати раніше
+			// Check if student has already joined this room previously
 			const existingParticipant =
 				await GameSessionsRepository.findParticipantByRoomAndStudent(
 					room.id,
@@ -158,12 +160,57 @@ export const GameSessionsService: GameSessionsServiceContract = {
 					true,
 				);
 
+				await gameRedisService.addParticipant(room.id, {
+					participantId: existingParticipant.id,
+					participantUuid: existingParticipant.uuid,
+					nickname: existingParticipant.nickname,
+					studentId: existingParticipant.studentId,
+					isConnected: true,
+					score: existingParticipant.score,
+				});
+
 				const token = this.generateGameToken({
 					participantId: existingParticipant.id,
 					participantUuid: existingParticipant.uuid,
 					roomId: room.id,
 					roomUuid: room.uuid,
 					role,
+					studentId: existingParticipant.studentId,
+					nickname: existingParticipant.nickname,
+				});
+
+				return { participant: existingParticipant, token, room };
+			}
+		} else if (participantIdParam) {
+			// Check if anonymous participant has already joined (session reconnect)
+			const existingParticipant =
+				await GameSessionsRepository.findParticipantById(participantIdParam);
+
+			if (existingParticipant && existingParticipant.roomId === room.id) {
+				if (existingParticipant.isBanned) {
+					throw new ForbiddenError("Вас було вилучено з цієї вікторини.");
+				}
+
+				await GameSessionsRepository.updateParticipantConnection(
+					existingParticipant.id,
+					true,
+				);
+
+				await gameRedisService.addParticipant(room.id, {
+					participantId: existingParticipant.id,
+					participantUuid: existingParticipant.uuid,
+					nickname: existingParticipant.nickname,
+					studentId: existingParticipant.studentId,
+					isConnected: true,
+					score: existingParticipant.score,
+				});
+
+				const token = this.generateGameToken({
+					participantId: existingParticipant.id,
+					participantUuid: existingParticipant.uuid,
+					roomId: room.id,
+					roomUuid: room.uuid,
+					role: existingParticipant.studentId ? "STUDENT" : "ANONYMOUS",
 					studentId: existingParticipant.studentId,
 					nickname: existingParticipant.nickname,
 				});

@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Link } from 'react-router-dom';
 import { QrCodeModal } from '../../modals';
 import { ParticipantsSidebar } from '../../sidebar';
 import { CopyIcon, CheckIcon, PlayIcon } from '../../../../../shared/ui/icons';
+import { copyToClipboard } from '../../../../../shared/tools';
 import type { HostLobbyProps } from './HostLobby.types';
-import styles from '../../GameSession.module.css';
+import styles from './HostLobby.module.css';
 
 export function HostLobby({
 	joinCode,
@@ -15,14 +16,48 @@ export function HostLobby({
 	onKickParticipant,
 }: HostLobbyProps) {
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-	const [copiedField, setCopiedField] = useState<'url' | 'code' | null>(null);
+	const [isUrlCopied, setIsUrlCopied] = useState(false);
+	const [isCodeCopied, setIsCodeCopied] = useState(false);
+	const urlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const codeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const joinUrl = `${window.location.origin}/join?code=${joinCode}`;
 
-	const handleCopy = (text: string, type: 'url' | 'code') => {
-		navigator.clipboard.writeText(text);
-		setCopiedField(type);
-		setTimeout(() => setCopiedField(null), 2000);
+	// Cleanup copy timeouts on unmount
+	useEffect(() => {
+		return () => {
+			if (urlTimeoutRef.current) {
+				clearTimeout(urlTimeoutRef.current);
+			}
+			if (codeTimeoutRef.current) {
+				clearTimeout(codeTimeoutRef.current);
+			}
+		};
+	}, []);
+
+	const handleCopy = async (text: string, type: 'url' | 'code') => {
+		const success = await copyToClipboard(text);
+		if (!success) return;
+
+		if (type === 'url') {
+			setIsUrlCopied(true);
+			if (urlTimeoutRef.current) {
+				clearTimeout(urlTimeoutRef.current);
+			}
+			urlTimeoutRef.current = setTimeout(() => {
+				setIsUrlCopied(false);
+				urlTimeoutRef.current = null;
+			}, 2000);
+		} else {
+			setIsCodeCopied(true);
+			if (codeTimeoutRef.current) {
+				clearTimeout(codeTimeoutRef.current);
+			}
+			codeTimeoutRef.current = setTimeout(() => {
+				setIsCodeCopied(false);
+				codeTimeoutRef.current = null;
+			}, 2000);
+		}
 	};
 
 	return (
@@ -38,11 +73,11 @@ export function HostLobby({
 							</div>
 							<button
 								type="button"
-								className={`${styles['lobby-copy-icon-btn']} ${copiedField === 'url' ? styles['is-copied'] : ''}`}
+								className={`${styles['lobby-copy-icon-btn']} ${isUrlCopied ? styles['is-copied'] : ''}`}
 								onClick={() => handleCopy(joinUrl, 'url')}
-								title={copiedField === 'url' ? 'Скопійовано!' : 'Скопіювати посилання'}
+								title={isUrlCopied ? 'Скопійовано!' : 'Скопіювати посилання'}
 							>
-								{copiedField === 'url' ? (
+								{isUrlCopied ? (
 									<CheckIcon size={16} />
 								) : (
 									<CopyIcon size={16} />
@@ -76,11 +111,11 @@ export function HostLobby({
 							</div>
 							<button
 								type="button"
-								className={`${styles['lobby-copy-icon-btn']} ${copiedField === 'code' ? styles['is-copied'] : ''}`}
+								className={`${styles['lobby-copy-icon-btn']} ${isCodeCopied ? styles['is-copied'] : ''}`}
 								onClick={() => handleCopy(joinCode, 'code')}
-								title={copiedField === 'code' ? 'Скопійовано!' : 'Скопіювати код'}
+								title={isCodeCopied ? 'Скопійовано!' : 'Скопіювати код'}
 							>
-								{copiedField === 'code' ? (
+								{isCodeCopied ? (
 									<CheckIcon size={16} />
 								) : (
 									<CopyIcon size={16} />
@@ -90,7 +125,7 @@ export function HostLobby({
 						<div
 							className={styles['lobby-pin-display']}
 							onClick={() => handleCopy(joinCode, 'code')}
-							title="Натисніть, щоб скопіювати код"
+							title={isCodeCopied ? 'Скопійовано!' : 'Натисніть, щоб скопіювати код'}
 							role="button"
 							tabIndex={0}
 							onKeyDown={(e) => {

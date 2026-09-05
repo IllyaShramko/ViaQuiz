@@ -9,6 +9,7 @@ export interface CreateRoomDto {
 export interface JoinByCodeDto {
 	joinCode: string;
 	nickname?: string | undefined;
+	gameToken?: string | undefined;
 }
 
 export interface GameJwtPayload {

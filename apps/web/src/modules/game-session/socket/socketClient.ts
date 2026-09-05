@@ -1,6 +1,7 @@
 import { io, type Socket } from 'socket.io-client';
 import { BASE_URL } from '../../../shared/constants/env';
 import { STORAGE_KEYS } from '../../../shared/constants/api';
+import { getGameSessionToken } from '../utils/gameStorage';
 
 export const GAME_TOKEN_STORAGE_KEY = 'viaquiz_game_jwt_token';
 
@@ -9,14 +10,14 @@ let currentSocketToken: string | null = null;
 
 export const getGameSocket = (explicitToken?: string, roomUuid?: string): Socket => {
 	const roomToken = roomUuid
-		? sessionStorage.getItem(`viaquiz_game_token_${roomUuid}`)
+		? (getGameSessionToken(roomUuid) || sessionStorage.getItem(`viaquiz_game_token_${roomUuid}`))
 		: null;
 	const userToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
 	const globalGameToken = sessionStorage.getItem(GAME_TOKEN_STORAGE_KEY);
 
 	// Priority:
 	// 1. Explicitly provided token
-	// 2. Room-specific token from sessionStorage
+	// 2. Room-specific token from gameStorage / sessionStorage
 	// 3. User login token (for Teacher hosting or logged-in student)
 	// 4. Global game token fallback
 	const token = explicitToken || roomToken || userToken || globalGameToken || '';

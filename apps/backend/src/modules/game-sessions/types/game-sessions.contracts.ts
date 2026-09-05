@@ -72,6 +72,7 @@ export interface GameSessionsRepositoryContract {
 export interface UserAuthContext {
 	studentId?: number | null | undefined;
 	userId?: number | null | undefined;
+	participantId?: number | null | undefined;
 }
 
 export interface GameSessionsServiceContract {

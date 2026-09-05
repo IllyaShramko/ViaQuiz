@@ -8,7 +8,7 @@ import {
   PendingInvitationsModal,
   LeaveCourseModal,
 } from '../../../modules/classes';
-import { CheckIcon, CopyIcon } from '../../../shared';
+import { CheckIcon, CopyIcon, copyToClipboard } from '../../../shared';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 export function ClassesPage() {
@@ -55,12 +55,14 @@ export function ClassesPage() {
     }
   }, [searchParams, setSearchParams]);
 
-  const handleCopyCode = (e: MouseEvent, code: string) => {
+  const handleCopyCode = async (e: MouseEvent, code: string) => {
     e.preventDefault();
     e.stopPropagation();
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
+    const success = await copyToClipboard(code);
+    if (success) {
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode(null), 2000);
+    }
   };
 
   const handleOpenLeaveCourse = (

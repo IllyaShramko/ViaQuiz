@@ -29,9 +29,20 @@ export const GameSessionsController: GameSessionsControllerContract = {
 
 	async join(req, res, next) {
 		try {
+			let participantId = res.locals.participantId;
+			if (!participantId && req.body.gameToken) {
+				try {
+					const decoded = GameSessionsService.verifyGameToken(req.body.gameToken);
+					participantId = decoded.participantId;
+				} catch {
+					// Invalid/expired gameToken, fallback to normal join
+				}
+			}
+
 			const result = await GameSessionsService.joinRoom(req.body, {
 				studentId: res.locals.studentId,
 				userId: res.locals.userId,
+				participantId,
 			});
 			res.status(200).json(result);
 		} catch (error) {

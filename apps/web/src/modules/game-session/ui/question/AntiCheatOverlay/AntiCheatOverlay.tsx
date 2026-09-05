@@ -2,7 +2,7 @@ import { useState } from 'react';
 import waitIcon from '../../../../../assets/icons/wait.svg';
 import { getRandomCaption } from '../../../utils/captions';
 import type { AntiCheatOverlayProps } from './AntiCheatOverlay.types';
-import styles from '../../GameSession.module.css';
+import styles from './AntiCheatOverlay.module.css';
 
 export function AntiCheatOverlay({ text }: AntiCheatOverlayProps) {
 	const [caption] = useState(() => text || getRandomCaption('wait'));
@@ -10,23 +10,19 @@ export function AntiCheatOverlay({ text }: AntiCheatOverlayProps) {
 	return (
 		<>
 			{/* Overlay to add blur and backdrop */}
-			<div
-				className={`${styles['review-student-overlay']} ${styles['is-active']}`}
-			/>
+			<div className={styles.overlay} />
 
 			{/* Status Banner Container (stays in center, doesn't drop down) */}
-			<div className={styles['wait-student-banner-container']}>
-				<div
-					className={`${styles['review-student-banner']} ${styles['review-banner-wait']}`}
-				>
+			<div className={styles.waitBannerContainer}>
+				<div className={styles.waitBanner}>
 					<img
 						src={waitIcon}
-						className={styles['wait-spinner-icon']}
+						className={styles.waitSpinnerIcon}
 						alt="Очікування"
 					/>
 					<span>Зачекайте...</span>
 				</div>
-				<span className={styles['review-banner-quote']}>
+				<span className={styles.quote}>
 					{caption}
 				</span>
 			</div>

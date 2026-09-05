@@ -18,6 +18,7 @@ export const joinRoomSchema = z.object({
 		.min(2, "Nickname must be at least 2 characters")
 		.max(30, "Nickname cannot exceed 30 characters")
 		.optional(),
+	gameToken: z.string().optional(),
 });
 
 export const validateJoinCodeSchema = z.object({

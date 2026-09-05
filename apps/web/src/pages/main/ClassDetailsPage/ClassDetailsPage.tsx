@@ -8,6 +8,7 @@ import {
   CreateCourseModal,
 } from '../../../modules/classes';
 import { useGetTeacherSessionsQuery } from '../../../modules/reports';
+import { copyToClipboard } from '../../../shared';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 type TabType = 'students' | 'courses' | 'performance' | 'history';
@@ -106,11 +107,13 @@ export function ClassDetailsPage() {
   const students = classroom.students || [];
   const courses = classroom.courses || [];
 
-  const handleCopyCode = () => {
+  const handleCopyCode = async () => {
     if (!classroom.code) return;
-    navigator.clipboard.writeText(classroom.code);
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2000);
+    const success = await copyToClipboard(classroom.code);
+    if (success) {
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
+    }
   };
 
   const handleDeleteStudent = async (studentUuid: string, studentName: string) => {

@@ -3,12 +3,14 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
 	useValidateJoinCodeMutation,
 	useJoinGameRoomMutation,
-	GAME_TOKEN_STORAGE_KEY,
-} from '../../modules/game-session';
-import { createLoginRedirectUrl } from '../../modules/auth';
-import { getAuthToken } from '../../shared/api/headers';
-import { LogoIcon } from '../../shared/ui/icons';
-import styles from '../../modules/game-session/ui/GameSession.module.css';
+	getGameSessionToken,
+	saveGameSessionToken,
+	removeGameSessionToken,
+} from '../../../modules/game-session';
+import { createLoginRedirectUrl } from '../../../modules/auth';
+import { getAuthToken } from '../../../shared/api/headers';
+import { LogoIcon } from '../../../shared/ui/icons';
+import styles from './GameJoinPage.module.css';
 
 export function GameJoinPage() {
 	const navigate = useNavigate();
@@ -40,18 +42,17 @@ export function GameJoinPage() {
 
 				const isLoggedIn = !!getAuthToken();
 
-				// Якщо користувач уже авторизований (учень/вчитель) — одразу приєднуємо!
+				// If the user is already authenticated (student/teacher), join immediately
 				if (isLoggedIn) {
 					const joinRes = await joinRoom({ joinCode: cleanCode }).unwrap();
 					if (joinRes.token) {
-						sessionStorage.setItem(`viaquiz_game_token_${joinRes.room.uuid}`, joinRes.token);
-						sessionStorage.setItem(GAME_TOKEN_STORAGE_KEY, joinRes.token);
+						saveGameSessionToken(joinRes.room.uuid, joinRes.token);
 					}
 					navigate(`/game/play/${joinRes.room.uuid}`);
 					return;
 				}
 
-				// Якщо не авторизований, але кімната вимагає акаунт класу
+				// If not authenticated and room requires classroom account
 				if (res.requiresAuth) {
 					setRequiresAuth(true);
 					setErrorMessage(
@@ -60,7 +61,27 @@ export function GameJoinPage() {
 					return;
 				}
 
-				// Якщо відкрита вікторина для гостей — переходимо на крок 2 (введення імені)
+				// If open guest quiz, check if an active game token already exists for this room
+				const existingToken = getGameSessionToken(res.roomUuid);
+				if (existingToken) {
+					try {
+						const joinRes = await joinRoom({
+							joinCode: cleanCode,
+							gameToken: existingToken,
+						}).unwrap();
+
+						if (joinRes.token) {
+							saveGameSessionToken(joinRes.room.uuid, joinRes.token);
+						}
+						navigate(`/game/play/${joinRes.room.uuid}`);
+						return;
+					} catch {
+						// If stored token is invalid or expired, remove it
+						removeGameSessionToken(res.roomUuid);
+					}
+				}
+
+				// If no valid token exists, proceed to step 2 (enter nickname)
 				setStep(2);
 			} catch (err: unknown) {
 				const error = err as { data?: { message?: string } };
@@ -106,8 +127,7 @@ export function GameJoinPage() {
 			}).unwrap();
 
 			if (res.token) {
-				sessionStorage.setItem(`viaquiz_game_token_${res.room.uuid}`, res.token);
-				sessionStorage.setItem(GAME_TOKEN_STORAGE_KEY, res.token);
+				saveGameSessionToken(res.room.uuid, res.token);
 			}
 
 			navigate(`/game/play/${res.room.uuid}`);
@@ -121,19 +141,19 @@ export function GameJoinPage() {
 	};
 
 	return (
-		<div className={styles['game-root']}>
-			<header className={styles['game-topbar']}>
-				<Link to="/" className={styles['game-logo']}>
-					<LogoIcon size={24} className={styles['game-logo-icon']} />
-					<span className={styles['game-logo-text']}>ViaQuiz</span>
+		<div className={styles.gameRoot}>
+			<header className={styles.topbar}>
+				<Link to="/" className={styles.logo}>
+					<LogoIcon size={24} className={styles.logoIcon} />
+					<span className={styles.logoText}>ViaQuiz</span>
 				</Link>
 			</header>
 
-			<div className={styles['game-main-content']}>
+			<div className={styles.mainContent}>
 				{step === 1 ? (
 					/* Step 1: Enter PIN code */
-					<form onSubmit={handleStepOneSubmit} className={styles['join-pin-card']}>
-						<h1 className={styles['join-pin-title']}>Введіть код</h1>
+					<form onSubmit={handleStepOneSubmit} className={styles.card}>
+						<h1 className={styles.title}>Введіть код</h1>
 
 						<input
 							type="text"
@@ -145,19 +165,12 @@ export function GameJoinPage() {
 								setErrorMessage(null);
 								setRequiresAuth(false);
 							}}
-							className={styles['join-pin-input']}
+							className={styles.inputPin}
 							autoFocus
 						/>
 
 						{errorMessage && (
-							<div
-								style={{
-									color: 'var(--color-error, #ef4444)',
-									fontSize: '0.9rem',
-									fontWeight: 600,
-									lineHeight: 1.4,
-								}}
-							>
+							<div className={styles.errorMessage}>
 								{errorMessage}
 							</div>
 						)}
@@ -165,8 +178,7 @@ export function GameJoinPage() {
 						{requiresAuth ? (
 							<Link
 								to={createLoginRedirectUrl(`/join?code=${joinCode.trim()}`, 'student')}
-								className={styles['lobby-start-btn']}
-								style={{ width: '100%', textDecoration: 'none' }}
+								className={styles.authRedirectBtn}
 							>
 								Увійти в акаунт
 							</Link>
@@ -174,7 +186,7 @@ export function GameJoinPage() {
 							<button
 								type="submit"
 								disabled={isValidating || isJoining || joinCode.length < 6}
-								className={styles['join-submit-btn']}
+								className={styles.submitBtn}
 							>
 								{isValidating || isJoining ? 'Перевірка...' : 'ПРИЄДНАТИСЬ'}
 							</button>
@@ -182,36 +194,21 @@ export function GameJoinPage() {
 					</form>
 				) : (
 					/* Step 2: Enter nickname (guest only) */
-					<form onSubmit={handleStepTwoSubmit} className={styles['join-pin-card']}>
+					<form onSubmit={handleStepTwoSubmit} className={styles.card}>
 						<button
 							type="button"
 							onClick={() => {
 								setStep(1);
 								setErrorMessage(null);
 							}}
-							style={{
-								alignSelf: 'flex-start',
-								color: 'var(--color-text-secondary, #9090a8)',
-								fontSize: '0.875rem',
-								fontWeight: 600,
-								display: 'flex',
-								alignItems: 'center',
-								gap: '0.35rem',
-								marginBottom: '-0.5rem',
-							}}
+							className={styles.backBtn}
 						>
 							← Змінити код ({joinCode})
 						</button>
 
 						<div>
-							<h1 className={styles['join-pin-title']}>Як вас звати?</h1>
-							<p
-								style={{
-									color: 'var(--color-text-secondary, #9090a8)',
-									fontSize: '0.875rem',
-									marginTop: '0.25rem',
-								}}
-							>
+							<h1 className={styles.title}>Як вас звати?</h1>
+							<p className={styles.subtitle}>
 								Введіть ім'я, яке бачитимуть викладач та інші учасники
 							</p>
 						</div>
@@ -225,18 +222,12 @@ export function GameJoinPage() {
 								setNickname(e.target.value);
 								setErrorMessage(null);
 							}}
-							className={styles['join-nickname-input']}
+							className={styles.inputNickname}
 							autoFocus
 						/>
 
 						{errorMessage && (
-							<div
-								style={{
-									color: 'var(--color-error, #ef4444)',
-									fontSize: '0.9rem',
-									fontWeight: 600,
-								}}
-							>
+							<div className={styles.errorMessage}>
 								{errorMessage}
 							</div>
 						)}
@@ -244,7 +235,7 @@ export function GameJoinPage() {
 						<button
 							type="submit"
 							disabled={isJoining || !nickname.trim()}
-							className={styles['join-submit-btn']}
+							className={styles.submitBtn}
 						>
 							{isJoining ? 'Вхід...' : 'ПРИЄДНАТИСЬ'}
 						</button>

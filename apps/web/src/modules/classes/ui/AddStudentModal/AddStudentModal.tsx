@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAddStudentMutation } from '../../api/classesApi';
-import { generateStudentLogin, generateSimplePassword } from '../../../../shared/tools/translit';
+import { generateStudentLogin, generateSimplePassword, copyToClipboard } from '../../../../shared';
 import {
   addStudentSchema,
   type AddStudentFormData,
@@ -78,12 +78,14 @@ export function AddStudentModal({
     }
   };
 
-  const handleCopyCredentials = () => {
+  const handleCopyCredentials = async () => {
     if (!createdCredentials) return;
     const text = `Дані для входу до ViaQuiz:\nІм'я: ${createdCredentials.firstName} ${createdCredentials.lastName}\nЛогін: ${createdCredentials.login}\nПароль: ${createdCredentials.password}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
   const handleResetAndClose = () => {

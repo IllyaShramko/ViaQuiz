@@ -1,0 +1,1 @@
+export { GameJoinPage } from './GameJoinPage';

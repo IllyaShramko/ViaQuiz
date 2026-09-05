@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useResetStudentPasswordMutation } from '../../api/classesApi';
+import { copyToClipboard } from '../../../../shared';
 import type { ResetPasswordModalProps } from './ResetPasswordModal.types';
 import styles from '../AddStudentModal/AddStudentModal.module.css';
 
@@ -30,12 +31,14 @@ export function ResetPasswordModal({
     }
   };
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     if (!newCredentials) return;
     const text = `Новий пароль для учня ${newCredentials.studentName}:\nЛогін: ${newCredentials.login}\nНовий пароль: ${newCredentials.newPassword}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    const success = await copyToClipboard(text);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
   };
 
   const handleClose = () => {

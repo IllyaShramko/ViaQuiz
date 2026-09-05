@@ -8,7 +8,10 @@ import {
 	ReviewStudentView,
 	shuffleArray,
 	formatTimer,
+	getGameSessionToken,
+	removeGameSessionToken,
 } from '../../modules/game-session';
+import { getAuthToken } from '../../shared/api/headers';
 import { LogoIcon, TimerIcon } from '../../shared/ui/icons';
 import styles from '../../modules/game-session/ui/GameSession.module.css';
 
@@ -52,12 +55,35 @@ export function GamePlayPage() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [questionKey]);
 
-	// Automatic redirect to student result report when test finishes
+	// If anonymous user opens /game/play/:roomUuid without having joined, redirect to /join
 	useEffect(() => {
-		if (status === 'FINISHED' && resultUuid) {
-			navigate(`/student/results/${resultUuid}`, { replace: true });
+		if (!isRoomLoading && room && roomUuid) {
+			const isLoggedIn = !!getAuthToken();
+			const hasGameToken = !!getGameSessionToken(roomUuid);
+			if (!isLoggedIn && !hasGameToken) {
+				navigate(`/join?code=${room.joinCode}`, { replace: true });
+			}
 		}
-	}, [status, resultUuid, navigate]);
+	}, [isRoomLoading, room, roomUuid, navigate]);
+
+	// Cleanup token when participant is kicked
+	useEffect(() => {
+		if (kickedReason && roomUuid) {
+			removeGameSessionToken(roomUuid);
+		}
+	}, [kickedReason, roomUuid]);
+
+	// Automatic redirect to student result report when test finishes + cleanup
+	useEffect(() => {
+		if (status === 'FINISHED') {
+			if (roomUuid) {
+				removeGameSessionToken(roomUuid);
+			}
+			if (resultUuid) {
+				navigate(`/student/results/${resultUuid}`, { replace: true });
+			}
+		}
+	}, [status, resultUuid, roomUuid, navigate]);
 
 	if (kickedReason) {
 		return (

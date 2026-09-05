@@ -64,18 +64,37 @@ export const optionalAuthenticate = (
 	try {
 		const decoded = jwt.verify(token, env.JWT_SECRET) as {
 			userId?: number;
+			id?: number;
 			studentId?: number;
+			participantId?: number;
+			roomId?: number;
+			roomUuid?: string;
 			email?: string;
 			login?: string;
 			role?: string;
 			classroomId?: number;
 		};
 
-		res.locals.userId = decoded.userId ? Number(decoded.userId) : undefined;
+		res.locals.userId = decoded.userId
+			? Number(decoded.userId)
+			: decoded.id
+				? Number(decoded.id)
+				: undefined;
 		res.locals.studentId = decoded.studentId ? Number(decoded.studentId) : undefined;
+		res.locals.participantId = decoded.participantId
+			? Number(decoded.participantId)
+			: undefined;
+		res.locals.roomId = decoded.roomId ? Number(decoded.roomId) : undefined;
+		res.locals.roomUuid = decoded.roomUuid ? String(decoded.roomUuid) : undefined;
 		res.locals.email = decoded.email;
 		res.locals.login = decoded.login;
-		res.locals.role = decoded.role || (decoded.studentId ? "STUDENT" : "TEACHER");
+		res.locals.role =
+			decoded.role ||
+			(decoded.studentId
+				? "STUDENT"
+				: decoded.participantId
+					? "ANONYMOUS"
+					: "TEACHER");
 		res.locals.classroomId = decoded.classroomId;
 	} catch {
 		// Silently continue for optional auth

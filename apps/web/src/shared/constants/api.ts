@@ -13,4 +13,5 @@ export const API_ENDPOINTS = {
 export const STORAGE_KEYS = {
   TOKEN: 'viaquiz-token',
   LOCALE: 'viaquiz-locale',
+  GAME_SESSIONS: 'viaquiz_game_sessions',
 } as const;

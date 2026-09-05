@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { AntiCheatOverlay } from '../AntiCheatOverlay';
 import { ImageLightboxModal } from '../../modals';
 import type { QuestionStudentViewProps } from './QuestionStudentView.types';
-import styles from '../../GameSession.module.css';
+import styles from './QuestionStudentView.module.css';
 
 export function QuestionStudentView({
 	question,
@@ -120,75 +120,59 @@ export function QuestionStudentView({
 	]);
 
 	return (
-		<div className={styles['game-main-content']}>
+		<div className={styles.gameMainContent}>
 			{alreadyAnswered && <AntiCheatOverlay />}
 
-			<div className={styles['question-container']}>
-				{/* Question Card */}
-				<div className={styles['question-header-card']}>
-					<h2 className={styles['question-text']}>{question.text}</h2>
+			{/* When already answered, questionContainer receives isBlurred (guaranteed blur on Android & iOS) */}
+			<div
+				className={`${styles.questionContainer} ${
+					alreadyAnswered ? styles.isBlurred : ''
+				}`}
+			>
+				{/* Top Section: Question Card (pinned to top on mobile) */}
+				<div className={styles.questionHeaderCard}>
+					<h2 className={styles.questionText}>{question.text}</h2>
 
 					{question.media && (
 						<img
 							src={question.media}
 							alt="Question media"
-							className={styles['question-media-img']}
+							className={styles.questionMediaImg}
 							onClick={() => setLightboxImage(question.media || null)}
 						/>
 					)}
 
 					{isMulti && (
-						<p
-							style={{
-								color: 'var(--color-accent, #863bff)',
-								fontSize: '0.875rem',
-								fontWeight: 600,
-								marginTop: '0.75rem',
-							}}
-						>
+						<p className={styles.questionMultiHint}>
 							* Оберіть декілька правильних варіантів
 						</p>
 					)}
 
 					{isTypeV1 && (
-						<p
-							style={{
-								color: 'var(--color-accent, #863bff)',
-								fontSize: '0.875rem',
-								fontWeight: 600,
-								marginTop: '0.75rem',
-							}}
-						>
+						<p className={styles.questionMultiHint}>
 							* Введіть вашу відповідь у поле нижче
 						</p>
 					)}
 
 					{isTypeV2 && (
-						<p
-							style={{
-								color: 'var(--color-accent, #863bff)',
-								fontSize: '0.875rem',
-								fontWeight: 600,
-								marginTop: '0.75rem',
-							}}
-						>
+						<p className={styles.questionMultiHint}>
 							* Введіть слово (по буквах)
 						</p>
 					)}
 				</div>
 
-				{/* Typed Answer Input (V1 or V2) */}
+				{/* Bottom Section: Answers & Actions (pinned to bottom on mobile) */}
 				{isTyped ? (
 					<form
-						className={styles['typed-answer-wrapper']}
+						className={styles.typedAnswerWrapper}
 						onSubmit={handleSubmitTyped}
 					>
-						<div className={styles['typed-answer-input-box']}>
+						<div className={styles.typedAnswerInputBox}>
 							<input
 								type="text"
 								disabled={alreadyAnswered}
 								autoFocus
-								className={styles['typed-answer-text-input']}
+								className={styles.typedAnswerTextInput}
 								placeholder={
 									isTypeV2 ? 'Введіть слово...' : 'Введіть відповідь...'
 								}
@@ -202,7 +186,7 @@ export function QuestionStudentView({
 							<button
 								type="submit"
 								disabled={alreadyAnswered || !typedInput.trim()}
-								className={styles['typed-answer-submit-btn']}
+								className={styles.typedAnswerSubmitBtn}
 							>
 								<span>Відповісти</span>
 								<span>↵</span>
@@ -211,12 +195,12 @@ export function QuestionStudentView({
 
 						{/* V2 Letters Preview Boxes */}
 						{isTypeV2 && typedInput.length > 0 && (
-							<div className={styles['typed-v2-boxes']}>
+							<div className={styles.typedV2Boxes}>
 								{typedInput.split('').map((char, i) => (
 									<div
 										key={i}
-										className={`${styles['typed-v2-letter-box']} ${
-											char.trim() ? styles['is-filled'] : ''
+										className={`${styles.typedV2LetterBox} ${
+											char.trim() ? styles.isFilled : ''
 										}`}
 									>
 										{char}
@@ -226,47 +210,55 @@ export function QuestionStudentView({
 						)}
 					</form>
 				) : (
-					/* Horizontal Squares Variants Grid */
-					<div
-						className={`${styles['variants-grid']} ${
-							(question.variants?.length || 0) > 4
-								? styles['variants-grid--column-mobile']
-								: ''
-						}`}
-					>
-						{question.variants.map((v, idx) => {
-							const colorIndex = idx % 8;
-							const isSelected = selectedVariantIds.includes(v.id);
+					<div className={styles.variantsSectionBottom}>
+						{/* Multi-choice Submit Button (on mobile: docked above variants; on desktop: below variants) */}
+						{isMulti && !alreadyAnswered && (
+							<button
+								type="button"
+								disabled={selectedVariantIds.length === 0}
+								className={styles.multiSubmitBtn}
+								onClick={handleSubmitMulti}
+							>
+								Відправити відповідь{' '}
+								{selectedVariantIds.length > 0
+									? `(${selectedVariantIds.length})`
+									: ''}
+							</button>
+						)}
 
-							return (
-								<button
-									key={v.id}
-									type="button"
-									disabled={alreadyAnswered}
-									className={`${styles['student-variant-btn']} ${
-										styles[`variant-color-${colorIndex}`]
-									} ${isSelected ? styles['is-selected'] : ''}`}
-									onClick={() => handleVariantClick(v.id)}
-								>
-									<div className={styles['variant-badge-corner']}>{idx + 1}</div>
-									<span>{v.text || 'Варіант без тексту'}</span>
-								</button>
-							);
-						})}
+						{/* Variants Grid */}
+						<div
+							className={`${styles.variantsGrid} ${
+								(question.variants?.length || 0) > 4
+									? styles.variantsGridColumnMobile
+									: ''
+							}`}
+						>
+							{question.variants.map((v, idx) => {
+								const colorIndex = idx % 8;
+								const isSelected = selectedVariantIds.includes(v.id);
+								const colorClass =
+									styles[
+										`variantColor${colorIndex}` as keyof typeof styles
+									] || '';
+
+								return (
+									<button
+										key={v.id}
+										type="button"
+										disabled={alreadyAnswered}
+										className={`${styles.studentVariantBtn} ${colorClass} ${
+											isSelected ? styles.isSelected : ''
+										}`}
+										onClick={() => handleVariantClick(v.id)}
+									>
+										<div className={styles.variantBadgeCorner}>{idx + 1}</div>
+										<span>{v.text || 'Варіант без тексту'}</span>
+									</button>
+								);
+							})}
+						</div>
 					</div>
-				)}
-
-				{/* Multi-answer confirmation button */}
-				{isMulti && !alreadyAnswered && (
-					<button
-						type="button"
-						disabled={selectedVariantIds.length === 0}
-						className={styles['lobby-start-btn']}
-						style={{ width: '100%', maxWidth: '400px', marginTop: '1rem' }}
-						onClick={handleSubmitMulti}
-					>
-						Відправити відповідь ({selectedVariantIds.length})
-					</button>
 				)}
 			</div>
 
