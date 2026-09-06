@@ -19,3 +19,6 @@ export interface GetUserQuizzesParams
 export interface GetLikedQuizzesParams
 	extends PaginationQueryParams,
 		SortQueryParams<LikedQuizSortBy> {}
+
+export const MIN_QUESTION_VARIANTS = 2;
+export const MAX_QUESTION_VARIANTS = 6;

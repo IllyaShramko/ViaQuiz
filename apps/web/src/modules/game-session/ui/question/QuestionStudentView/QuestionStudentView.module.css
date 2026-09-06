@@ -19,7 +19,7 @@
   max-width: 1000px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: center;
   position: relative;
   transition: filter 0.4s ease, -webkit-filter 0.4s ease;
@@ -36,11 +36,11 @@
 /* Top Section: Question Header Card */
 .questionHeaderCard {
   width: 100%;
-  min-height: 180px;
+  min-height: 150px;
   background: var(--color-bg-elevated, #12121a);
   border: 1px solid var(--color-border, #2a2a3a);
   border-radius: var(--radius-2xl, 1.25rem);
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   text-align: center;
   box-shadow: var(--shadow-md);
   position: relative;
@@ -131,14 +131,15 @@
   flex-direction: row;
   justify-content: center;
   align-items: stretch;
-  gap: 1.25rem;
+  gap: 0.75rem;
 }
 
 /* Student Big Colored Option Button */
 .studentVariantBtn {
   color: #fff;
   font-weight: 700;
-  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-size: clamp(0.9rem, 1.25vw, 1.1rem);
+  line-height: 1.35;
   flex: 1 1 0;
   min-width: 0;
   aspect-ratio: 1 / 1;
@@ -152,7 +153,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 1.25rem 1rem;
+  padding: 1.25rem 0.875rem;
   text-align: center;
   box-shadow: var(--shadow-md);
   transition: transform var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease), filter var(--transition-fast, 150ms ease);
@@ -208,7 +209,57 @@
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* Variant 8-color palette */
+/* Multi-select Variant Checkbox (Top-right corner) */
+.variantCheckboxCorner {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md, 0.375rem);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  box-sizing: border-box;
+  pointer-events: none;
+  transition: background-color var(--transition-fast, 150ms ease),
+              border-color var(--transition-fast, 150ms ease),
+              box-shadow var(--transition-fast, 150ms ease);
+}
+
+.studentVariantBtn:hover:not(:disabled) .variantCheckboxCorner:not(.variantCheckboxSelected) {
+  border-color: #ffffff;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.variantCheckboxSelected {
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.variantCheckboxCheck {
+  color: #0f172a;
+  animation: checkPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Variant 6-color palette */
 .variantColor0 { background: #2563eb; }
 .variantColor0:hover { background: #3b82f6; }
 .variantColor1 { background: #d97706; }
@@ -221,10 +272,6 @@
 .variantColor4:hover { background: #8b5cf6; }
 .variantColor5 { background: #0891b2; }
 .variantColor5:hover { background: #06b6d4; }
-.variantColor6 { background: #ca8a04; }
-.variantColor6:hover { background: #eab308; }
-.variantColor7 { background: #dc2626; }
-.variantColor7:hover { background: #ef4444; }
 
 /* Typed Answer Form (V1/V2) */
 .typedAnswerWrapper {
@@ -387,14 +434,14 @@
     max-height: 65vh;
   }
 
-  /* On mobile: Submit button docked above variants */
+  /* On mobile: Submit button positioned below variants */
   .multiSubmitBtn {
-    order: 0;
+    order: 2;
     width: 100%;
     max-width: 100%;
-    margin-top: 0;
-    margin-bottom: 0.35rem;
-    padding: 0.75rem 1rem;
+    margin-top: 0.35rem;
+    margin-bottom: 0;
+    padding: 0.85rem 1rem;
     font-size: 0.95rem;
     font-weight: 800;
     border-radius: var(--radius-lg, 0.625rem);
@@ -403,6 +450,7 @@
     justify-content: center;
     gap: 0.5rem;
     box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+    flex-shrink: 0;
   }
 
   /* Standard variants grid: 2 columns taking full width */
@@ -452,6 +500,15 @@
     background: rgba(0, 0, 0, 0.35);
   }
 
+  .studentVariantBtn .variantCheckboxCorner {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-md, 0.375rem);
+  }
+
   .studentVariantBtn span {
     text-align: center;
     -webkit-line-clamp: 3;
@@ -484,7 +541,7 @@
     aspect-ratio: auto;
     min-height: clamp(52px, 7.5vh, 64px);
     max-height: none;
-    padding: 0.65rem 1.15rem 0.65rem 3.5rem;
+    padding: 0.65rem 3.25rem 0.65rem 3.5rem;
     border-radius: var(--radius-xl, 0.875rem);
     font-size: clamp(0.95rem, 3.6vw, 1.125rem);
     font-weight: 700;
@@ -502,6 +559,14 @@
     width: 26px;
     height: 26px;
     font-size: 0.875rem;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn .variantCheckboxCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 12px;
+    width: 26px;
+    height: 26px;
   }
 
   .variantsGridColumnMobile .studentVariantBtn span {

@@ -1,3 +1,4 @@
+import { MAX_QUESTION_VARIANTS, MIN_QUESTION_VARIANTS } from '@viaquiz/shared-types';
 import type { EditorQuestion, EditorQuiz } from '../models/types';
 
 export function validateQuestion(q: EditorQuestion, index: number): string[] {
@@ -16,20 +17,25 @@ export function validateQuestion(q: EditorQuestion, index: number): string[] {
   );
 
   if (q.type === 'ONE_ANSWER') {
-    if (filledVariants.length < 2) {
-      errors.push(`Питання #${qIndex}: додайте щонайменше 2 заповнені варіанти відповідей`);
+    if (filledVariants.length < MIN_QUESTION_VARIANTS) {
+      errors.push(`Питання #${qIndex}: додайте щонайменше ${MIN_QUESTION_VARIANTS} заповнені варіанти відповідей`);
+    } else if (filledVariants.length > MAX_QUESTION_VARIANTS) {
+      errors.push(`Питання #${qIndex}: кількість варіантів не може перевищувати ${MAX_QUESTION_VARIANTS}`);
     }
     if (correctVariants.length !== 1) {
       errors.push(`Питання #${qIndex}: позначте рівно 1 правильний варіант відповіді`);
     }
   } else if (q.type === 'MANY_ANSWERS') {
-    if (filledVariants.length < 2) {
-      errors.push(`Питання #${qIndex}: додайте щонайменше 2 заповнені варіанти відповідей`);
+    if (filledVariants.length < MIN_QUESTION_VARIANTS) {
+      errors.push(`Питання #${qIndex}: додайте щонайменше ${MIN_QUESTION_VARIANTS} заповнені варіанти відповідей`);
+    } else if (filledVariants.length > MAX_QUESTION_VARIANTS) {
+      errors.push(`Питання #${qIndex}: кількість варіантів не може перевищувати ${MAX_QUESTION_VARIANTS}`);
     }
     if (correctVariants.length < 1) {
       errors.push(`Питання #${qIndex}: позначте хоча б один правильний варіант відповіді`);
     }
-  } else if (q.type === 'TYPE_ANSWER_V1' || q.type === 'TYPE_ANSWER_V2') {
+  }
+ else if (q.type === 'TYPE_ANSWER_V1' || q.type === 'TYPE_ANSWER_V2') {
     if (correctVariants.length === 0 && filledVariants.length === 0) {
       errors.push(`Питання #${qIndex}: вкажіть правильну відповідь`);
     }

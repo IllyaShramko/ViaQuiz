@@ -142,14 +142,12 @@ export function GameJoinPage() {
 
 	return (
 		<div className={styles.gameRoot}>
-			<header className={styles.topbar}>
+			<div className={styles.joinContainer}>
 				<Link to="/" className={styles.logo}>
-					<LogoIcon size={24} className={styles.logoIcon} />
+					<LogoIcon size={28} className={styles.logoIcon} />
 					<span className={styles.logoText}>ViaQuiz</span>
 				</Link>
-			</header>
 
-			<div className={styles.mainContent}>
 				{step === 1 ? (
 					/* Step 1: Enter PIN code */
 					<form onSubmit={handleStepOneSubmit} className={styles.card}>

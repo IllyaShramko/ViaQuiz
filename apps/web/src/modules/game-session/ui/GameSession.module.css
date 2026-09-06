@@ -596,7 +596,7 @@
 }
 
 /* ==========================================================================
-   QUESTION VIEWS & 8-VARIANT COLOR PALETTE
+   QUESTION VIEWS & 6-VARIANT COLOR PALETTE
    ========================================================================== */
 
 /* Variant Color Classes */
@@ -612,10 +612,6 @@
 .variant-color-4:hover { background: #8b5cf6; }
 .variant-color-5 { background: #0891b2; } /* Cyan */
 .variant-color-5:hover { background: #06b6d4; }
-.variant-color-6 { background: #ca8a04; } /* Yellow */
-.variant-color-6:hover { background: #eab308; }
-.variant-color-7 { background: #dc2626; } /* Red */
-.variant-color-7:hover { background: #ef4444; }
 
 /* Question Container */
 .question-container {
@@ -623,17 +619,17 @@
   max-width: 1000px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: center;
 }
 
 .question-header-card {
   width: 100%;
-  min-height: 180px;
+  min-height: 150px;
   background: var(--color-bg-elevated, #12121a);
   border: 1px solid var(--color-border, #2a2a3a);
   border-radius: var(--radius-2xl);
-  padding: 2rem;
+  padding: 1.5rem 2rem;
   text-align: center;
   box-shadow: var(--shadow-md);
   position: relative;
@@ -669,7 +665,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: stretch;
-  gap: 1.25rem;
+  gap: 0.75rem;
 }
 
 @media (max-width: 768px) {
@@ -862,7 +858,7 @@
 
 .teacher-variant-text {
   font-weight: 600;
-  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+  font-size: clamp(0.875rem, 1.2vw, 1.05rem);
   color: #fff;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -873,6 +869,7 @@
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Teacher Review Variant Row (Horizontal bar for review tab) */

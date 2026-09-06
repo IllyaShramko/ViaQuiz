@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_QUESTION_VARIANTS } from "@viaquiz/shared-types";
 
 export const questionTypeEnum = z.enum([
 	"ONE_ANSWER",
@@ -34,7 +35,10 @@ export const createQuestionSchema = z.object({
 	points: z.number().int().min(0).max(5000).default(1000),
 	variants: z
 		.array(variantSchema)
-		.max(8, "Cannot exceed 8 variants")
+		.max(
+			MAX_QUESTION_VARIANTS,
+			`Cannot exceed ${MAX_QUESTION_VARIANTS} variants`,
+		)
 		.optional(),
 });
 
@@ -49,7 +53,10 @@ export const updateQuestionSchema = z.object({
 	points: z.number().int().min(0).max(5000).optional(),
 	variants: z
 		.array(variantSchema)
-		.max(8, "Cannot exceed 8 variants")
+		.max(
+			MAX_QUESTION_VARIANTS,
+			`Cannot exceed ${MAX_QUESTION_VARIANTS} variants`,
+		)
 		.optional(),
 });
 

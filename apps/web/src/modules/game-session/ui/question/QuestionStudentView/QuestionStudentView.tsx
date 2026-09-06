@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { MAX_QUESTION_VARIANTS } from '@viaquiz/shared-types';
+import { CheckIcon } from '../../../../../shared';
 import { AntiCheatOverlay } from '../AntiCheatOverlay';
 import { ImageLightboxModal } from '../../modals';
 import type { QuestionStudentViewProps } from './QuestionStudentView.types';
@@ -74,9 +76,9 @@ export function QuestionStudentView({
 			if (isTyped) return;
 
 			let num: number | null = null;
-			if (e.key >= '1' && e.key <= '8') {
+			if (e.key >= '1' && e.key <= '6') {
 				num = parseInt(e.key, 10);
-			} else if (/^Numpad[1-8]$/.test(e.code)) {
+			} else if (/^Numpad[1-6]$/.test(e.code)) {
 				num = parseInt(e.code.replace('Numpad', ''), 10);
 			}
 
@@ -211,7 +213,61 @@ export function QuestionStudentView({
 					</form>
 				) : (
 					<div className={styles.variantsSectionBottom}>
-						{/* Multi-choice Submit Button (on mobile: docked above variants; on desktop: below variants) */}
+						{/* Variants Grid */}
+						<div
+							className={`${styles.variantsGrid} ${
+								(question.variants?.length || 0) > 4
+									? styles.variantsGridColumnMobile
+									: ''
+							}`}
+						>
+							{question.variants.map((v, idx) => {
+								const colorIndex = idx % MAX_QUESTION_VARIANTS;
+								const isSelected = selectedVariantIds.includes(v.id);
+								const colorClass =
+									styles[
+										`variantColor${colorIndex}` as keyof typeof styles
+									] || '';
+
+								return (
+									<button
+										key={v.id}
+										type="button"
+										role={isMulti ? 'checkbox' : undefined}
+										aria-checked={isMulti ? isSelected : undefined}
+										disabled={alreadyAnswered}
+										className={`${styles.studentVariantBtn} ${colorClass} ${
+											isSelected ? styles.isSelected : ''
+										}`}
+										onClick={() => handleVariantClick(v.id)}
+									>
+										<div className={styles.variantBadgeCorner}>{idx + 1}</div>
+
+										{/* Multi-select checkbox indicator in the top-right corner */}
+										{isMulti && (
+											<div
+												className={`${styles.variantCheckboxCorner} ${
+													isSelected ? styles.variantCheckboxSelected : ''
+												}`}
+												aria-hidden="true"
+											>
+												{isSelected && (
+													<CheckIcon
+														size={16}
+														strokeWidth="3"
+														className={styles.variantCheckboxCheck}
+													/>
+												)}
+											</div>
+										)}
+
+										<span>{v.text || 'Варіант без тексту'}</span>
+									</button>
+								);
+							})}
+						</div>
+
+						{/* Multi-choice Submit Button (positioned below variants on both mobile and desktop) */}
 						{isMulti && !alreadyAnswered && (
 							<button
 								type="button"
@@ -225,39 +281,6 @@ export function QuestionStudentView({
 									: ''}
 							</button>
 						)}
-
-						{/* Variants Grid */}
-						<div
-							className={`${styles.variantsGrid} ${
-								(question.variants?.length || 0) > 4
-									? styles.variantsGridColumnMobile
-									: ''
-							}`}
-						>
-							{question.variants.map((v, idx) => {
-								const colorIndex = idx % 8;
-								const isSelected = selectedVariantIds.includes(v.id);
-								const colorClass =
-									styles[
-										`variantColor${colorIndex}` as keyof typeof styles
-									] || '';
-
-								return (
-									<button
-										key={v.id}
-										type="button"
-										disabled={alreadyAnswered}
-										className={`${styles.studentVariantBtn} ${colorClass} ${
-											isSelected ? styles.isSelected : ''
-										}`}
-										onClick={() => handleVariantClick(v.id)}
-									>
-										<div className={styles.variantBadgeCorner}>{idx + 1}</div>
-										<span>{v.text || 'Варіант без тексту'}</span>
-									</button>
-								);
-							})}
-						</div>
 					</div>
 				)}
 			</div>

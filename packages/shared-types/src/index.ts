@@ -13,6 +13,7 @@ export type {
 	GetUserQuizzesParams,
 	GetLikedQuizzesParams,
 } from "./quiz";
+export { MIN_QUESTION_VARIANTS, MAX_QUESTION_VARIANTS } from "./quiz";
 export type {
 	ClassroomLimits,
 	StudentDto,

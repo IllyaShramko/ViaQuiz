@@ -3,6 +3,7 @@ import {
 	ForbiddenError,
 	NotFoundError,
 } from "../../errors/customErrors";
+import { MAX_QUESTION_VARIANTS } from "@viaquiz/shared-types";
 import { QuizRepository } from "./quiz.repository";
 import type { QuizServiceContract } from "./types/quizzes.contracts";
 import type { QuizValidationError } from "./types/quizzes.types";
@@ -182,6 +183,13 @@ export const QuizService: QuizServiceContract = {
 							field: "variants",
 							message: `Питання #${qIndex}: додайте щонайменше 2 заповнені варіанти відповідей`,
 						});
+					} else if (filledVariants.length > MAX_QUESTION_VARIANTS) {
+						errors.push({
+							questionIndex: qIndex,
+							questionId: q.id,
+							field: "variants",
+							message: `Питання #${qIndex}: кількість варіантів не може перевищувати ${MAX_QUESTION_VARIANTS}`,
+						});
 					}
 					if (correctVariants.length !== 1) {
 						errors.push({
@@ -198,6 +206,13 @@ export const QuizService: QuizServiceContract = {
 							questionId: q.id,
 							field: "variants",
 							message: `Питання #${qIndex}: додайте щонайменше 2 заповнені варіанти відповідей`,
+						});
+					} else if (filledVariants.length > MAX_QUESTION_VARIANTS) {
+						errors.push({
+							questionIndex: qIndex,
+							questionId: q.id,
+							field: "variants",
+							message: `Питання #${qIndex}: кількість варіантів не може перевищувати ${MAX_QUESTION_VARIANTS}`,
 						});
 					}
 					if (correctVariants.length < 1) {

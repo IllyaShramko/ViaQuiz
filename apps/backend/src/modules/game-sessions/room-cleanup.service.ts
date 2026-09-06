@@ -7,14 +7,14 @@ export class RoomCleanupService {
 	private intervalId: NodeJS.Timeout | null = null;
 
 	/**
-	 * Перевірка та автоматичне видалення кімнат, які були створені понад 30 хвилин тому
-	 * і так і не були запущені (status: "AWAITING").
+	 * Check and automatically delete rooms created over 30 minutes ago
+	 * that were never launched (status: "AWAITING").
 	 */
 	public async cleanupExpiredRooms(maxAgeMinutes = 30): Promise<number> {
 		try {
 			const expirationThreshold = new Date(Date.now() - maxAgeMinutes * 60 * 1000);
 
-			// Знаходимо всі кімнати в режимі очікування, які старші за 30 хвилин
+			// Find all awaiting rooms older than 30 minutes
 			const expiredRooms = await PRISMA_CLIENT.room.findMany({
 				where: {
 					status: "AWAITING",
@@ -37,19 +37,19 @@ export class RoomCleanupService {
 
 			for (const room of expiredRooms) {
 				try {
-					// 1. Сповіщаємо підключених учасників та хоста через Socket.IO
+					// 1. Notify connected participants and host via Socket.IO
 					try {
 						socketManager.toRoom(room.id).emit("room:participant_kicked", {
 							reason: "Кімнату автоматично закрито через 30 хвилин бездіяльності.",
 						});
 					} catch (socketErr) {
-						// Ігноруємо помилки сокетів, якщо сокет-сервер ще не запущений
+						// Ignore socket errors if socket server is not initialized yet
 					}
 
-					// 2. Очищаємо кеш кімнати в Redis
+					// 2. Clear room cache in Redis
 					await gameRedisService.clearSession(room.id);
 
-					// 3. Видаляємо кімнату з бази даних (каскадно видалить зв'язаних учасників)
+					// 3. Delete room from database (cascades to related participants)
 					await PRISMA_CLIENT.room.delete({
 						where: { id: room.id },
 					});
@@ -65,7 +65,7 @@ export class RoomCleanupService {
 				}
 			}
 
-			// Також завершуємо закинуті сесії в прогресі старші за 6 годин
+			// Also complete abandoned in-progress sessions older than 6 hours
 			const abandonedThreshold = new Date(Date.now() - 6 * 60 * 60 * 1000);
 			const abandonedRooms = await PRISMA_CLIENT.room.findMany({
 				where: {
@@ -91,8 +91,8 @@ export class RoomCleanupService {
 	}
 
 	/**
-	 * Запуск періодичного фонового воркера очищення
-	 * @param intervalMs Інтервал перевірки (за замовчуванням кожні 60 секунд)
+	 * Start periodic background cleanup worker
+	 * @param intervalMs Check interval (defaults to every 60 seconds)
 	 */
 	public startCleanupScheduler(intervalMs = 60_000): void {
 		if (this.intervalId) {
@@ -103,12 +103,12 @@ export class RoomCleanupService {
 			`[RoomCleanupService] Scheduler started. Checking for inactive rooms every ${intervalMs / 1000}s (30m max inactivity).`,
 		);
 
-		// Виконуємо очищення відразу при старті сервера
+		// Run cleanup immediately on server startup
 		this.cleanupExpiredRooms().catch((err) => {
 			logger.error("[RoomCleanupService] Initial cleanup run failed:", err);
 		});
 
-		// Встановлюємо регулярний інтервал
+		// Set regular interval
 		this.intervalId = setInterval(() => {
 			this.cleanupExpiredRooms().catch((err) => {
 				logger.error("[RoomCleanupService] Scheduled cleanup run failed:", err);
@@ -117,7 +117,7 @@ export class RoomCleanupService {
 	}
 
 	/**
-	 * Зупинка воркера при завершенні роботи сервера
+	 * Stop worker on server shutdown
 	 */
 	public stopCleanupScheduler(): void {
 		if (this.intervalId) {

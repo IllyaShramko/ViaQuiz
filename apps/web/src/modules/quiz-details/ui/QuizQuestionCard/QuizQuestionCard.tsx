@@ -3,7 +3,7 @@ import type { QuizQuestionCardProps } from './QuizQuestionCard.types';
 import { TimerIcon } from '../../../../shared/ui/icons';
 import styles from '../QuizDetails.module.css';
 
-const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 export function QuizQuestionCard({ question, index }: QuizQuestionCardProps) {
   const timeSec = question.timeLimit

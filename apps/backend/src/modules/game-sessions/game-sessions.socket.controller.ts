@@ -9,13 +9,13 @@ import { PRISMA_CLIENT } from "../../config/database";
 import { logger } from "../../tools/logger";
 import type { ParticipantRoundAnswerDto } from "@viaquiz/shared-types";
 
-// Зберігаємо таймери питань на сервері в пам'яті за roomId
+// Store question timers in server memory by roomId
 const activeRoomTimers = new Map<number, NodeJS.Timeout>();
 
 export const gameSessionsSocketController: SocketController = {
 	registerHandlers(socket: AuthenticatedSocket, ioServer: ServerSocket): void {
 		/**
-		 * Клієнт приєднується до сесії
+		 * Client joins the session
 		 */
 		socket.on("game:join", async (data) => {
 			try {
@@ -290,7 +290,7 @@ export const gameSessionsSocketController: SocketController = {
 					}
 				}
 
-				// Надсилаємо синхронізацію клієнту
+				// Send state synchronization to the client
 				socket.emit("game:sync_state", {
 					roomState,
 					participants,
@@ -305,7 +305,7 @@ export const gameSessionsSocketController: SocketController = {
 					isHost: isTeacher,
 				});
 
-				// Сповіщаємо кімнату про учасника
+				// Notify the room about the new participant
 				if (!isTeacher && participantId && socket.data.nickname) {
 					ioServer.to(`room:${roomId}`).emit("room:participant_joined", {
 						participantId,
@@ -319,7 +319,7 @@ export const gameSessionsSocketController: SocketController = {
 		});
 
 		/**
-		 * Вчитель запускає вікторину
+		 * Teacher starts the quiz
 		 */
 		socket.on("host:start_game", async (data) => {
 			try {
@@ -365,7 +365,7 @@ export const gameSessionsSocketController: SocketController = {
 				const isTyped0 =
 					q0.type === "TYPE_ANSWER_V1" || q0.type === "TYPE_ANSWER_V2";
 
-				// Відправляємо питання хосту (з повними варіантами)
+				// Send question to host (with full variants)
 				ioServer.to(`room:host:${roomId}`).emit("game:question_started", {
 					questionIndex: 0,
 					totalQuestions: quiz.questions.length,
@@ -383,7 +383,7 @@ export const gameSessionsSocketController: SocketController = {
 					})),
 				});
 
-				// Відправляємо питання учням (санітизовано для текстових відповідей)
+				// Send question to students (sanitized for text answers)
 				ioServer
 					.to(`room:${roomId}`)
 					.except(`room:host:${roomId}`)
@@ -404,7 +404,7 @@ export const gameSessionsSocketController: SocketController = {
 						})),
 					});
 
-				// Запускаємо серверний таймер
+				// Start the server timer
 				startServerQuestionTimer(ioServer, roomId, 0, timeLimitMs);
 			} catch (error) {
 				logger.error("[Socket Event host:start_game Error]", error);
@@ -412,7 +412,7 @@ export const gameSessionsSocketController: SocketController = {
 		});
 
 		/**
-		 * Вчитель перемикає на наступне питання
+		 * Teacher switches to next question
 		 */
 		socket.on("host:next_question", async (data) => {
 			try {
@@ -427,7 +427,7 @@ export const gameSessionsSocketController: SocketController = {
 				const nextIndex = (state?.currentQuestionIndex ?? 0) + 1;
 
 				if (nextIndex >= quiz.questions.length) {
-					// Всі питання пройдені -> завершуємо вікторину
+					// All questions completed -> finish quiz
 					await finishGameSession(ioServer, roomId, quiz.questions.length);
 					return;
 				}
@@ -466,7 +466,7 @@ export const gameSessionsSocketController: SocketController = {
 				const isNextTyped =
 					nextQ.type === "TYPE_ANSWER_V1" || nextQ.type === "TYPE_ANSWER_V2";
 
-				// Відправляємо питання хосту
+				// Send question to host
 				ioServer.to(`room:host:${roomId}`).emit("game:question_started", {
 					questionIndex: nextIndex,
 					totalQuestions: quiz.questions.length,
@@ -484,7 +484,7 @@ export const gameSessionsSocketController: SocketController = {
 					})),
 				});
 
-				// Відправляємо питання учням (санітизовано для текстових відповідей)
+				// Send question to students (sanitized for text answers)
 				ioServer
 					.to(`room:${roomId}`)
 					.except(`room:host:${roomId}`)
@@ -524,7 +524,7 @@ export const gameSessionsSocketController: SocketController = {
 		});
 
 		/**
-		 * Вчитель додає час (+15 сек)
+		 * Teacher extends time (+15 sec)
 		 */
 		socket.on("host:extend_time", async (data) => {
 			try {
@@ -546,7 +546,7 @@ export const gameSessionsSocketController: SocketController = {
 
 				await gameRedisService.setRoomState(roomId, { timeLimitMs: newLimit });
 
-				// Перезапускаємо таймер із залишком часу
+				// Restart timer with remaining time
 				startServerQuestionTimer(
 					ioServer,
 					roomId,
@@ -564,7 +564,7 @@ export const gameSessionsSocketController: SocketController = {
 		});
 
 		/**
-		 * Вчитель виганяє учасника (Kick)
+		 * Teacher kicks a participant
 		 */
 		socket.on("host:kick_participant", async (data) => {
 			try {
@@ -572,14 +572,14 @@ export const gameSessionsSocketController: SocketController = {
 				await GameSessionsRepository.banParticipant(participantId);
 				await gameRedisService.banParticipant(roomId, participantId);
 
-				// Відправляємо сповіщення в персональну кімнату учня
+				// Send notification to the student's personal room
 				ioServer
 					.to(`participant:${participantId}`)
 					.emit("room:participant_kicked", {
 						reason: "Вилучено організатором вікторини",
 					});
 
-				// Сповіщаємо всю кімнату
+				// Notify the entire room
 				ioServer.to(`room:${roomId}`).emit("room:participant_left", {
 					participantId,
 					kicked: true,
@@ -590,7 +590,7 @@ export const gameSessionsSocketController: SocketController = {
 		});
 
 		/**
-		 * Учень надсилає відповідь
+		 * Student submits an answer
 		 */
 		socket.on("participant:submit_answer", async (data) => {
 			try {
@@ -612,7 +612,7 @@ export const gameSessionsSocketController: SocketController = {
 				const timeSpentMs = Math.max(0, Date.now() - startedAt);
 				const timeLimit = cachedQ.timeLimit || 30000;
 
-				// Перевірка правильності
+				// Verify correctness
 				const correctVariantIds = cachedQ.variants
 					.filter((v) => v.isCorrect)
 					.map((v) => v.id);
@@ -652,7 +652,7 @@ export const gameSessionsSocketController: SocketController = {
 						correctVariantIds.includes(chosenId);
 				}
 
-				// Підрахунок балів за швидкість
+				// Calculate speed points
 				let scoreEarned = 0;
 				if (isCorrect) {
 					const basePoints = cachedQ.points || 1000;
@@ -679,14 +679,14 @@ export const gameSessionsSocketController: SocketController = {
 
 				const activeParticipants = await gameRedisService.getParticipants(roomId);
 
-				// Сповіщаємо хоста про прогрес відповідей
+				// Notify host about response progress
 				ioServer.to(`room:host:${roomId}`).emit("game:answer_received", {
 					participantId,
 					answeredCount,
 					totalParticipants: activeParticipants.length,
 				});
 
-				// Якщо всі активні учні відповіли -> завершуємо раунд достроково!
+				// If all active students answered -> end the round early!
 				if (
 					activeParticipants.length > 0 &&
 					answeredCount >= activeParticipants.length
@@ -699,7 +699,7 @@ export const gameSessionsSocketController: SocketController = {
 		});
 
 		/**
-		 * Відключення сокета
+		 * Socket disconnection
 		 */
 		socket.on("disconnect", async () => {
 			try {
@@ -716,7 +716,7 @@ export const gameSessionsSocketController: SocketController = {
 };
 
 /**
- * Отримати кешоване запитання або завантажити з БД і закешувати
+ * Get cached question or fetch from database and cache it
  */
 async function getOrCacheQuestion(
 	roomId: number,
@@ -751,7 +751,7 @@ async function getOrCacheQuestion(
 }
 
 /**
- * Запуск серверного таймера для запитання
+ * Start server timer for a question
  */
 function startServerQuestionTimer(
 	ioServer: ServerSocket,
@@ -775,7 +775,7 @@ function startServerQuestionTimer(
 }
 
 /**
- * Завершення раунду запитання -> перехід у статус REVIEWING
+ * End question round -> transition to REVIEWING status
  */
 async function endQuestionRound(
 	ioServer: ServerSocket,
@@ -810,7 +810,7 @@ async function endQuestionRound(
 		.filter((v) => v.text && v.text.trim().length > 0)
 		.map((v) => v.text!);
 
-	// Розподіл відповідей по варіантах для кругової діаграми
+	// Answer distribution across options for the pie/bar chart
 	const distribution: Record<number, number> = {};
 	for (const v of cachedQ.variants) {
 		distribution[v.id] = 0;
@@ -825,7 +825,7 @@ async function endQuestionRound(
 
 	const participants = await gameRedisService.getParticipants(roomId);
 
-	// Детальні відповіді кожного учасника для вчителя (хоста)
+	// Detailed answers of each participant for the host
 	const participantAnswers: ParticipantRoundAnswerDto[] = participants.map((p) => {
 		const participantAnswer = answers[p.participantId];
 		return {
@@ -841,7 +841,7 @@ async function endQuestionRound(
 		};
 	});
 
-	// Подія для хоста з детальними результатами всіх учасників
+	// Event for the host with detailed results of all participants
 	ioServer.to(`room:host:${roomId}`).emit("game:question_ended", {
 		questionIndex,
 		correctVariantIds,
@@ -852,7 +852,7 @@ async function endQuestionRound(
 		participantAnswers,
 	});
 
-	// Спільна подія для учнів (виключаючи хоста)
+	// General event for students (excluding host)
 	ioServer
 		.to(`room:${roomId}`)
 		.except(`room:host:${roomId}`)
@@ -865,7 +865,7 @@ async function endQuestionRound(
 			totalParticipants: participants.length,
 		});
 
-	// Відправляємо персональні результати кожному учню в його власну кімнату participant:id
+	// Send personal results to each student in their private participant:id room
 	for (const p of participants) {
 		const participantAnswer = answers[p.participantId];
 		const isCorrect = participantAnswer?.isCorrect ?? false;
@@ -890,7 +890,7 @@ async function endQuestionRound(
 }
 
 /**
- * Завершення всієї вікторини -> збереження в PostgreSQL та фінальний рейтинг
+ * Finish entire quiz -> save to PostgreSQL and produce final leaderboard
  */
 async function finishGameSession(
 	ioServer: ServerSocket,
@@ -912,7 +912,7 @@ async function finishGameSession(
 
 	const participants = await gameRedisService.getParticipants(roomId);
 
-	// Зберігаємо результати кожного учасника у PostgreSQL
+	// Save results for each participant to PostgreSQL
 	for (const p of participants) {
 		let totalCorrect = 0;
 		let totalTime = 0;
@@ -943,7 +943,7 @@ async function finishGameSession(
 					isSkipped: false,
 				});
 			} else {
-				// Питання пропущено (не було відповіді)
+				// Question skipped (no answer submitted)
 				await GameSessionsRepository.saveAnswer({
 					participantId: p.participantId,
 					questionId: q.id,
@@ -963,18 +963,18 @@ async function finishGameSession(
 			totalQuestionsCount: actualTotalQuestions,
 		});
 
-		// Відправляємо індивідуальне сповіщення з resultUuid
+		// Send individual notification with resultUuid
 		ioServer.to(`participant:${p.participantId}`).emit("game:finished_result", {
 			resultUuid: savedResult.uuid,
 		});
 	}
 
-	// Відправляємо подію закінчення вікторини
+	// Send quiz finished event
 	ioServer.to(`room:${roomId}`).emit("game:finished", {
 		totalQuestions: actualTotalQuestions,
 		leaderboard: participants.sort((a, b) => b.score - a.score),
 	});
 
-	// Встановлюємо 2 години TTL у Redis
+	// Set 2 hours TTL in Redis
 	await gameRedisService.setSessionExpiry(roomId, 7200);
 }

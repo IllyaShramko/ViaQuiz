@@ -53,7 +53,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Зберегти / оновити повний стан кімнати в Redis
+	 * Save / update full room state in Redis
 	 */
 	public async setRoomState(
 		roomId: number,
@@ -76,7 +76,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Отримати поточний стан кімнати з Redis
+	 * Get current room state from Redis
 	 */
 	public async getRoomState(roomId: number): Promise<RedisRoomState | null> {
 		try {
@@ -109,7 +109,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Зберегти кеш запитання з варіантами в Redis
+	 * Save cached question with options in Redis
 	 */
 	public async cacheQuestion(
 		roomId: number,
@@ -125,7 +125,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Отримати кеш запитання з Redis
+	 * Get cached question from Redis
 	 */
 	public async getCachedQuestion(
 		roomId: number,
@@ -143,7 +143,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Додати учасника до сесії в Redis
+	 * Add participant to session in Redis
 	 */
 	public async addParticipant(
 		roomId: number,
@@ -165,7 +165,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Оновити статус підключення учасника
+	 * Update participant connection status
 	 */
 	public async setParticipantConnection(
 		roomId: number,
@@ -186,7 +186,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Позначити учасника як заблокованого (banned)
+	 * Mark participant as banned
 	 */
 	public async banParticipant(roomId: number, participantId: number): Promise<void> {
 		try {
@@ -204,7 +204,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Отримати всіх активних учасників сесії з Redis
+	 * Get all active session participants from Redis
 	 */
 	public async getParticipants(roomId: number): Promise<RedisParticipant[]> {
 		try {
@@ -220,7 +220,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Записати відповідь учасника на конкретне питання
+	 * Record participant's answer to a specific question
 	 */
 	public async recordAnswer(
 		roomId: number,
@@ -250,7 +250,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Отримати всі збережені відповіді на запитання
+	 * Get all saved answers for a question
 	 */
 	public async getAnswersForQuestion(
 		roomId: number,
@@ -274,7 +274,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Оновити бали учасника
+	 * Update participant's score
 	 */
 	public async incrementScore(
 		roomId: number,
@@ -285,7 +285,7 @@ export class GameRedisService {
 			const scoresKey = this.getKey(roomId, "scores");
 			const newScore = await redis.hincrby(scoresKey, String(participantId), points);
 
-			// Також оновлюємо об'єкт учасника в хеші participants
+			// Also update the participant object in the participants hash
 			const pKey = this.getKey(roomId, "participants");
 			const raw = await redis.hget(pKey, String(participantId));
 			if (raw) {
@@ -302,7 +302,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Встановити TTL для всіх ключів сесії після її завершення (наприклад, 2 години)
+	 * Set TTL for all session keys after it ends (e.g., 2 hours)
 	 */
 	public async setSessionExpiry(roomId: number, ttlSeconds = 7200): Promise<void> {
 		try {
@@ -323,7 +323,7 @@ export class GameRedisService {
 	}
 
 	/**
-	 * Повністю очистити тимчасові дані кімнати
+	 * Completely clear temporary room data
 	 */
 	public async clearSession(roomId: number): Promise<void> {
 		try {

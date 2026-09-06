@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { MAX_QUESTION_VARIANTS } from '@viaquiz/shared-types';
 import { ImageLightboxModal } from '../../modals';
 import { getRandomCaption } from '../../../utils/captions';
 import { pluralizePoints } from '../../../../../shared';
@@ -166,7 +167,7 @@ export function ReviewStudentView({
 							}`}
 						>
 							{question.variants.map((v, idx) => {
-								const colorIndex = idx % 8;
+								const colorIndex = idx % MAX_QUESTION_VARIANTS;
 								const isThisCorrect = correctIds.includes(v.id);
 								const isThisSelected = selectedIds.includes(v.id);
 

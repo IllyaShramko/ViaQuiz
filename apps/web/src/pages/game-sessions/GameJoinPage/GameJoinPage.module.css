@@ -1,33 +1,30 @@
 .gameRoot {
-  min-height: 100vh;
-  min-height: 100dvh;
-  height: 100dvh;
+  min-height: 100%;
   width: 100%;
   background: var(--color-bg, #0a0a0f);
   color: var(--color-text-primary, #f0f0f5);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   font-family: var(--font-family, 'Inter', sans-serif);
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
   background-image: 
     radial-gradient(circle at 15% 20%, rgba(134, 59, 255, 0.05) 0%, transparent 40%),
     radial-gradient(circle at 85% 80%, rgba(37, 99, 235, 0.05) 0%, transparent 40%);
 }
 
-.topbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
+.joinContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 2rem;
-  min-height: 65px;
-  pointer-events: none;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 420px;
+  animation: cardFadeIn 0.3s ease-out;
 }
 
 .logo {
@@ -38,7 +35,6 @@
   font-size: 1.25rem;
   color: #fff;
   text-decoration: none;
-  pointer-events: auto;
 }
 
 .logoIcon {
@@ -52,32 +48,18 @@
   display: inline-block;
 }
 
-.mainContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 100%;
-  padding: 5rem 1rem 2rem;
-  box-sizing: border-box;
-}
-
 .card {
   background: var(--color-bg-elevated, #12121a);
   border: 1px solid var(--color-border, #2a2a3a);
   border-radius: var(--radius-2xl, 1.25rem);
   padding: 2.5rem 2rem;
   width: 100%;
-  max-width: 420px;
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   text-align: center;
-  margin: auto 0;
-  animation: cardFadeIn 0.3s ease-out;
+  box-sizing: border-box;
 }
 
 @keyframes cardFadeIn {
@@ -219,25 +201,19 @@
 }
 
 @media (max-width: 768px) {
-  .topbar {
-    padding: 0.75rem 1rem;
-    min-height: 52px;
+  .gameRoot {
+    padding: 1.25rem 1rem;
   }
 
-  .logo span,
-  .logoText {
-    display: none;
-  }
-
-  .mainContent {
-    padding: 4.5rem 1rem 1.5rem;
+  .joinContainer {
+    gap: 1.15rem;
+    max-width: min(92vw, 380px);
   }
 
   .card {
     padding: 1.6rem 1.25rem;
     gap: 1.15rem;
     border-radius: var(--radius-xl, 1rem);
-    max-width: min(92vw, 380px);
   }
 
   .title {

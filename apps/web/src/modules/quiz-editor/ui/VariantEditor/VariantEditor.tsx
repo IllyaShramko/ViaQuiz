@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
+import { MAX_QUESTION_VARIANTS, MIN_QUESTION_VARIANTS } from '@viaquiz/shared-types';
 import type { VariantEditorProps } from './VariantEditor.types';
 import { CloseIcon, PlusIcon, CheckIcon } from '../../../../shared';
 import styles from './VariantEditor.module.css';
 
 const COLORS = [
-  '#ef4444', '#3b82f6', '#f59e0b', '#22c55e',
-  '#a855f7', '#ec4899', '#6366f1', '#14b8a6'
+  '#2563eb', '#d97706', '#16a34a', '#db2777', '#7c3aed', '#0891b2'
 ];
 
 export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, questionType, onChange }) => {
@@ -44,13 +44,13 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
   };
 
   const handleDelete = (index: number) => {
-    if (variants.length <= 2) return;
+    if (variants.length <= MIN_QUESTION_VARIANTS) return;
     const newVariants = variants.filter((_, i) => i !== index);
     onChange(newVariants);
   };
 
   const handleAdd = () => {
-    if (variants.length >= 8) return;
+    if (variants.length >= MAX_QUESTION_VARIANTS) return;
     onChange([
       ...variants,
       {
@@ -101,7 +101,7 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
                     </div>
                   )}
                 </button>
-                {variants.length > 2 && (
+                {variants.length > MIN_QUESTION_VARIANTS && (
                   <button
                     type="button"
                     className={styles['variant-delete-btn']}
@@ -117,7 +117,7 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
           );
         })}
       </div>
-      {variants.length < 8 && (
+      {variants.length < MAX_QUESTION_VARIANTS && (
         <button type="button" className={styles['variant-add-btn']} onClick={handleAdd}>
           <PlusIcon width={16} height={16} />
           <span>Додати варіант</span>

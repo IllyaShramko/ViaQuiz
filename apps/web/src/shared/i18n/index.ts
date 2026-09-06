@@ -63,7 +63,7 @@ export type PluralWords =
 
 /**
  * Ukrainian pluralization logic:
- * [1, 2-4, 5+] (1 запитання, 2-4 запитання, 5+ запитань)
+ * [1, 2-4, 5+] (e.g. 1 question, 2-4 questions, 5+ questions)
  */
 export function pluralizeUk(
   count: number,
