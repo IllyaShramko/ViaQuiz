@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Chart from 'react-apexcharts';
-import type { SessionReportTab } from './SessionReportPage.types';
+import type { SessionReportTab, ReportSortBy, OverviewTabProps } from './SessionReportPage.types';
 import { useGetSessionReportQuery } from '../../api';
 import { StudentDetailDrawer } from '../StudentDetailDrawer';
 import { pluralize, pluralizeAnswers } from '../../../../shared';
 import styles from '../Reports.module.css';
-import type { SessionQuestionStatsDto, SessionParticipantSummaryDto } from '@viaquiz/shared-types';
+import type { SessionQuestionStatsDto, SortOrder } from '@viaquiz/shared-types';
 
 export const SessionReportPage: React.FC = () => {
 	const navigate = useNavigate();
@@ -120,48 +120,250 @@ export const SessionReportPage: React.FC = () => {
 	);
 };
 
-const OverviewTab: React.FC<{ 
-	participants: SessionParticipantSummaryDto[];
-	onRowClick: (id: number) => void;
-}> = ({ participants, onRowClick }) => {
-	const [sortBy, setSortBy] = useState<'percentage' | 'name'>('percentage');
+const SORT_LABELS: Record<ReportSortBy, string> = {
+	percentage: 'Точністю',
+	grade: 'Оцінкою',
+	name: "Ім'ям",
+};
 
-	const sortedParticipants = [...participants].sort((a, b) => {
-		if (sortBy === 'percentage') return b.percentage - a.percentage;
-		return a.nickname.localeCompare(b.nickname);
-	});
+const OverviewTab: React.FC<OverviewTabProps> = ({ participants, onRowClick }) => {
+	const [sortBy, setSortBy] = useState<ReportSortBy>('percentage');
+	const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+	const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+	const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+	// Close sort dropdown when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+				setIsSortDropdownOpen(false);
+			}
+		};
+		if (isSortDropdownOpen) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [isSortDropdownOpen]);
+
+	// Close sort dropdown on Escape key
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape' && isSortDropdownOpen) {
+				setIsSortDropdownOpen(false);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [isSortDropdownOpen]);
+
+	const handleSortBySelect = (field: ReportSortBy) => {
+		setSortBy(field);
+		setIsSortDropdownOpen(false);
+		setSortOrder(field === 'name' ? 'asc' : 'desc');
+	};
+
+	const toggleSortOrder = () => {
+		setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+	};
+
+	const handleHeaderClick = (field: ReportSortBy) => {
+		if (sortBy === field) {
+			toggleSortOrder();
+		} else {
+			setSortBy(field);
+			setSortOrder(field === 'name' ? 'asc' : 'desc');
+		}
+	};
+
+	const sortedParticipants = useMemo(() => {
+		return [...participants].sort((a, b) => {
+			let comparison = 0;
+			if (sortBy === 'percentage') {
+				comparison = a.percentage - b.percentage;
+				if (comparison === 0) comparison = a.score - b.score;
+			} else if (sortBy === 'grade') {
+				comparison = a.grade - b.grade;
+				if (comparison === 0) comparison = a.percentage - b.percentage;
+			} else if (sortBy === 'name') {
+				const nameA = (a.studentName || a.nickname || '').trim();
+				const nameB = (b.studentName || b.nickname || '').trim();
+				comparison = nameA.localeCompare(nameB, 'uk', { sensitivity: 'base' });
+			}
+
+			if (comparison === 0) {
+				comparison = a.participantId - b.participantId;
+			}
+
+			return sortOrder === 'asc' ? comparison : -comparison;
+		});
+	}, [participants, sortBy, sortOrder]);
 
 	return (
 		<div>
-			<div className={styles['overview-legend']}>
-				<div className={styles['overview-legend-item']}>
-					<div className={`${styles['overview-legend-color']} ${styles['overview-legend-color--correct']}`}></div>
-					Правильні
+			<div className={styles['overview-toolbar']}>
+				<div className={styles['overview-legend']}>
+					<div className={styles['overview-legend-item']}>
+						<div className={`${styles['overview-legend-color']} ${styles['overview-legend-color--correct']}`}></div>
+						Правильні
+					</div>
+					<div className={styles['overview-legend-item']}>
+						<div className={`${styles['overview-legend-color']} ${styles['overview-legend-color--incorrect']}`}></div>
+						Помилка
+					</div>
+					<div className={styles['overview-legend-item']}>
+						<div className={`${styles['overview-legend-color']} ${styles['overview-legend-color--skipped']}`}></div>
+						Пропущені
+					</div>
 				</div>
-				<div className={styles['overview-legend-item']}>
-					<div className={`${styles['overview-legend-color']} ${styles['overview-legend-color--incorrect']}`}></div>
-					Помилка
+
+				<div className={styles['overview-sort-group']}>
+					<div className={styles['overview-sort-dropdown-container']} ref={sortDropdownRef}>
+						<button 
+							type="button"
+							className={`${styles['overview-sort-btn']} ${isSortDropdownOpen ? styles['overview-sort-btn--active'] : ''}`}
+							onClick={() => setIsSortDropdownOpen(prev => !prev)}
+							title="Змінити критерій сортування"
+							aria-haspopup="listbox"
+							aria-expanded={isSortDropdownOpen}
+						>
+							<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+								<line x1="21" y1="10" x2="3" y2="10" />
+								<line x1="21" y1="6" x2="3" y2="6" />
+								<line x1="18" y1="14" x2="3" y2="14" />
+								<line x1="14" y1="18" x2="3" y2="18" />
+							</svg>
+							<span className={styles['overview-sort-btn-label']}>Сортувати за:</span>
+							<span className={styles['overview-sort-btn-value']}>{SORT_LABELS[sortBy]}</span>
+							<svg 
+								className={`${styles['overview-sort-chevron']} ${isSortDropdownOpen ? styles['overview-sort-chevron--open'] : ''}`} 
+								width="14" 
+								height="14" 
+								viewBox="0 0 24 24" 
+								fill="none" 
+								stroke="currentColor" 
+								strokeWidth="2.5" 
+								strokeLinecap="round" 
+								strokeLinejoin="round"
+							>
+								<polyline points="6 9 12 15 18 9" />
+							</svg>
+						</button>
+
+						{isSortDropdownOpen && (
+							<div className={styles['overview-sort-menu']} role="listbox">
+								<button
+									type="button"
+									className={`${styles['overview-sort-option']} ${sortBy === 'percentage' ? styles['overview-sort-option--active'] : ''}`}
+									onClick={() => handleSortBySelect('percentage')}
+								>
+									<span>Точністю</span>
+									{sortBy === 'percentage' && (
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+											<polyline points="20 6 9 17 4 12" />
+										</svg>
+									)}
+								</button>
+								<button
+									type="button"
+									className={`${styles['overview-sort-option']} ${sortBy === 'grade' ? styles['overview-sort-option--active'] : ''}`}
+									onClick={() => handleSortBySelect('grade')}
+								>
+									<span>Оцінкою</span>
+									{sortBy === 'grade' && (
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+											<polyline points="20 6 9 17 4 12" />
+										</svg>
+									)}
+								</button>
+								<button
+									type="button"
+									className={`${styles['overview-sort-option']} ${sortBy === 'name' ? styles['overview-sort-option--active'] : ''}`}
+									onClick={() => handleSortBySelect('name')}
+								>
+									<span>Ім'ям</span>
+									{sortBy === 'name' && (
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+											<polyline points="20 6 9 17 4 12" />
+										</svg>
+									)}
+								</button>
+							</div>
+						)}
+					</div>
+
+					<button 
+						type="button"
+						className={styles['overview-sort-order-btn']}
+						onClick={toggleSortOrder}
+						title={sortOrder === 'asc' ? 'За зростанням (клікніть для сортування за спаданням)' : 'За спаданням (клікніть для сортування за зростанням)'}
+						aria-label={sortOrder === 'asc' ? 'За зростанням' : 'За спаданням'}
+					>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+							{sortOrder === 'asc' ? (
+								<>
+									<line x1="12" y1="19" x2="12" y2="5" />
+									<polyline points="5 12 12 5 19 12" />
+								</>
+							) : (
+								<>
+									<line x1="12" y1="5" x2="12" y2="19" />
+									<polyline points="19 12 12 19 5 12" />
+								</>
+							)}
+						</svg>
+					</button>
 				</div>
-				<div className={styles['overview-legend-item']}>
-					<div className={`${styles['overview-legend-color']} ${styles['overview-legend-color--skipped']}`}></div>
-					Пропущені
-				</div>
-				<button 
-					className={styles['overview-sort-btn']}
-					onClick={() => setSortBy(prev => prev === 'percentage' ? 'name' : 'percentage')}
-				>
-					Сортувати за: {sortBy === 'percentage' ? 'Точністю' : 'Ім\'ям'}
-				</button>
 			</div>
 
 			<div className={styles['overview-table-container']}>
 				<table className={styles['overview-table']}>
 					<thead>
 						<tr>
-							<th className={styles['overview-col-name']}>Ім'я</th>
+							<th 
+								className={`${styles['overview-col-name']} ${styles['overview-th-sortable']}`}
+								onClick={() => handleHeaderClick('name')}
+								title="Сортувати за ім'ям"
+							>
+								<div className={styles['overview-th-content']}>
+									<span>Ім'я</span>
+									{sortBy === 'name' && (
+										<span className={styles['overview-th-sort-icon']}>
+											{sortOrder === 'asc' ? '↑' : '↓'}
+										</span>
+									)}
+								</div>
+							</th>
 							<th className={styles['overview-col-bars']}></th>
-							<th className={styles['overview-col-grade']}>Оцінка</th>
-							<th className={styles['overview-col-percent']}>Точність</th>
+							<th 
+								className={`${styles['overview-col-grade']} ${styles['overview-th-sortable']}`}
+								onClick={() => handleHeaderClick('grade')}
+								title="Сортувати за оцінкою"
+							>
+								<div className={`${styles['overview-th-content']} ${styles['overview-th-content--center']}`}>
+									<span>Оцінка</span>
+									{sortBy === 'grade' && (
+										<span className={styles['overview-th-sort-icon']}>
+											{sortOrder === 'asc' ? '↑' : '↓'}
+										</span>
+									)}
+								</div>
+							</th>
+							<th 
+								className={`${styles['overview-col-percent']} ${styles['overview-th-sortable']}`}
+								onClick={() => handleHeaderClick('percentage')}
+								title="Сортувати за точністю"
+							>
+								<div className={`${styles['overview-th-content']} ${styles['overview-th-content--center']}`}>
+									<span>Точність</span>
+									{sortBy === 'percentage' && (
+										<span className={styles['overview-th-sort-icon']}>
+											{sortOrder === 'asc' ? '↑' : '↓'}
+										</span>
+									)}
+								</div>
+							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -172,7 +374,12 @@ const OverviewTab: React.FC<{
 								onClick={() => onRowClick(p.participantId)}
 							>
 								<td className={styles['overview-col-name']}>
-									<span className={styles['overview-nickname']}>{p.nickname}</span>
+									<div className={styles['overview-name-container']}>
+										<span className={styles['overview-nickname']}>{p.nickname}</span>
+										{p.studentName && (
+											<span className={styles['overview-student-name']}>{p.studentName}</span>
+										)}
+									</div>
 								</td>
 								<td className={styles['overview-col-bars']}>
 									<div className={styles['stacked-bar']}>

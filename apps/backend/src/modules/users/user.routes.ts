@@ -29,6 +29,7 @@ userRouter.post(
 );
 userRouter.post("/login", validateBody(loginSchema), UserController.login);
 userRouter.get("/me", authenticate, UserController.me);
+userRouter.get("/profile/stats", authenticate, UserController.getProfileStats);
 userRouter.get(
 	"/",
 	authenticate,

@@ -88,6 +88,7 @@ export interface GameReviewDataDto {
 	totalParticipants?: number | undefined;
 	participantAnswers?: ParticipantRoundAnswerDto[] | undefined;
 	participantResult?: ParticipantRoundResultDto | undefined;
+	leaderboard?: ParticipantDto[] | undefined;
 	myAnswer?: {
 		variantIds?: number[] | undefined;
 		typedAnswer?: string | undefined;

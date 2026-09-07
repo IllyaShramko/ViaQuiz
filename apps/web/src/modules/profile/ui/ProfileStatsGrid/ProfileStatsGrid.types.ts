@@ -3,4 +3,7 @@ export interface ProfileStatsGridProps {
   activeClassesCount?: number;
   gamesCount?: number;
   isLoadingQuizzes?: boolean;
+  isLoadingClasses?: boolean;
+  isLoadingGames?: boolean;
+  isLoading?: boolean;
 }

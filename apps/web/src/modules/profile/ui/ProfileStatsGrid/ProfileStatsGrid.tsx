@@ -7,7 +7,14 @@ export function ProfileStatsGrid({
   activeClassesCount = 0,
   gamesCount = 0,
   isLoadingQuizzes = false,
+  isLoadingClasses = false,
+  isLoadingGames = false,
+  isLoading = false,
 }: ProfileStatsGridProps) {
+  const loadingQuizzes = isLoading || isLoadingQuizzes;
+  const loadingClasses = isLoading || isLoadingClasses;
+  const loadingGames = isLoading || isLoadingGames;
+
   return (
     <div className={styles['profile-stats-grid']}>
       <ProfileStatCard
@@ -16,7 +23,7 @@ export function ProfileStatsGrid({
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
         }
-        value={isLoadingQuizzes ? '...' : totalQuizzes}
+        value={loadingQuizzes ? '...' : totalQuizzes}
         label="Створених вікторин"
       />
 
@@ -29,7 +36,7 @@ export function ProfileStatsGrid({
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
         }
-        value={activeClassesCount}
+        value={loadingClasses ? '...' : activeClassesCount}
         label="Активних класів"
       />
 
@@ -41,7 +48,7 @@ export function ProfileStatsGrid({
             <line x1="6" y1="20" x2="6" y2="14" />
           </svg>
         }
-        value={gamesCount}
+        value={loadingGames ? '...' : gamesCount}
         label="Проведених ігор"
       />
     </div>

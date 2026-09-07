@@ -271,6 +271,9 @@ export const gameSessionsSocketController: SocketController = {
 							totalParticipants: participants.length,
 							participantAnswers,
 							participantResult,
+							leaderboard: isTeacher
+								? [...participants].sort((a, b) => b.score - a.score)
+								: undefined,
 							myAnswer: participantId ? answers[participantId] : null,
 						};
 					}
@@ -841,7 +844,9 @@ async function endQuestionRound(
 		};
 	});
 
-	// Event for the host with detailed results of all participants
+	const leaderboard = [...participants].sort((a, b) => b.score - a.score);
+
+	// Event for the host with detailed results and sorted leaderboard
 	ioServer.to(`room:host:${roomId}`).emit("game:question_ended", {
 		questionIndex,
 		correctVariantIds,
@@ -850,6 +855,7 @@ async function endQuestionRound(
 		totalAnswered: Object.keys(answers).length,
 		totalParticipants: participants.length,
 		participantAnswers,
+		leaderboard,
 	});
 
 	// General event for students (excluding host)

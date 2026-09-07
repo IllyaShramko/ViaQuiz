@@ -11,3 +11,9 @@ export interface CreateUserDto {
 	name: string;
 	password: string;
 }
+
+export interface TeacherProfileStatsDto {
+	totalQuizzes: number;
+	activeClassesCount: number;
+	gamesCount: number;
+}

@@ -1,6 +1,6 @@
 import { useUserContext } from '../../../modules/auth/context';
 import {
-  useGetMyQuizzesQuery,
+  useGetProfileStatsQuery,
   ProfileHeaderCard,
   ProfileStatsGrid,
   ProfileAccountInfo,
@@ -9,14 +9,19 @@ import styles from '../../../modules/profile/ui/Profile.module.css';
 
 export function ProfilePage() {
   const { user } = useUserContext();
-  const { data: myQuizzesData, isLoading: isLoadingQuizzes } = useGetMyQuizzesQuery({ isDraft: false });
-
-  const totalQuizzes = myQuizzesData?.total ?? myQuizzesData?.quizzes?.length ?? 0;
+  const { data: stats, isLoading: isLoadingStats } = useGetProfileStatsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   return (
     <div className={styles['teacher-profile-page']}>
       <ProfileHeaderCard user={user} />
-      <ProfileStatsGrid totalQuizzes={totalQuizzes} isLoadingQuizzes={isLoadingQuizzes} />
+      <ProfileStatsGrid
+        totalQuizzes={stats?.totalQuizzes ?? 0}
+        activeClassesCount={stats?.activeClassesCount ?? 0}
+        gamesCount={stats?.gamesCount ?? 0}
+        isLoading={isLoadingStats}
+      />
       <ProfileAccountInfo user={user} />
     </div>
   );

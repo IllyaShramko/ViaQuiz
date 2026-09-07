@@ -63,6 +63,9 @@ export const GameSessionsService: GameSessionsServiceContract = {
 			joinCode,
 		);
 
+		// Clear any previous Redis data for this roomId
+		await gameRedisService.clearSession(room.id);
+
 		// Cache in Redis
 		await gameRedisService.setRoomState(room.id, {
 			roomId: room.id,

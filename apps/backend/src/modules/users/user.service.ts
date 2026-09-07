@@ -7,6 +7,8 @@ import {
 	UnauthorizedError,
 } from "../../errors/customErrors";
 import { UserRepository } from "./user.repository";
+import { QuizRepository } from "../quizzes/quiz.repository";
+import { ClassroomRepository } from "../classrooms/classroom.repository";
 import type { UserServiceContract } from "./types/users.contracts";
 import type { UserWithPassword } from "./types/users.types";
 import type { VerificationCode } from "../../generated/prisma";
@@ -302,6 +304,29 @@ export const UserService: UserServiceContract = {
 
 	async me(userId) {
 		return await UserRepository.findById(userId);
+	},
+
+	async getProfileStats(userId) {
+		const [totalQuizzes, activeClassesCount, gamesCount] = await Promise.all([
+			QuizRepository.countUserQuizzes({ authorId: userId, isDraft: false }),
+			ClassroomRepository.countActiveTeacherClassrooms(userId),
+			PRISMA_CLIENT.room.count({
+				where: {
+					status: "FINISHED",
+					OR: [
+						{ hostId: userId },
+						{ classroom: { teacherId: userId } },
+						{ course: { classroom: { teacherId: userId } } },
+					],
+				},
+			}),
+		]);
+
+		return {
+			totalQuizzes: totalQuizzes || 0,
+			activeClassesCount: activeClassesCount || 0,
+			gamesCount: gamesCount || 0,
+		};
 	},
 
 	async getUsers(pagination) {

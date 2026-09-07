@@ -1,4 +1,4 @@
-export type { User, CreateUserDto } from "./user";
+export type { User, CreateUserDto, TeacherProfileStatsDto } from "./user";
 export type {
 	SortOrder,
 	PaginationQueryParams,

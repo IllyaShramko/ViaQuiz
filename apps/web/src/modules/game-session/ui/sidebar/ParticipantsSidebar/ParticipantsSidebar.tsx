@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { KickConfirmModal } from '../../modals';
 import {
 	NeutralCheckIcon,
@@ -17,6 +17,9 @@ import styles from '../../GameSession.module.css';
  * - During REVIEWING: shows green checkmark / red cross based on correctness.
  * - On hover: reveals the participant's score instead of the icon.
  * - On click: opens kick confirmation modal.
+ *
+ * TODO: integrate useFlipAnimation hook for smooth reorder transitions
+ * once the FLIP approach is validated.
  */
 export function ParticipantsSidebar({
 	participants,
@@ -27,6 +30,16 @@ export function ParticipantsSidebar({
 }: ParticipantsSidebarProps) {
 	const [kickTarget, setKickTarget] = useState<ParticipantDto | null>(null);
 	const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+	// Sort participants by score when game has started; keep join order during lobby (AWAITING)
+	const displayParticipants = useMemo(() => {
+		if (status === 'AWAITING') {
+			return participants;
+		}
+		return [...participants].sort(
+			(a, b) => b.score - a.score || a.nickname.localeCompare(b.nickname),
+		);
+	}, [participants, status]);
 
 	/**
 	 * Determine what to render in the right-hand side of each participant row.
@@ -91,9 +104,9 @@ export function ParticipantsSidebar({
 					<SettingsIcon size={18} className={styles['game-sidebar-settings-icon']} />
 				</div>
 				<div className={styles['game-sidebar-list']}>
-					{participants.map((p, idx) => (
+					{displayParticipants.map((p, idx) => (
 						<div
-							key={p.participantId || idx}
+							key={p.participantId}
 							className={`${styles['participant-item']} ${styles['participant-item-clickable']}`}
 							onClick={() => setKickTarget(p)}
 							onMouseEnter={() => setHoveredId(p.participantId)}

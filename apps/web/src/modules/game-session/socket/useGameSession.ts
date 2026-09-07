@@ -14,12 +14,14 @@ export interface UseGameSessionProps {
 	roomUuid?: string;
 	joinCode?: string;
 	explicitToken?: string;
+	enabled?: boolean;
 }
 
 export function useGameSession({
 	roomUuid,
 	joinCode,
 	explicitToken,
+	enabled = true,
 }: UseGameSessionProps) {
 	const [status, setStatus] = useState<RoomStatus>('AWAITING');
 	const [roomId, setRoomId] = useState<number | null>(null);
@@ -62,6 +64,10 @@ export function useGameSession({
 	}, []);
 
 	useEffect(() => {
+		if (!enabled || !roomUuid) {
+			return;
+		}
+
 		// Reset state for new session
 		setStatus('AWAITING');
 		setRoomId(null);
@@ -203,7 +209,9 @@ export function useGameSession({
 				participantResult: payload.participantResult ?? prev?.participantResult,
 				participantAnswers: payload.participantAnswers ?? prev?.participantAnswers,
 			}));
-			if (payload.participantAnswers) {
+			if (payload.leaderboard) {
+				setParticipants(payload.leaderboard);
+			} else if (payload.participantAnswers) {
 				setParticipants((prev) =>
 					prev.map((p) => {
 						const pa = payload.participantAnswers?.find(
@@ -263,7 +271,7 @@ export function useGameSession({
 			socket.off('game:finished_result', handleFinishedResult);
 			closeGameSocket();
 		};
-	}, [roomUuid, joinCode, explicitToken, startCountdown]);
+	}, [roomUuid, joinCode, explicitToken, enabled, startCountdown]);
 
 	// Actions
 	const startGame = useCallback(

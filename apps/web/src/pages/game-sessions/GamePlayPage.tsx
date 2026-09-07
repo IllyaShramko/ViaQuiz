@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '../../modules/auth';
 import {
 	useGetRoomByUuidQuery,
 	useGameSession,
@@ -18,11 +19,42 @@ import styles from '../../modules/game-session/ui/GameSession.module.css';
 export function GamePlayPage() {
 	const { roomUuid } = useParams<{ roomUuid: string }>();
 	const navigate = useNavigate();
+	const { user, isLoading: isAuthLoading } = useAuth();
 
-	const { data: room, isLoading: isRoomLoading } = useGetRoomByUuidQuery(
-		roomUuid || '',
-		{ skip: !roomUuid, refetchOnMountOrArgChange: true },
-	);
+	const {
+		data: room,
+		isLoading: isRoomLoading,
+		isError: isRoomError,
+	} = useGetRoomByUuidQuery(roomUuid || '', {
+		skip: !roomUuid,
+		refetchOnMountOrArgChange: true,
+	});
+
+	const isFinished = room?.status === 'FINISHED';
+	const isTeacher =
+		user?.role === 'TEACHER' ||
+		user?.role === 'ADMIN' ||
+		(user?.id != null && room?.hostId != null && user.id === room.hostId);
+
+	// Redirect when room has already finished or does not exist
+	useEffect(() => {
+		if (isRoomLoading || isAuthLoading) return;
+
+		// If room was not found or invalid UUID -> redirect to not-found
+		if (isRoomError || !room) {
+			navigate('/not-found', { replace: true });
+			return;
+		}
+
+		// If room has already finished when navigating to this link
+		if (isFinished) {
+			if (isTeacher) {
+				navigate(`/dashboard/reports/${roomUuid}`, { replace: true });
+			} else {
+				navigate('/not-found', { replace: true });
+			}
+		}
+	}, [isRoomLoading, isAuthLoading, isRoomError, room, isFinished, isTeacher, roomUuid, navigate]);
 
 	const {
 		status,
@@ -37,7 +69,10 @@ export function GamePlayPage() {
 		remainingSeconds,
 		kickedReason,
 		submitAnswer,
-	} = useGameSession({ roomUuid });
+	} = useGameSession({
+		roomUuid,
+		enabled: !isFinished && !isRoomError && !isRoomLoading && !isAuthLoading,
+	});
 
 	const currentRoomId = roomId || room?.id || 0;
 	const quizName = room?.quiz?.name || 'Вікторина';
@@ -57,14 +92,14 @@ export function GamePlayPage() {
 
 	// If anonymous user opens /game/play/:roomUuid without having joined, redirect to /join
 	useEffect(() => {
-		if (!isRoomLoading && room && roomUuid) {
+		if (!isRoomLoading && !isFinished && room && roomUuid) {
 			const isLoggedIn = !!getAuthToken();
 			const hasGameToken = !!getGameSessionToken(roomUuid);
 			if (!isLoggedIn && !hasGameToken) {
 				navigate(`/join?code=${room.joinCode}`, { replace: true });
 			}
 		}
-	}, [isRoomLoading, room, roomUuid, navigate]);
+	}, [isRoomLoading, isFinished, room, roomUuid, navigate]);
 
 	// Cleanup token when participant is kicked
 	useEffect(() => {
@@ -106,7 +141,7 @@ export function GamePlayPage() {
 		);
 	}
 
-	if (isRoomLoading) {
+	if (isRoomLoading || isAuthLoading) {
 		return (
 			<div className={styles['game-root']}>
 				<div className={styles['game-main-content']}>
@@ -114,6 +149,10 @@ export function GamePlayPage() {
 				</div>
 			</div>
 		);
+	}
+
+	if (isRoomError || !room || isFinished) {
+		return null;
 	}
 
 	return (

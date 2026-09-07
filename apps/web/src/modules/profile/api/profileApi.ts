@@ -1,5 +1,5 @@
 import { baseApi } from '../../../shared/api/base-api';
-import type { QuizzesResponse } from '../models';
+import type { QuizzesResponse, TeacherProfileStatsDto } from '../models';
 
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,8 +13,12 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Quiz'],
     }),
+    getProfileStats: builder.query<TeacherProfileStatsDto, void>({
+      query: () => '/users/profile/stats',
+      providesTags: ['Quiz', 'Classroom'],
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetMyQuizzesQuery } = profileApi;
+export const { useGetMyQuizzesQuery, useGetProfileStatsQuery } = profileApi;

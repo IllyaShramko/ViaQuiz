@@ -1,5 +1,6 @@
 import { UserService } from "./user.service";
 import { StudentRepository } from "../students/student.repository";
+import { UnauthorizedError } from "../../errors/customErrors";
 import type { UserControllerContract } from "./types/users.contracts";
 
 export const UserController: UserControllerContract = {
@@ -55,6 +56,20 @@ export const UserController: UserControllerContract = {
 				...user,
 				role: (user as any)?.role || "TEACHER",
 			});
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async getProfileStats(_req, res, next) {
+		try {
+			const userId = res.locals.userId;
+			if (!userId) {
+				throw new UnauthorizedError("Teacher authentication required");
+			}
+
+			const stats = await UserService.getProfileStats(userId);
+			res.status(200).json(stats);
 		} catch (error) {
 			next(error);
 		}

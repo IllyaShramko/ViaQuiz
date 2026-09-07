@@ -253,12 +253,22 @@
 	overflow: hidden;
 }
 
+.overview-toolbar {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
 .overview-legend {
 	display: flex;
 	flex-direction: row;
 	gap: 1.5rem;
-	margin-bottom: 1rem;
 	align-items: center;
+	flex-wrap: wrap;
 }
 
 .overview-legend-item {
@@ -279,20 +289,176 @@
 .overview-legend-color--incorrect { background: #ef4444; }
 .overview-legend-color--skipped { background: #64748b; }
 
-.overview-sort-btn {
-	background: transparent;
-	border: none;
-	color: var(--color-text-muted);
-	cursor: pointer;
+/* Sort controls */
+.overview-sort-group {
 	display: flex;
 	align-items: center;
-	gap: 0.25rem;
+	gap: 0.5rem;
+	margin-left: auto;
+}
+
+.overview-sort-dropdown-container {
+	position: relative;
+}
+
+.overview-sort-btn {
+	background-color: var(--color-bg-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
 	font-size: 0.875rem;
+	padding: 0.45rem 0.85rem;
+	transition: all var(--transition-fast);
+	white-space: nowrap;
+}
+
+.overview-sort-btn:hover,
+.overview-sort-btn--active {
+	color: var(--color-text-primary);
+	border-color: var(--color-accent);
+	background-color: var(--color-bg-hover);
+}
+
+.overview-sort-btn-label {
+	color: var(--color-text-muted);
+}
+
+.overview-sort-btn-value {
+	color: var(--color-text-primary);
+	font-weight: 600;
+}
+
+.overview-sort-chevron {
+	transition: transform var(--transition-fast);
+	color: var(--color-text-muted);
+}
+
+.overview-sort-chevron--open {
+	transform: rotate(180deg);
+}
+
+.overview-sort-menu {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	min-width: 160px;
+	background-color: var(--color-bg-elevated);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+	padding: 0.35rem;
+	z-index: 50;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	animation: overviewFadeIn 0.15s ease-out;
+}
+
+@keyframes overviewFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.overview-sort-option {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 0.5rem 0.75rem;
+	background: transparent;
+	border: none;
+	border-radius: var(--radius-md);
+	color: var(--color-text-secondary);
+	font-size: 0.875rem;
+	text-align: left;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+.overview-sort-option:hover {
+	color: var(--color-text-primary);
+	background-color: var(--color-bg-hover);
+}
+
+.overview-sort-option--active {
+	color: var(--color-accent);
+	background-color: rgba(134, 59, 255, 0.12);
+	font-weight: 600;
+}
+
+.overview-sort-order-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	background-color: var(--color-bg-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	flex-shrink: 0;
+}
+
+.overview-sort-order-btn:hover {
+	color: var(--color-text-primary);
+	border-color: var(--color-accent);
+	background-color: var(--color-bg-hover);
+}
+
+.overview-sort-order-btn svg {
+	width: 18px;
+	height: 18px;
+}
+
+.overview-th-sortable {
+	cursor: pointer;
+	user-select: none;
 	transition: color var(--transition-fast);
 }
 
-.overview-sort-btn:hover {
+.overview-th-sortable:hover {
 	color: var(--color-text-primary);
+}
+
+.overview-th-content {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+}
+
+.overview-th-content--center {
+	justify-content: center;
+	width: 100%;
+}
+
+.overview-th-sort-icon {
+	display: inline-flex;
+	align-items: center;
+	color: var(--color-accent);
+	font-size: 0.875rem;
+}
+
+.overview-name-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.overview-student-name {
+	font-size: 0.75rem;
+	color: var(--color-text-muted);
 }
 
 .overview-table {

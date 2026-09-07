@@ -1,12 +1,14 @@
 export {
   profileApi,
   useGetMyQuizzesQuery,
+  useGetProfileStatsQuery,
 } from './api';
 
 export type {
   QuizzesResponse,
   QuizAuthor,
   PublicQuizSummary,
+  TeacherProfileStatsDto,
 } from './models';
 
 export {

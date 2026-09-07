@@ -1,2 +1,2 @@
 export { SessionReportPage } from './SessionReportPage';
-export type { SessionReportTab } from './SessionReportPage.types';
+export type { SessionReportTab, ReportSortBy, OverviewTabProps } from './SessionReportPage.types';

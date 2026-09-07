@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import type { TeacherProfileStatsDto } from "@viaquiz/shared-types";
 import type { AuthenticatedUser } from "../../../types/token";
 import type { PaginationLocals } from "../../../middlewares/paginationMiddleware";
 import type {
@@ -40,6 +41,7 @@ export type UserServiceContract = {
 	register: (credentials: RegisterCredentials) => Promise<TokenDTO>;
 	login: (credentials: LoginCredentials) => Promise<TokenDTO>;
 	me: (userId: number) => Promise<User>;
+	getProfileStats: (userId: number) => Promise<TeacherProfileStatsDto>;
 	getUsers: (pagination: {
 		skip: number;
 		take: number;
@@ -70,6 +72,11 @@ export type UserControllerContract = {
 	me: (
 		req: Request<object, User, object, object, AuthenticatedUser>,
 		res: Response<User, AuthenticatedUser>,
+		next: NextFunction,
+	) => Promise<void>;
+	getProfileStats: (
+		req: Request<object, TeacherProfileStatsDto, object, object, AuthenticatedUser>,
+		res: Response<TeacherProfileStatsDto, AuthenticatedUser>,
 		next: NextFunction,
 	) => Promise<void>;
 	getUsers: (

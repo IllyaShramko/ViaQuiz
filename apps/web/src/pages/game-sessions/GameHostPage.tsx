@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../modules/auth';
 import {
 	useGetRoomByUuidQuery,
 	useGameSession,
@@ -7,16 +9,48 @@ import {
 	ReviewHostView,
 	FinalResultsHost,
 } from '../../modules/game-session';
+import { getAuthToken } from '../../shared/api/headers';
 import styles from '../../modules/game-session/ui/GameSession.module.css';
 
 export function GameHostPage() {
 	const { roomUuid } = useParams<{ roomUuid: string }>();
 	const navigate = useNavigate();
+	const { user, isLoading: isAuthLoading } = useAuth();
 
-	const { data: room, isLoading: isRoomLoading } = useGetRoomByUuidQuery(
-		roomUuid || '',
-		{ skip: !roomUuid, refetchOnMountOrArgChange: true },
-	);
+	const {
+		data: room,
+		isLoading: isRoomLoading,
+		isError: isRoomError,
+	} = useGetRoomByUuidQuery(roomUuid || '', {
+		skip: !roomUuid,
+		refetchOnMountOrArgChange: true,
+	});
+
+	const isFinished = room?.status === 'FINISHED';
+	const isTeacher =
+		user?.role === 'TEACHER' ||
+		user?.role === 'ADMIN' ||
+		(user?.id != null && room?.hostId != null && user.id === room.hostId);
+
+	// Redirect when room has already finished or does not exist
+	useEffect(() => {
+		if (isRoomLoading || isAuthLoading) return;
+
+		// If room was not found or invalid UUID -> redirect to not-found
+		if (isRoomError || !room) {
+			navigate('/not-found', { replace: true });
+			return;
+		}
+
+		// If room has already finished when navigating to this link
+		if (isFinished) {
+			if (isTeacher) {
+				navigate(`/dashboard/reports/${roomUuid}`, { replace: true });
+			} else {
+				navigate('/not-found', { replace: true });
+			}
+		}
+	}, [isRoomLoading, isAuthLoading, isRoomError, room, isFinished, isTeacher, roomUuid, navigate]);
 
 	const {
 		status,
@@ -36,7 +70,11 @@ export function GameHostPage() {
 		endQuestion,
 		extendTime,
 		kickParticipant,
-	} = useGameSession({ roomUuid });
+	} = useGameSession({
+		roomUuid,
+		explicitToken: getAuthToken() || undefined,
+		enabled: !isFinished && !isRoomError && !isRoomLoading && !isAuthLoading,
+	});
 
 	const currentRoomId = roomId || room?.id || 0;
 	const joinCode = room?.joinCode || '000000';
@@ -65,7 +103,7 @@ export function GameHostPage() {
 		);
 	}
 
-	if (isRoomLoading) {
+	if (isRoomLoading || isAuthLoading) {
 		return (
 			<div className={styles['game-root']}>
 				<div className={styles['game-main-content']}>
@@ -73,6 +111,10 @@ export function GameHostPage() {
 				</div>
 			</div>
 		);
+	}
+
+	if (isRoomError || !room || isFinished) {
+		return null;
 	}
 
 	return (

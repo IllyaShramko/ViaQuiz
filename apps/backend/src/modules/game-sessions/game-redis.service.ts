@@ -327,18 +327,11 @@ export class GameRedisService {
 	 */
 	public async clearSession(roomId: number): Promise<void> {
 		try {
-			const state = await this.getRoomState(roomId);
-			const totalQ = state?.totalQuestions || 50;
-			const keysToDelete = [
-				this.getKey(roomId, "state"),
-				this.getKey(roomId, "participants"),
-				this.getKey(roomId, "scores"),
-			];
-			for (let i = 0; i <= totalQ; i++) {
-				keysToDelete.push(this.getKey(roomId, `q:${i}:answers`));
-				keysToDelete.push(this.getKey(roomId, `q:${i}:data`));
+			const pattern = this.getKey(roomId, "*");
+			const keys = await redis.keys(pattern);
+			if (keys.length > 0) {
+				await redis.del(...keys);
 			}
-			await redis.del(...keysToDelete);
 		} catch (error) {
 			logger.error(`[GameRedisService] Error clearing session for room ${roomId}:`, error);
 		}
