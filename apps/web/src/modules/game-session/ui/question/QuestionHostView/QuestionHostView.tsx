@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ImageLightboxModal } from '../../modals';
-import { ParticipantsSidebar } from '../../sidebar';
 import type { QuestionHostViewProps } from './QuestionHostView.types';
 import timerIcon from '../../../../../assets/icons/timer.svg';
 import nextIcon from '../../../../../assets/icons/next.svg';
@@ -12,11 +11,11 @@ export function QuestionHostView({
 	totalQuestions,
 	participants,
 	answeredCount,
-	answeredParticipantIds,
+	answeredParticipantIds: _answeredParticipantIds,
 	remainingSeconds,
 	onExtendTime,
 	onSkipQuestion,
-	onKickParticipant,
+	onKickParticipant: _onKickParticipant,
 }: QuestionHostViewProps) {
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 	const [isAnswerRevealed, setIsAnswerRevealed] = useState<boolean>(false);
@@ -27,8 +26,7 @@ export function QuestionHostView({
 	}, [questionIndex, (question as { questionId?: number; id?: number }).questionId, (question as { id?: number }).id]);
 
 	return (
-		<div className={styles['game-layout-body']}>
-			<div className={styles['game-main-content']}>
+		<div className={styles['game-main-content']}>
 				<div className={styles['question-container']}>
 					{/* Question Card */}
 					<div className={styles['question-header-card']}>
@@ -167,21 +165,12 @@ export function QuestionHostView({
 						</button>
 					</div>
 				</div>
+
+				<ImageLightboxModal
+					isOpen={!!lightboxImage}
+					imageUrl={lightboxImage}
+					onClose={() => setLightboxImage(null)}
+				/>
 			</div>
-
-			{/* Sidebar Participants */}
-			<ParticipantsSidebar
-				participants={participants}
-				status="PROGRESS"
-				answeredParticipantIds={answeredParticipantIds}
-				onKickParticipant={onKickParticipant}
-			/>
-
-			<ImageLightboxModal
-				isOpen={!!lightboxImage}
-				imageUrl={lightboxImage}
-				onClose={() => setLightboxImage(null)}
-			/>
-		</div>
-	);
-}
+		);
+	}

@@ -1,0 +1,134 @@
+/* ==========================================================================
+   ParticipantsSidebar Scoped Styles
+   ========================================================================== */
+
+.game-sidebar {
+  width: 300px;
+  background: var(--color-bg-elevated, #12121a);
+  border-left: 1px solid var(--color-border, #2a2a3a);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  transition: transform var(--transition-normal);
+}
+
+.game-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border, #2a2a3a);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.game-sidebar-settings-icon {
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.game-sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-lg, 0.5rem);
+  font-size: 0.95rem;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  will-change: transform;
+}
+
+.participant-item:hover {
+  background: var(--color-bg-hover, #22222e);
+}
+
+.participant-item-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.participant-item-clickable:hover {
+  background: var(--color-bg-hover, #22222e);
+  border-color: rgba(134, 59, 255, 0.3);
+}
+
+.participant-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.participant-badge {
+  background: var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm, 0.25rem);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.participant-name {
+  font-weight: 600;
+  color: var(--color-text-primary, #f0f0f5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.participant-item-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.participant-score-text {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent, #863bff);
+  white-space: nowrap;
+}
+
+.participant-status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInCheckMark 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInCheckMark {
+  from {
+    opacity: 0;
+    transform: translateX(8px) scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.game-sidebar-empty {
+  color: var(--color-text-muted, #606078);
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+}

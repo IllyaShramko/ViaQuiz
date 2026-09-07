@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useLayoutEffect, type DependencyList } from 'react';
 
 /**
  * Lightweight FLIP (First-Last-Invert-Play) hook for animating
@@ -8,25 +8,8 @@ import { useRef, useLayoutEffect } from 'react';
  *
  * ## How it works
  * Each child MUST have a `data-flip-key` attribute with a stable unique ID.
- * After every React commit the hook compares each child's new bounding rect
- * with the rect stored from the previous commit (keyed by `data-flip-key`).
- * If a child moved, it animates `translate()` from the old position to the new.
- * New children get a subtle scale-in entrance.
- *
- * Because `useLayoutEffect` runs after DOM mutations but before the browser
- * paints, the user never sees the "jump" — only the smooth animation.
- *
- * ## Usage
- * ```tsx
- * const listRef = useFlipAnimation<HTMLDivElement>({ duration: 400 });
- * return (
- *   <div ref={listRef}>
- *     {items.map(item => (
- *       <div key={item.id} data-flip-key={item.id}>…</div>
- *     ))}
- *   </div>
- * );
- * ```
+ * When dependencies change (or on each commit), the hook measures new un-transformed rects,
+ * compares them with the previous resting positions, and animates changes smoothly.
  */
 
 export interface UseFlipAnimationOptions {
@@ -34,18 +17,20 @@ export interface UseFlipAnimationOptions {
 	duration?: number;
 	/** CSS easing string (default: cubic-bezier(0.16, 1, 0.3, 1) — expo out) */
 	easing?: string;
+	/** Optional dependencies to limit FLIP calculation only to data/order changes */
+	deps?: DependencyList;
 }
 
 export function useFlipAnimation<T extends HTMLElement>({
 	duration = 350,
 	easing = 'cubic-bezier(0.16, 1, 0.3, 1)',
+	deps,
 }: UseFlipAnimationOptions = {}) {
 	const containerRef = useRef<T | null>(null);
 
 	/**
-	 * Stored rects keyed by `data-flip-key` value.
-	 * Updated at the end of every useLayoutEffect so they are always
-	 * ready for comparison on the next render.
+	 * Stored resting rects keyed by `data-flip-key` value.
+	 * Captured BEFORE animations start, ensuring we always compare true resting positions.
 	 */
 	const prevRectsRef = useRef<Map<string, DOMRect>>(new Map());
 
@@ -56,13 +41,34 @@ export function useFlipAnimation<T extends HTMLElement>({
 		const children = Array.from(container.children) as HTMLElement[];
 		const prevRects = prevRectsRef.current;
 
-		// Only animate if we have previously stored positions (skip first mount)
+		// 1. Cancel any active running WAAPI animations before measuring natural DOM layout
+		for (const child of children) {
+			if (typeof child.getAnimations === 'function') {
+				const activeAnimations = child.getAnimations();
+				for (const anim of activeAnimations) {
+					anim.cancel();
+				}
+			}
+		}
+
+		// 2. Measure TRUE resting positions BEFORE applying any new animations
+		const currentRects = new Map<string, DOMRect>();
+		for (const child of children) {
+			const key = child.dataset.flipKey;
+			if (key) {
+				currentRects.set(key, child.getBoundingClientRect());
+			}
+		}
+
+		// 3. Compare with prevRects and animate moved / new elements
 		if (prevRects.size > 0) {
 			for (const child of children) {
 				const key = child.dataset.flipKey;
 				if (!key) continue;
 
-				const newRect = child.getBoundingClientRect();
+				const newRect = currentRects.get(key);
+				if (!newRect) continue;
+
 				const prevRect = prevRects.get(key);
 
 				if (!prevRect) {
@@ -80,8 +86,8 @@ export function useFlipAnimation<T extends HTMLElement>({
 				const deltaX = prevRect.left - newRect.left;
 				const deltaY = prevRect.top - newRect.top;
 
-				// Skip if the element didn't actually move
-				if (Math.abs(deltaX) < 0.5 && Math.abs(deltaY) < 0.5) continue;
+				// Skip if the element didn't actually move (using 1px threshold to avoid subpixel noise)
+				if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) continue;
 
 				// Invert + Play: start at old position, animate to natural (new) position
 				child.animate(
@@ -94,16 +100,9 @@ export function useFlipAnimation<T extends HTMLElement>({
 			}
 		}
 
-		// Store current positions for the next render's comparison
-		const nextRects = new Map<string, DOMRect>();
-		for (const child of children) {
-			const key = child.dataset.flipKey;
-			if (key) {
-				nextRects.set(key, child.getBoundingClientRect());
-			}
-		}
-		prevRectsRef.current = nextRects;
-	});
+		// 4. Save TRUE resting positions (measured BEFORE animations were launched)
+		prevRectsRef.current = currentRects;
+	}, deps);
 
 	return containerRef;
 }

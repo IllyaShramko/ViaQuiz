@@ -6,9 +6,10 @@ import {
 	IncorrectCrossIcon,
 	SettingsIcon,
 } from '../../../../../shared/ui/icons';
+import { useFlipAnimation } from '../../../../../shared/hooks';
 import type { ParticipantDto } from '@viaquiz/shared-types';
 import type { ParticipantsSidebarProps } from './ParticipantsSidebar.types';
-import styles from '../../GameSession.module.css';
+import styles from './ParticipantsSidebar.module.css';
 
 /**
  * Unified sidebar for all game phases (lobby, question, review).
@@ -17,9 +18,7 @@ import styles from '../../GameSession.module.css';
  * - During REVIEWING: shows green checkmark / red cross based on correctness.
  * - On hover: reveals the participant's score instead of the icon.
  * - On click: opens kick confirmation modal.
- *
- * TODO: integrate useFlipAnimation hook for smooth reorder transitions
- * once the FLIP approach is validated.
+ * - Animates participant reordering and additions smoothly using useFlipAnimation.
  */
 export function ParticipantsSidebar({
 	participants,
@@ -40,6 +39,12 @@ export function ParticipantsSidebar({
 			(a, b) => b.score - a.score || a.nickname.localeCompare(b.nickname),
 		);
 	}, [participants, status]);
+
+	// FLIP animation for smooth list reordering and additions (only triggered when participant list/order changes)
+	const listRef = useFlipAnimation<HTMLDivElement>({
+		duration: 350,
+		deps: [displayParticipants],
+	});
 
 	/**
 	 * Determine what to render in the right-hand side of each participant row.
@@ -103,10 +108,11 @@ export function ParticipantsSidebar({
 					<span>Учасники: ({participants.length})</span>
 					<SettingsIcon size={18} className={styles['game-sidebar-settings-icon']} />
 				</div>
-				<div className={styles['game-sidebar-list']}>
+				<div ref={listRef} className={styles['game-sidebar-list']}>
 					{displayParticipants.map((p, idx) => (
 						<div
 							key={p.participantId}
+							data-flip-key={p.participantId}
 							className={`${styles['participant-item']} ${styles['participant-item-clickable']}`}
 							onClick={() => setKickTarget(p)}
 							onMouseEnter={() => setHoveredId(p.participantId)}

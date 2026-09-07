@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Link } from 'react-router-dom';
 import { QrCodeModal } from '../../modals';
-import { ParticipantsSidebar } from '../../sidebar';
 import { CopyIcon, CheckIcon, PlayIcon } from '../../../../../shared/ui/icons';
 import { copyToClipboard } from '../../../../../shared/tools';
 import type { HostLobbyProps } from './HostLobby.types';
@@ -11,9 +10,9 @@ import styles from './HostLobby.module.css';
 export function HostLobby({
 	joinCode,
 	roomUuid: _roomUuid,
-	participants,
+	participants: _participants,
 	onStartGame,
-	onKickParticipant,
+	onKickParticipant: _onKickParticipant,
 }: HostLobbyProps) {
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [isUrlCopied, setIsUrlCopied] = useState(false);
@@ -61,9 +60,8 @@ export function HostLobby({
 	};
 
 	return (
-		<div className={styles['game-layout-body']}>
-			<div className={styles['game-main-content']}>
-				<div className={styles['lobby-host-card']}>
+		<div className={styles['game-main-content']}>
+			<div className={styles['lobby-host-card']}>
 					{/* Step 1: Join via link */}
 					<div className={styles['lobby-step-section']}>
 						<div className={styles['lobby-step-header']}>
@@ -148,21 +146,13 @@ export function HostLobby({
 						<span>Почати вікторину</span>
 					</button>
 				</div>
+
+				{/* QR Code Modal */}
+				<QrCodeModal
+					isOpen={isQrModalOpen}
+					onClose={() => setIsQrModalOpen(false)}
+					joinUrl={joinUrl}
+				/>
 			</div>
-
-			{/* Participants Sidebar */}
-			<ParticipantsSidebar
-				participants={participants}
-				status="AWAITING"
-				onKickParticipant={onKickParticipant}
-			/>
-
-			{/* QR Code Modal */}
-			<QrCodeModal
-				isOpen={isQrModalOpen}
-				onClose={() => setIsQrModalOpen(false)}
-				joinUrl={joinUrl}
-			/>
-		</div>
-	);
-}
+		);
+	}

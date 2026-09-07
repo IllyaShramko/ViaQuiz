@@ -6,9 +6,9 @@ export interface QuestionHostViewProps {
   totalQuestions: number;
   participants: ParticipantDto[];
   answeredCount: number;
-  answeredParticipantIds: Set<number>;
+  answeredParticipantIds?: Set<number>;
   remainingSeconds: number;
   onExtendTime: (seconds?: number) => void;
   onSkipQuestion: () => void;
-  onKickParticipant: (participantId: number) => void;
+  onKickParticipant?: (participantId: number) => void;
 }

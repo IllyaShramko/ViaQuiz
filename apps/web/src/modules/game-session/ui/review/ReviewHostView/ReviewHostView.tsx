@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import { ImageLightboxModal } from '../../modals';
-import { ParticipantsSidebar } from '../../sidebar';
 import type { ReviewHostViewProps } from './ReviewHostView.types';
 import correctIcon from '../../../../../assets/icons/correct_answers.svg';
 import wrongIcon from '../../../../../assets/icons/wrong_answers.svg';
@@ -20,7 +19,7 @@ export function ReviewHostView({
 	participants,
 	remainingSeconds,
 	onNextQuestion,
-	onKickParticipant,
+	onKickParticipant: _onKickParticipant,
 }: ReviewHostViewProps) {
 	const isLastQuestion =
 		isLastQuestionProp ??
@@ -117,9 +116,8 @@ export function ReviewHostView({
 		'—';
 
 	return (
-		<div className={styles['game-layout-body']}>
-			<div className={styles['game-main-content']}>
-				<div className={styles['teacher-review-container']}>
+		<div className={styles['game-main-content']}>
+			<div className={styles['teacher-review-container']}>
 					{/* Left Column: Donut Chart & Stats */}
 					<div className={styles['review-stats-card']}>
 						<div className={styles['review-donut-wrapper']}>
@@ -468,21 +466,12 @@ export function ReviewHostView({
 						</button>
 					</div>
 				</div>
+
+				<ImageLightboxModal
+					isOpen={!!lightboxImage}
+					imageUrl={lightboxImage}
+					onClose={() => setLightboxImage(null)}
+				/>
 			</div>
-
-			{/* Sidebar Participants */}
-			<ParticipantsSidebar
-				participants={participants}
-				status="REVIEWING"
-				reviewData={reviewData}
-				onKickParticipant={onKickParticipant}
-			/>
-
-			<ImageLightboxModal
-				isOpen={!!lightboxImage}
-				imageUrl={lightboxImage}
-				onClose={() => setLightboxImage(null)}
-			/>
-		</div>
-	);
-}
+		);
+	}

@@ -8,6 +8,7 @@ import {
 	QuestionHostView,
 	ReviewHostView,
 	FinalResultsHost,
+	ParticipantsSidebar,
 } from '../../modules/game-session';
 import { getAuthToken } from '../../shared/api/headers';
 import styles from '../../modules/game-session/ui/GameSession.module.css';
@@ -119,65 +120,72 @@ export function GameHostPage() {
 
 	return (
 		<div className={styles['game-root']}>
-			{/* Views based on status */}
-			{status === 'AWAITING' && (
-				<HostLobby
-					joinCode={joinCode}
-					roomUuid={roomUuid || ''}
-					participants={participants}
-					onStartGame={() => startGame(currentRoomId)}
-					onKickParticipant={(pId) => kickParticipant(currentRoomId, pId)}
-				/>
-			)}
-
-			{status === 'PROGRESS' && (
-				currentQuestion ? (
-					<QuestionHostView
-						question={currentQuestion}
-						questionIndex={currentQuestionIndex}
-						totalQuestions={totalQuestions}
-						participants={participants}
-						answeredCount={answeredCount}
-						answeredParticipantIds={answeredParticipantIds}
-						remainingSeconds={remainingSeconds}
-						onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
-						onSkipQuestion={() => endQuestion(currentRoomId)}
-						onKickParticipant={(pId: number) => kickParticipant(currentRoomId, pId)}
-					/>
-				) : (
-					<div className={styles['game-main-content']}>
-						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження запитання...</div>
-					</div>
-				)
-			)}
-
-			{status === 'REVIEWING' && (
-				currentQuestion && reviewData ? (
-					<ReviewHostView
-						question={currentQuestion}
-						questionIndex={currentQuestionIndex}
-						totalQuestions={totalQuestions}
-						reviewData={reviewData}
-						participants={participants}
-						remainingSeconds={remainingSeconds}
-						onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
-						onNextQuestion={() => nextQuestion(currentRoomId)}
-						onKickParticipant={(pId: number) => kickParticipant(currentRoomId, pId)}
-					/>
-				) : (
-					<div className={styles['game-main-content']}>
-						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження огляду результатів...</div>
-					</div>
-				)
-			)}
-
-			{status === 'FINISHED' && (
+			{/* Final results screen (full podium view without sidebar) */}
+			{status === 'FINISHED' ? (
 				<FinalResultsHost
 					quizName={quizName}
 					totalQuestions={totalQuestions}
 					leaderboard={finishedData?.leaderboard || participants}
 					roomUuid={roomUuid}
 				/>
+			) : (
+				<div className={styles['game-layout-body']}>
+					{/* Main interactive area switching between lobby, question, and review */}
+					{status === 'AWAITING' && (
+						<HostLobby
+							joinCode={joinCode}
+							roomUuid={roomUuid || ''}
+							onStartGame={() => startGame(currentRoomId)}
+						/>
+					)}
+
+					{status === 'PROGRESS' && (
+						currentQuestion ? (
+							<QuestionHostView
+								question={currentQuestion}
+								questionIndex={currentQuestionIndex}
+								totalQuestions={totalQuestions}
+								participants={participants}
+								answeredCount={answeredCount}
+								remainingSeconds={remainingSeconds}
+								onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
+								onSkipQuestion={() => endQuestion(currentRoomId)}
+							/>
+						) : (
+							<div className={styles['game-main-content']}>
+								<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження запитання...</div>
+							</div>
+						)
+					)}
+
+					{status === 'REVIEWING' && (
+						currentQuestion && reviewData ? (
+							<ReviewHostView
+								question={currentQuestion}
+								questionIndex={currentQuestionIndex}
+								totalQuestions={totalQuestions}
+								reviewData={reviewData}
+								participants={participants}
+								remainingSeconds={remainingSeconds}
+								onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
+								onNextQuestion={() => nextQuestion(currentRoomId)}
+							/>
+						) : (
+							<div className={styles['game-main-content']}>
+								<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження огляду результатів...</div>
+							</div>
+						)
+					)}
+
+					{/* Persistent Sidebar across all non-finished states */}
+					<ParticipantsSidebar
+						participants={participants}
+						status={status}
+						answeredParticipantIds={answeredParticipantIds}
+						reviewData={reviewData}
+						onKickParticipant={(pId) => kickParticipant(currentRoomId, pId)}
+					/>
+				</div>
 			)}
 		</div>
 	);
