@@ -264,7 +264,7 @@ export function AddStudentModal({
                   </span>
                 )}
                 <span className={styles['hint-text']}>
-                  Можна змінити вручну або залишити автоматичний
+                  Можна змінити вручну (на кінець додадуться 3 цифри для унікальності)
                 </span>
               </div>
 

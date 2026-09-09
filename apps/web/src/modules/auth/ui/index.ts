@@ -1,5 +1,6 @@
 export { AuthCard, type AuthCardProps } from './AuthCard';
 export { PasswordInput, type PasswordInputProps } from './PasswordInput';
+export { VerificationCodeInput, type VerificationCodeInputProps } from './VerificationCodeInput';
 export { LoginForm, type LoginFormProps, type AuthRole } from './LoginForm';
 export {
   RegisterForm,

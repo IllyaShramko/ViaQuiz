@@ -63,6 +63,12 @@ export function generateStudentLogin(firstName: string, lastName: string): strin
 	return transLast || transFirst || `student_${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
+export function generateRandomDigits(length = 3): string {
+	const min = Math.pow(10, length - 1);
+	const max = Math.pow(10, length) - 1;
+	return Math.floor(min + Math.random() * (max - min + 1)).toString();
+}
+
 export function generateSimplePassword(length = 8): string {
 	// Simple, readable alphanumeric characters (excluding confusing chars like 0, O, 1, l, I)
 	const chars = "23456789abcdefghjkmnpqrstuvwxyz";

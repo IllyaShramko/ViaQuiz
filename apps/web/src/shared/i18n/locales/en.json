@@ -192,6 +192,11 @@
     "error_confirm_password_required": "Please confirm your password",
     "error_passwords_match": "Passwords do not match",
     "error_code_required": "Verification code is required",
-    "error_code_length": "Code must be 6 digits"
+    "error_code_length": "Code must be 6 digits",
+    "error_code_invalid": "Invalid verification code",
+    "error_code_attempts": "Invalid verification code. Remaining attempts: {attempts}",
+    "error_code_attempts_exceeded": "Maximum verification attempts exceeded. Please request a new code",
+    "error_code_expired": "Verification code has expired. Please request a new code",
+    "error_code_not_found": "Verification code not found. Please request a new code"
   }
 }

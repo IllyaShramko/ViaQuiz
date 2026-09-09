@@ -192,6 +192,11 @@
     "error_confirm_password_required": "Підтвердіть пароль",
     "error_passwords_match": "Паролі не збігаються",
     "error_code_required": "Код підтвердження обов'язковий",
-    "error_code_length": "Код має містити 6 цифр"
+    "error_code_length": "Код має містити 6 цифр",
+    "error_code_invalid": "Невірний код підтвердження",
+    "error_code_attempts": "Невірний код. Залишилося спроб: {attempts}",
+    "error_code_attempts_exceeded": "Вичерпано максимальну кількість спроб. Надішліть новий код",
+    "error_code_expired": "Час дії коду вичерпано. Надішліть новий код",
+    "error_code_not_found": "Код не знайдено. Надішліть новий код"
   }
 }

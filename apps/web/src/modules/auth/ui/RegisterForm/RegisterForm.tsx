@@ -40,10 +40,15 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
     handleSubmit,
     trigger,
     getValues,
+    setValue,
+    watch,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormInputs>({
     mode: 'onTouched',
+    defaultValues: {
+      code: '',
+    },
   });
 
   useEffect(() => {
@@ -148,6 +153,7 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
       setServerError(null);
       const response = await sendCode({ email }).unwrap();
       setCooldown(response.cooldownSeconds || 60);
+      setValue('code', '', { shouldValidate: false });
     } catch (err: any) {
       const message =
         err.data?.error?.message ||
@@ -211,7 +217,9 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
 
       <RegisterSteps currentStep={currentStep} />
 
-      {serverError && <div className="auth-error">{serverError}</div>}
+      {serverError && currentStep !== 2 && (
+        <div className="auth-error">{serverError}</div>
+      )}
 
       <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
         <StepCredentials
@@ -234,11 +242,16 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
 
         <StepVerification
           register={register}
+          setValue={setValue}
+          watch={watch}
           errors={errors}
           targetEmail={targetEmail}
           cooldown={cooldown}
           onResend={handleResendCode}
           onBack={() => setCurrentStep(1)}
+          onSubmitForm={() => handleSubmit(onSubmit)()}
+          verificationError={currentStep === 2 ? serverError : null}
+          onClearError={() => setServerError(null)}
           isSubmitting={isSubmitting}
           isVisible={currentStep === 2}
         />

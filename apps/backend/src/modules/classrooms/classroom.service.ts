@@ -3,6 +3,7 @@ import { CLASSROOM_LIMITS } from "../../config/limits";
 import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors/customErrors";
 import {
 	generateClassCode,
+	generateRandomDigits,
 	generateSimplePassword,
 	generateStudentLogin,
 } from "../../tools/credentialsGenerator";
@@ -106,26 +107,32 @@ export const ClassroomService: ClassroomServiceContract = {
 			);
 		}
 
-		let finalLogin = data.login?.trim().toLowerCase();
+		const baseLogin =
+			data.login?.trim().toLowerCase() ||
+			generateStudentLogin(data.firstName, data.lastName);
+
+		let finalLogin = "";
+		let attempts = 0;
+		const maxAttempts = 15;
+
+		// Append 3 random digits to guarantee login uniqueness
+		while (attempts < maxAttempts) {
+			const digits = generateRandomDigits(3);
+			const candidate = `${baseLogin}${digits}`;
+			const existing = await ClassroomRepository.findStudentByGlobalLogin(candidate);
+			if (!existing) {
+				finalLogin = candidate;
+				break;
+			}
+			attempts++;
+		}
+
+		// Fallback in case of collision
 		if (!finalLogin) {
-			let attempts = 0;
-			let isUnique = false;
-			while (!isUnique && attempts < 10) {
-				const candidate = generateStudentLogin(data.firstName, data.lastName);
-				const existing = await ClassroomRepository.findStudentByGlobalLogin(candidate);
-				if (!existing) {
-					finalLogin = candidate;
-					isUnique = true;
-				}
-				attempts++;
-			}
-			if (!finalLogin) {
-				finalLogin = `student_${Math.random().toString(36).substring(2, 9)}`;
-			}
-		} else {
+			finalLogin = `${baseLogin}${Math.floor(1000 + Math.random() * 9000)}`;
 			const existing = await ClassroomRepository.findStudentByGlobalLogin(finalLogin);
 			if (existing) {
-				throw new BadRequestError("Учень з таким логіном вже існує в системі");
+				finalLogin = `student_${Math.random().toString(36).substring(2, 9)}`;
 			}
 		}
 
