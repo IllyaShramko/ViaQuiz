@@ -143,7 +143,7 @@
   flex: 1 1 0;
   min-width: 0;
   aspect-ratio: 1 / 1;
-  max-width: 260px;
+  max-width: none;
   border-radius: var(--radius-xl, 1rem);
   border: 3px solid transparent;
   outline: none;
@@ -180,6 +180,18 @@
   box-shadow: 0 0 0 3px #fff, 0 8px 24px rgba(0, 0, 0, 0.6) !important;
   transform: scale(0.98);
   border-color: #fff;
+}
+
+/* 2 variants desktop: wide cards expanding across container */
+.variantsGridCount2 .studentVariantBtn {
+  aspect-ratio: 16 / 10;
+  max-width: none;
+}
+
+/* 3 variants desktop: expand across container */
+.variantsGridCount3 .studentVariantBtn {
+  aspect-ratio: 1 / 1;
+  max-width: none;
 }
 
 .studentVariantBtn span {
@@ -518,11 +530,79 @@
     word-break: break-word;
   }
 
-  /* If 3 variants: make the 3rd variant span both columns */
-  .variantsGrid:not(.variantsGridColumnMobile) > .studentVariantBtn:last-child:nth-child(odd) {
-    grid-column: span 2;
+  /* 2 variants on mobile: strictly 1 row with 2 items side-by-side */
+  .variantsGrid.variantsGridCount2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .variantsGridCount2 .studentVariantBtn {
+    aspect-ratio: 1 / 1;
+    min-height: clamp(100px, 15vh, 145px);
+    max-height: clamp(135px, 22vh, 190px);
+    padding: 1.5rem 0.75rem 0.75rem;
+    border-radius: var(--radius-xl, 1rem);
+    font-size: clamp(0.95rem, 3.6vw, 1.25rem);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  /* 3 variants on mobile: vertical column just like 5 variants, but slightly bigger */
+  .variantsGrid.variantsGridCount3 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    gap: clamp(0.55rem, 1.4vh, 0.75rem);
+    box-sizing: border-box;
+  }
+
+  .variantsGridCount3 .studentVariantBtn {
+    width: 100%;
+    max-width: 100%;
     aspect-ratio: auto;
-    min-height: clamp(65px, 9vh, 85px);
+    min-height: clamp(66px, 9.5vh, 84px);
+    max-height: none;
+    padding: 0.8rem 3.25rem 0.8rem 3.75rem;
+    border-radius: var(--radius-xl, 1rem);
+    font-size: clamp(1.05rem, 4vw, 1.25rem);
+    font-weight: 700;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  .variantsGridCount3 .studentVariantBtn .variantBadgeCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+
+  .variantsGridCount3 .studentVariantBtn .variantCheckboxCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 12px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .variantsGridCount3 .studentVariantBtn span {
+    text-align: left;
+    -webkit-line-clamp: 2;
   }
 
   /* When > 4 variants: 1-column full-width vertical list (like photo_4 and photo_5) */

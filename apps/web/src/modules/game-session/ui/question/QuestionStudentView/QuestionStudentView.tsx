@@ -121,6 +121,16 @@ export function QuestionStudentView({
 		onSubmitAnswer,
 	]);
 
+	const variantCount = question.variants?.length || 0;
+	const gridVariantClass =
+		variantCount === 2
+			? styles.variantsGridCount2
+			: variantCount === 3
+				? styles.variantsGridCount3
+				: variantCount > 4
+					? styles.variantsGridColumnMobile
+					: '';
+
 	return (
 		<div className={styles.gameMainContent}>
 			{alreadyAnswered && <AntiCheatOverlay />}
@@ -215,11 +225,7 @@ export function QuestionStudentView({
 					<div className={styles.variantsSectionBottom}>
 						{/* Variants Grid */}
 						<div
-							className={`${styles.variantsGrid} ${
-								(question.variants?.length || 0) > 4
-									? styles.variantsGridColumnMobile
-									: ''
-							}`}
+							className={`${styles.variantsGrid} ${gridVariantClass}`}
 						>
 							{question.variants.map((v, idx) => {
 								const colorIndex = idx % MAX_QUESTION_VARIANTS;

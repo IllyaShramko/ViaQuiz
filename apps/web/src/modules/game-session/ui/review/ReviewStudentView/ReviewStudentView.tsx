@@ -43,6 +43,16 @@ export function ReviewStudentView({
 		question.variants.map((v) => v.text).filter(Boolean).join(' / ') ||
 		'—';
 
+	const variantCount = question.variants?.length || 0;
+	const gridVariantClass =
+		variantCount === 2
+			? styles.variantsGridCount2
+			: variantCount === 3
+				? styles.variantsGridCount3
+				: variantCount > 4
+					? styles.variantsGridColumnMobile
+					: '';
+
 	return (
 		<div className={styles.gameMainContent}>
 			{/* Overlay to add blur and backdrop */}
@@ -160,11 +170,7 @@ export function ReviewStudentView({
 				) : (
 					<div className={styles.variantsSectionBottom}>
 						<div
-							className={`${styles.variantsGrid} ${
-								(question.variants?.length || 0) > 4
-									? styles.variantsGridColumnMobile
-									: ''
-							}`}
+							className={`${styles.variantsGrid} ${gridVariantClass}`}
 						>
 							{question.variants.map((v, idx) => {
 								const colorIndex = idx % MAX_QUESTION_VARIANTS;

@@ -1,0 +1,480 @@
+/* ==========================================================================
+   QuestionHostView Scoped Styles
+   ========================================================================== */
+
+.gameMainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.questionContainer {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.questionHeaderCard {
+  width: 100%;
+  min-height: 150px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-2xl, 1.25rem);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.questionText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #fff;
+  margin: 0;
+  word-break: break-word;
+}
+
+.questionMediaImg {
+  max-height: 240px;
+  border-radius: var(--radius-lg);
+  margin: 1rem auto 0;
+  cursor: pointer;
+  transition: transform var(--transition-fast, 150ms ease);
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-border, #2a2a3a);
+}
+
+.questionMediaImg:hover {
+  transform: scale(1.02);
+}
+
+/* Variants Grid (Desktop) */
+.variantsGrid {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+/* Teacher Variant Card (Square by default, expands across container) */
+.teacherVariantCard {
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-2xl, 1.25rem);
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+  max-width: none;
+  min-height: 140px;
+  padding: 2.25rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3);
+  transition: transform var(--transition-fast, 150ms ease), border-color var(--transition-fast, 150ms ease);
+  box-sizing: border-box;
+}
+
+.teacherVariantCard:hover {
+  border-color: rgba(134, 59, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* 2 variants desktop: wide cards expanding across container */
+.variantsGridCount2 .teacherVariantCard {
+  aspect-ratio: 16 / 10;
+  max-width: none;
+}
+
+/* 3 variants desktop: expand across container */
+.variantsGridCount3 .teacherVariantCard {
+  aspect-ratio: 1 / 1;
+  max-width: none;
+}
+
+.variantBadgeCorner {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md, 0.375rem);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.teacherVariantText {
+  font-weight: 600;
+  font-size: clamp(0.875rem, 1.2vw, 1.05rem);
+  color: #fff;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.35;
+  margin: 0;
+  text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Typed Answer Host Active Question Styles */
+.typedHostCard {
+  width: 100%;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-2xl, 1.25rem);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.typedHostHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.typedHostTypeBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.typedHostIcon {
+  font-size: 1.1rem;
+}
+
+.typedHostRevealBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-lg, 0.75rem);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #e2e8f0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.typedHostRevealBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.typedHostRevealBtn.isRevealed {
+  background: rgba(134, 59, 255, 0.15);
+  border-color: var(--color-accent, #863bff);
+  color: #c084fc;
+}
+
+.typedHostStatusBox {
+  min-height: 4.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xl, 1rem);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.typedHostStatusBox.isRevealed {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.typedHostStatusText {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-secondary, #94a3b8);
+  font-weight: 500;
+  animation: fadeInAnswer 0.2s ease;
+}
+
+.typedHostRevealedInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  animation: fadeInAnswer 0.2s ease;
+}
+
+.typedHostRevealedLabel {
+  font-size: 1rem;
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.typedHostRevealedText {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+@keyframes fadeInAnswer {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Floating Bottom Control Bar */
+.teacherBottomControls {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  width: 195px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px 20px;
+  align-items: center;
+  justify-content: center;
+  background-color: #434343;
+  z-index: 20;
+  border-radius: 10px;
+}
+
+.bottomTimerSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bottomTimerIcon {
+  width: 40px;
+  height: auto;
+}
+
+.bottomTimerText {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.bottomControlsButtons {
+  width: 100%;
+  height: 35px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.bottomControlBtn {
+  position: relative;
+  width: 100%;
+  height: 33px;
+  background-color: #d3d3d3;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  transition: height 0.1s ease;
+}
+
+.bottomControlBtn:hover:not(:disabled) {
+  height: 35px;
+}
+
+.bottomControlBtn:active:not(:disabled) {
+  height: 30px;
+}
+
+.bottomControlBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  height: 33px;
+}
+
+.bottomControlBtnInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 5px;
+  height: 30px;
+  width: 100%;
+}
+
+.bottomControlBtnInner p {
+  color: black;
+  font-weight: 500;
+  margin: 0;
+}
+
+.bottomNextIcon {
+  height: 10px;
+  width: auto;
+}
+
+/* ==========================================================================
+   MOBILE LAYOUT (Teacher View)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .gameMainContent {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .questionContainer {
+    gap: 0.75rem;
+  }
+
+  .questionHeaderCard {
+    min-height: 80px;
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-xl, 1rem);
+  }
+
+  .questionText {
+    font-size: clamp(1.15rem, 4vw, 1.4rem);
+  }
+
+  .questionMediaImg {
+    max-height: 180px;
+    margin: 0.75rem auto 0;
+  }
+
+  /* Default 2 columns for 4 variants */
+  .variantsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  /* 2 variants on mobile: 1 row with 2 items */
+  .variantsGrid.variantsGridCount2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  /* 3 variants on mobile: vertical column slightly bigger */
+  .variantsGrid.variantsGridCount3 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: clamp(0.55rem, 1.4vh, 0.75rem);
+  }
+
+  .variantsGridCount3 .teacherVariantCard {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    min-height: clamp(66px, 9.5vh, 84px);
+    padding: 0.8rem 1rem 0.8rem 3.75rem;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    border-radius: var(--radius-xl, 1rem);
+  }
+
+  .variantsGridCount3 .teacherVariantCard .variantBadgeCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+
+  .variantsGridCount3 .teacherVariantText {
+    text-align: left;
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    -webkit-line-clamp: 2;
+  }
+
+  /* When > 4 variants: column layout on mobile */
+  .variantsGrid.variantsGridColumnMobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .variantsGridColumnMobile .teacherVariantCard {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    min-height: 52px;
+    padding: 0.75rem 1rem 0.75rem 3.25rem;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    border-radius: var(--radius-lg, 0.75rem);
+  }
+
+  .variantsGridColumnMobile .teacherVariantCard .variantBadgeCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+  }
+
+  .variantsGridColumnMobile .teacherVariantText {
+    text-align: left;
+    -webkit-line-clamp: 2;
+  }
+}

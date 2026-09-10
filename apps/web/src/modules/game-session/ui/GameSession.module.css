@@ -754,6 +754,49 @@
     text-align: left;
     -webkit-line-clamp: 2;
   }
+
+  /* 2 variants on mobile: 1 row with 2 items */
+  .variants-grid.variants-grid--count-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  /* 3 variants on mobile: vertical column slightly bigger */
+  .variants-grid.variants-grid--count-3 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: clamp(0.55rem, 1.4vh, 0.75rem);
+  }
+
+  .variants-grid--count-3 .teacher-variant-card {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    min-height: clamp(66px, 9.5vh, 84px);
+    padding: 0.8rem 1rem 0.8rem 3.75rem;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    border-radius: var(--radius-xl, 1rem);
+  }
+
+  .variants-grid--count-3 .teacher-variant-card .variant-badge-corner {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+
+  .variants-grid--count-3 .teacher-variant-text {
+    text-align: left;
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    -webkit-line-clamp: 2;
+  }
 }
 
 /* Student Big Colored Option Button (Square) */
@@ -838,7 +881,7 @@
   flex: 1 1 0;
   min-width: 0;
   aspect-ratio: 1 / 1;
-  max-width: 260px;
+  max-width: none;
   min-height: 140px;
   padding: 2.25rem 1rem 1rem;
   display: flex;
@@ -854,6 +897,18 @@
 .teacher-variant-card:hover {
   border-color: rgba(134, 59, 255, 0.4);
   transform: translateY(-2px);
+}
+
+/* 2 variants desktop: wide cards expanding across container */
+.variants-grid--count-2 .teacher-variant-card {
+  aspect-ratio: 16 / 10;
+  max-width: none;
+}
+
+/* 3 variants desktop: expand across container */
+.variants-grid--count-3 .teacher-variant-card {
+  aspect-ratio: 1 / 1;
+  max-width: none;
 }
 
 .teacher-variant-text {
