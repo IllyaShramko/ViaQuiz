@@ -101,15 +101,15 @@
   transform: translateY(-2px);
 }
 
-/* 2 variants desktop: wide cards expanding across container */
+/* 2 variants desktop: wide cards matching 4-variant height */
 .variantsGridCount2 .teacherVariantCard {
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 2 / 1;
   max-width: none;
 }
 
-/* 3 variants desktop: expand across container */
+/* 3 variants desktop: expand across container matching 4-variant height */
 .variantsGridCount3 .teacherVariantCard {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   max-width: none;
 }
 
