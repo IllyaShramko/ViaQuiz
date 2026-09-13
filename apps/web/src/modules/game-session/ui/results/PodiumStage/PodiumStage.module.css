@@ -1,0 +1,54 @@
+.stageContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.stage {
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem 0;
+	min-height: 290px;
+	width: 100%;
+	max-width: 650px;
+}
+
+.floorLine {
+	width: 100%;
+	max-width: 600px;
+	height: 3px;
+	background: linear-gradient(
+		90deg,
+		transparent 0%,
+		var(--color-border, #2a2a3a) 20%,
+		var(--color-accent, #863bff) 50%,
+		var(--color-border, #2a2a3a) 80%,
+		transparent 100%
+	);
+	border-radius: 2px;
+	box-shadow: 0 0 16px rgba(134, 59, 255, 0.3);
+}
+
+.emptyMessage {
+	padding: 2rem 1rem;
+	color: var(--color-text-muted, #9090a8);
+	font-size: 1.125rem;
+	text-align: center;
+}
+
+@media (max-width: 640px) {
+	.stage {
+		gap: 0.25rem;
+		min-height: 240px;
+		padding: 0.5rem 0.5rem 0;
+	}
+
+	.floorLine {
+		max-width: 340px;
+	}
+}

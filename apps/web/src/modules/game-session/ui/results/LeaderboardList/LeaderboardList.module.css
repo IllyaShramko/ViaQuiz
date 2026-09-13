@@ -1,0 +1,163 @@
+.container {
+	width: 100%;
+	max-width: 720px;
+	margin-top: 0.75rem;
+	animation: listFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.title {
+	font-size: 0.9rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--color-text-muted, #9090a8);
+	margin-bottom: 0.5rem;
+	padding-left: 0.25rem;
+}
+
+.tableWrapper {
+	width: 100%;
+	overflow-x: auto;
+	border: 1px solid var(--color-border, #2a2a3a);
+	border-radius: var(--radius-md, 10px);
+	background: var(--color-bg-surface, #1a1a26);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
+}
+
+.table th {
+	padding: 0.75rem 1rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--color-text-muted, #9090a8);
+	border-bottom: 1px solid var(--color-border, #2a2a3a);
+	white-space: nowrap;
+}
+
+.table td {
+	padding: 0.75rem 1rem;
+	border-bottom: 1px solid rgba(42, 42, 58, 0.6);
+	font-size: 0.95rem;
+	vertical-align: middle;
+}
+
+.table tr:last-child td {
+	border-bottom: none;
+}
+
+.row {
+	opacity: 0;
+	transform: translateY(8px);
+	animation: rowEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation-delay: calc(var(--row-index, 0) * 50ms);
+	transition: background-color 0.2s ease;
+}
+
+.row:hover td {
+	background-color: rgba(255, 255, 255, 0.03);
+}
+
+.thRank,
+.tdRank {
+	width: 48px;
+	text-align: center;
+	color: var(--color-text-muted, #9090a8);
+	font-weight: 700;
+}
+
+.thName,
+.tdName {
+	font-weight: 700;
+	color: #ffffff;
+}
+
+.nickname {
+	display: inline-block;
+	max-width: 260px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+.thScore,
+.tdScore {
+	width: 130px;
+	text-align: right;
+}
+
+.scoreValue {
+	color: var(--color-accent, #863bff);
+	font-weight: 800;
+	font-size: 1rem;
+}
+
+.thGrade,
+.tdGrade {
+	width: 120px;
+	text-align: right;
+}
+
+.gradeBadge {
+	display: inline-block;
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid var(--color-border, #2a2a3a);
+	padding: 0.25rem 0.65rem;
+	border-radius: var(--radius-sm, 6px);
+	font-weight: 700;
+	font-size: 0.85rem;
+	color: #ffffff;
+	white-space: nowrap;
+}
+
+@keyframes listFadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes rowEntrance {
+	0% {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@media (max-width: 640px) {
+	.table th,
+	.table td {
+		padding: 0.6rem 0.75rem;
+		font-size: 0.85rem;
+	}
+
+	.nickname {
+		max-width: 130px;
+	}
+
+	.thScore,
+	.tdScore {
+		width: 90px;
+	}
+
+	.thGrade,
+	.tdGrade {
+		width: 90px;
+	}
+
+	.gradeBadge {
+		padding: 0.2rem 0.45rem;
+		font-size: 0.75rem;
+	}
+}

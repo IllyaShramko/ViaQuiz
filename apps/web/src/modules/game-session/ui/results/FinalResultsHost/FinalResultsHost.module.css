@@ -1,0 +1,66 @@
+.container {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 1.5rem 1.5rem 3rem;
+	box-sizing: border-box;
+}
+
+.resultsCard {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	background: rgba(26, 26, 38, 0.85);
+	backdrop-filter: blur(12px);
+	border: 1px solid var(--color-border, #2a2a3a);
+	border-radius: 16px;
+	padding: 1.75rem 2rem;
+	box-sizing: border-box;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.skipButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-bottom: 0.75rem;
+	padding: 0.45rem 0.95rem;
+	background: rgba(255, 255, 255, 0.04);
+	border: 1px solid var(--color-border, #2a2a3a);
+	border-radius: var(--radius-sm, 6px);
+	color: var(--color-text-muted, #9090a8);
+	font-size: 0.85rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+	align-self: flex-end;
+}
+
+.skipButton:hover {
+	color: #ffffff;
+	border-color: var(--color-accent, #863bff);
+	background: rgba(134, 59, 255, 0.1);
+	transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+	.container {
+		padding: 1rem 0.75rem 2rem;
+	}
+
+	.resultsCard {
+		padding: 1.25rem 0.75rem;
+		border-radius: 12px;
+	}
+
+	.skipButton {
+		font-size: 0.8rem;
+		padding: 0.35rem 0.75rem;
+	}
+}
