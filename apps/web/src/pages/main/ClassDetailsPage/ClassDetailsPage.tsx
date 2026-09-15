@@ -8,7 +8,7 @@ import {
   CreateCourseModal,
 } from '../../../modules/classes';
 import { useGetTeacherSessionsQuery } from '../../../modules/reports';
-import { copyToClipboard } from '../../../shared';
+import { copyToClipboard, useTeacherHeader } from '../../../shared';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 type TabType = 'students' | 'courses' | 'performance' | 'history';
@@ -37,6 +37,16 @@ export function ClassDetailsPage() {
   const { data: classroom, isLoading, error } = useGetClassroomQuery(uuid || '', {
     skip: !uuid,
   });
+
+  useTeacherHeader(
+    {
+      title: classroom?.name || 'Клас',
+      showBack: true,
+      backTo: '/classes',
+      backLabel: 'Назад до списку класів',
+    },
+    [classroom?.name],
+  );
 
   const {
     data: historyData,

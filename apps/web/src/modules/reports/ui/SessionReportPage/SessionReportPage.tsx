@@ -4,7 +4,7 @@ import Chart from 'react-apexcharts';
 import type { SessionReportTab, ReportSortBy, OverviewTabProps } from './SessionReportPage.types';
 import { useGetSessionReportQuery } from '../../api';
 import { StudentDetailDrawer } from '../StudentDetailDrawer';
-import { pluralize, pluralizeAnswers } from '../../../../shared';
+import { pluralize, pluralizeAnswers, useTeacherHeader } from '../../../../shared';
 import styles from '../Reports.module.css';
 import type { SessionQuestionStatsDto, SortOrder } from '@viaquiz/shared-types';
 
@@ -14,6 +14,16 @@ export const SessionReportPage: React.FC = () => {
 	const { data: report, isLoading, isError } = useGetSessionReportQuery(roomUuid as string, {
 		skip: !roomUuid,
 	});
+
+	useTeacherHeader(
+		{
+			title: report?.quizName || 'Результати вікторини',
+			showBack: true,
+			backTo: '/dashboard/reports',
+			backLabel: 'Назад до звітів',
+		},
+		[report?.quizName],
+	);
 
 	useEffect(() => {
 		if (!roomUuid || isError) {

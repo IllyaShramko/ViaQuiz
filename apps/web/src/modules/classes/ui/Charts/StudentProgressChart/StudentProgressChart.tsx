@@ -1,7 +1,7 @@
 import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 import type { StudentProgressChartProps } from './StudentProgressChart.types';
-import styles from '../Charts.module.css';
+import styles from './StudentProgressChart.module.css';
 
 export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
   categories,
@@ -28,8 +28,11 @@ export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
   const options: ApexOptions = {
     chart: {
       type: 'area',
-      height: 280,
+      height: 320,
+      width: '100%',
       background: 'transparent',
+      redrawOnParentResize: true,
+      redrawOnWindowResize: true,
       toolbar: {
         show: true,
         tools: {
@@ -83,6 +86,12 @@ export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
           show: true,
         },
       },
+      padding: {
+        top: 0,
+        right: 20,
+        bottom: 0,
+        left: 10,
+      },
     },
     xaxis: {
       categories,
@@ -90,7 +99,11 @@ export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
         style: {
           colors: '#9090a8',
           fontSize: '12px',
+          fontFamily: 'inherit',
         },
+        rotate: -35,
+        rotateAlways: false,
+        hideOverlappingLabels: true,
       },
       axisBorder: {
         color: '#2a2a3a',
@@ -107,6 +120,7 @@ export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
         style: {
           colors: '#9090a8',
           fontSize: '12px',
+          fontFamily: 'inherit',
         },
         formatter: (val) => `${Math.round(val)}`,
       },
@@ -115,6 +129,8 @@ export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
         style: {
           color: '#606078',
           fontSize: '11px',
+          fontFamily: 'inherit',
+          fontWeight: 600,
         },
       },
     },
@@ -154,7 +170,7 @@ export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
         </div>
       </div>
       <div className={styles['chart-body']}>
-        <Chart options={options} series={series} type="area" height={280} width="100%" />
+        <Chart options={options} series={series} type="area" height={320} width="100%" />
       </div>
     </div>
   );

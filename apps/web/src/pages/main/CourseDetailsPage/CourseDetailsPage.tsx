@@ -14,6 +14,7 @@ import {
   type CourseTabType,
 } from '../../../modules/classes';
 import { useAuth } from '../../../modules/auth';
+import { useTeacherHeader } from '../../../shared';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 export function CourseDetailsPage() {
@@ -37,6 +38,16 @@ export function CourseDetailsPage() {
   const { data: classroom } = useGetClassroomQuery(classUuid || '', {
     skip: !classUuid,
   });
+
+  useTeacherHeader(
+    {
+      title: classroom?.name || 'Клас',
+      showBack: true,
+      backTo: `/classes/${classUuid}`,
+      backLabel: 'Назад до класу',
+    },
+    [classroom?.name, classUuid],
+  );
 
   if (isCourseLoading) {
     return (

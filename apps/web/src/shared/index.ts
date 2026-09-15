@@ -42,6 +42,12 @@ export {
 export {
   Layout,
   TeacherLayout,
+  TeacherLayoutProvider,
+  useTeacherLayout,
+  useTeacherHeader,
+  type TeacherLayoutProps,
+  type TeacherHeaderConfig,
+  type TeacherLayoutContextValue,
   StudentLayout,
   ProtectedRoute,
   PublicRoute,

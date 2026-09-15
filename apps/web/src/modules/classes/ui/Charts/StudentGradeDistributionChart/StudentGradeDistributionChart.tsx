@@ -1,7 +1,7 @@
 import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 import type { StudentGradeDistributionChartProps } from './StudentGradeDistributionChart.types';
-import styles from '../Charts.module.css';
+import styles from './StudentGradeDistributionChart.module.css';
 
 export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionChartProps> = ({
   labels,
@@ -42,7 +42,11 @@ export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionCha
   const options: ApexOptions = {
     chart: {
       type: 'donut',
+      height: 290,
+      width: '100%',
       background: 'transparent',
+      redrawOnParentResize: true,
+      redrawOnWindowResize: true,
       animations: {
         enabled: true,
         speed: 600,
@@ -56,30 +60,36 @@ export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionCha
     },
     plotOptions: {
       pie: {
+        customScale: 0.9,
         donut: {
-          size: '68%',
+          size: '65%',
           background: 'transparent',
           labels: {
             show: true,
             name: {
               show: true,
-              fontSize: '13px',
+              fontSize: '14px',
+              fontFamily: 'inherit',
+              fontWeight: 600,
               color: '#9090a8',
-              offsetY: -4,
+              offsetY: -6,
             },
             value: {
               show: true,
-              fontSize: '20px',
-              fontWeight: '700',
+              fontSize: '24px',
+              fontFamily: 'inherit',
+              fontWeight: '800',
               color: '#f0f0f5',
-              offsetY: 4,
+              offsetY: 6,
               formatter: (val) => `${val} тест.`,
             },
             total: {
               show: true,
               label: 'Всього тестів',
               color: '#9090a8',
-              fontSize: '12px',
+              fontFamily: 'inherit',
+              fontSize: '13px',
+              fontWeight: 600,
               formatter: (w) => {
                 const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0);
                 return `${total}`;
@@ -95,15 +105,18 @@ export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionCha
     legend: {
       position: 'right',
       horizontalAlign: 'center',
-      fontSize: '13px',
+      fontSize: '14px',
+      fontFamily: 'inherit',
+      fontWeight: 500,
       labels: {
         colors: '#f0f0f5',
       },
       markers: {
-        size: 7,
+        size: 8,
       },
       itemMargin: {
-        vertical: 4,
+        horizontal: 8,
+        vertical: 8,
       },
     },
     tooltip: {
@@ -117,8 +130,16 @@ export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionCha
     },
     responsive: [
       {
-        breakpoint: 600,
+        breakpoint: 768,
         options: {
+          chart: {
+            height: 280,
+          },
+          plotOptions: {
+            pie: {
+              customScale: 0.9,
+            },
+          },
           legend: {
             position: 'bottom',
           },
@@ -136,7 +157,14 @@ export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionCha
         </div>
       </div>
       <div className={styles['chart-body']}>
-        <Chart options={options} series={series} type="donut" height={280} width="100%" />
+        <Chart
+          className={styles['chart-inner']}
+          options={options}
+          series={series}
+          type="donut"
+          height={290}
+          width="100%"
+        />
       </div>
     </div>
   );

@@ -7,9 +7,11 @@ import {
   TeacherQuizzesGrid,
   TeacherPagination,
 } from '../../../modules/dashboard';
+import { useTeacherHeader } from '../../../shared';
 import styles from '../../../modules/dashboard/ui/Dashboard.module.css';
 
 export function TeacherMainPage() {
+  useTeacherHeader({ title: 'Головна' });
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');

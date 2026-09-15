@@ -5,9 +5,17 @@ import {
   ProfileStatsGrid,
   ProfileAccountInfo,
 } from '../../../modules/profile';
+import { useTeacherHeader } from '../../../shared';
 import styles from '../../../modules/profile/ui/Profile.module.css';
 
 export function ProfilePage() {
+  useTeacherHeader({
+    title: 'Профіль',
+    showBack: true,
+    backTo: '/dashboard',
+    backLabel: 'Назад до головної',
+  });
+
   const { user } = useUserContext();
   const { data: stats, isLoading: isLoadingStats } = useGetProfileStatsQuery(undefined, {
     refetchOnMountOrArgChange: true,

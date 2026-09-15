@@ -1,19 +1,16 @@
-import { Outlet, Link, useLocation, useNavigate, Navigate, matchPath } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
 import { isStudent } from '../../../modules/auth/utils';
-import { useGetClassroomQuery } from '../../../modules/classes/api/classesApi';
 import { removeAuthToken } from '../../api/headers';
+import { TeacherLayoutProvider, useTeacherLayout } from './TeacherLayout.context';
+import type { TeacherLayoutProps } from './TeacherLayout.types';
 import styles from './TeacherLayout.module.css';
 
-export interface TeacherLayoutProps {
-  pageTitle?: string;
-  showBack?: boolean;
-}
-
-export function TeacherLayout() {
+function TeacherLayoutInner({ children }: TeacherLayoutProps) {
   const { user } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
+  const { headerConfig } = useTeacherLayout();
 
   if (isStudent(user)) {
     return <Navigate to="/not-found" replace />;
@@ -28,28 +25,16 @@ export function TeacherLayout() {
     window.location.replace('/');
   };
 
-  const isProfile = location.pathname.includes('/profile');
-  const isQuizDetails = location.pathname.startsWith('/quiz');
-  const isLibrary = location.pathname.startsWith('/library');
-  const isClasses = location.pathname.startsWith('/classes');
+  const handleBackClick = () => {
+    if (typeof headerConfig.backTo === 'function') {
+      headerConfig.backTo();
+    } else if (typeof headerConfig.backTo === 'string') {
+      navigate(headerConfig.backTo);
+    } else {
+      navigate(-1);
+    }
+  };
 
-  const classDetailsMatch = matchPath({ path: '/classes/:uuid', end: true }, location.pathname);
-  const courseDetailsMatch = matchPath(
-    { path: '/classes/:classUuid/courses/:courseUuid', end: true },
-    location.pathname,
-  );
-  const studentDetailsMatch = matchPath(
-    { path: '/classes/:classUuid/students/:studentUuid', end: true },
-    location.pathname,
-  );
-
-  const currentClassUuid =
-    classDetailsMatch?.params.uuid ||
-    studentDetailsMatch?.params.classUuid ||
-    courseDetailsMatch?.params.classUuid;
-  const { data: currentClassroom } = useGetClassroomQuery(currentClassUuid || '', {
-    skip: !currentClassUuid,
-  });
   const displayName =
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`
@@ -124,102 +109,37 @@ export function TeacherLayout() {
         {/* Topbar */}
         <header className={styles['teacher-topbar']}>
           <div className={styles['teacher-topbar__left']}>
-            {isProfile ? (
+            {headerConfig.showBack && (
               <button
                 type="button"
                 className={styles['teacher-back-btn']}
-                onClick={() => navigate('/dashboard')}
-                aria-label="Назад до головної"
+                onClick={handleBackClick}
+                aria-label={headerConfig.backLabel || 'Назад'}
+                title={headerConfig.backLabel || 'Назад'}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="19" y1="12" x2="5" y2="12" />
                   <polyline points="12 19 5 12 12 5" />
                 </svg>
-                <span className={styles['teacher-topbar__title']}>Профіль</span>
               </button>
-            ) : isQuizDetails ? (
-              <button
-                type="button"
-                className={styles['teacher-back-btn']}
-                onClick={() => navigate('/dashboard')}
-                aria-label="Назад до головної"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-                <span className={styles['teacher-topbar__title']}>Вікторина</span>
-              </button>
-            ) : courseDetailsMatch ? (
-              <button
-                type="button"
-                className={styles['teacher-back-btn']}
-                onClick={() => navigate(`/classes/${courseDetailsMatch.params.classUuid}`)}
-                aria-label="Назад до класу"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-                <span className={styles['teacher-topbar__title']}>
-                  {currentClassroom?.name || 'Клас'}
-                </span>
-              </button>
-            ) : studentDetailsMatch ? (
-              <button
-                type="button"
-                className={styles['teacher-back-btn']}
-                onClick={() => navigate(`/classes/${studentDetailsMatch.params.classUuid}`)}
-                aria-label="Назад до класу"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-                <span className={styles['teacher-topbar__title']}>
-                  {currentClassroom?.name || 'Клас'}
-                </span>
-              </button>
-            ) : classDetailsMatch ? (
-              <button
-                type="button"
-                className={styles['teacher-back-btn']}
-                onClick={() => navigate('/classes')}
-                aria-label="Назад до списку класів"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-                <span className={styles['teacher-topbar__title']}>
-                  {currentClassroom?.name || 'Клас'}
-                </span>
-              </button>
-            ) : isLibrary ? (
-              <h1 className={styles['teacher-topbar__title']}>Бібліотека</h1>
-            ) : isClasses ? (
-              <h1 className={styles['teacher-topbar__title']}>Мої класи</h1>
-            ) : location.pathname.startsWith('/dashboard/reports/') ? (
-              <button
-                type="button"
-                className={styles['teacher-back-btn']}
-                onClick={() => navigate('/dashboard/reports')}
-                aria-label="Назад до звітів"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-                <span className={styles['teacher-topbar__title']}>Результати вікторини</span>
-              </button>
-            ) : location.pathname.startsWith('/dashboard/reports') ? (
-              <h1 className={styles['teacher-topbar__title']}>Звіти</h1>
-            ) : (
-              <h1 className={styles['teacher-topbar__title']}>Головна</h1>
+            )}
+
+            {headerConfig.title && (
+              <h1 className={styles['teacher-topbar__title']}>
+                {headerConfig.title}
+              </h1>
+            )}
+
+            {headerConfig.badge && (
+              <div className={styles['teacher-topbar__badge']}>
+                {headerConfig.badge}
+              </div>
             )}
           </div>
 
           <div className={styles['teacher-topbar__actions']}>
+            {headerConfig.actions}
+
             <button
               type="button"
               className={styles['btn-teacher-create']}
@@ -258,9 +178,17 @@ export function TeacherLayout() {
 
         {/* Content Outlet */}
         <main className={styles['teacher-content']}>
-          <Outlet />
+          {children || <Outlet />}
         </main>
       </div>
     </div>
+  );
+}
+
+export function TeacherLayout(props: TeacherLayoutProps) {
+  return (
+    <TeacherLayoutProvider>
+      <TeacherLayoutInner {...props} />
+    </TeacherLayoutProvider>
   );
 }

@@ -14,9 +14,11 @@ import {
   type LibrarySortOrder,
 } from '../../../modules/library';
 import { TeacherPagination } from '../../../modules/dashboard';
+import { useTeacherHeader } from '../../../shared';
 import styles from '../../../modules/library/ui/Library.module.css';
 
 export function LibraryPage() {
+  useTeacherHeader({ title: 'Бібліотека' });
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<LibraryTab>('my');

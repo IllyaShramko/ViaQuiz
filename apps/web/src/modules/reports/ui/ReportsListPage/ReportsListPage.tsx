@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetTeacherSessionsQuery } from '../../api';
+import { useTeacherHeader } from '../../../../shared';
 import styles from '../Reports.module.css';
 
 export const ReportsListPage: React.FC = () => {
-	const navigate = useNavigate();
+  useTeacherHeader({ title: 'Звіти' });
+  const navigate = useNavigate();
 	const [page, setPage] = useState(1);
 	const [searchInput, setSearchInput] = useState('');
 	const [searchQuery, setSearchQuery] = useState('');

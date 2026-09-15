@@ -8,10 +8,11 @@ import {
   PendingInvitationsModal,
   LeaveCourseModal,
 } from '../../../modules/classes';
-import { CheckIcon, CopyIcon, copyToClipboard } from '../../../shared';
+import { CheckIcon, CopyIcon, copyToClipboard, useTeacherHeader } from '../../../shared';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
 export function ClassesPage() {
+  useTeacherHeader({ title: 'Мої класи' });
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isLoading, error } = useGetClassroomsQuery();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

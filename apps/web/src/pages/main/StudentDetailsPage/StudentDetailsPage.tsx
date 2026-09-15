@@ -2,10 +2,12 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   useGetStudentAnalyticsQuery,
+  useGetClassroomQuery,
   StudentProgressChart,
   StudentGradeDistributionChart,
   ResetPasswordModal,
 } from '../../../modules/classes';
+import { useTeacherHeader } from '../../../shared';
 import { DateFilterBar } from '../../../shared/ui';
 import styles from '../../../modules/classes/ui/Classes.module.css';
 
@@ -44,6 +46,20 @@ export function StudentDetailsPage() {
       to: appliedFilter.to,
     },
     { skip: !classUuid || !studentUuid },
+  );
+
+  const { data: classroom } = useGetClassroomQuery(classUuid || '', {
+    skip: !classUuid,
+  });
+
+  useTeacherHeader(
+    {
+      title: classroom?.name || 'Клас',
+      showBack: true,
+      backTo: `/classes/${classUuid}`,
+      backLabel: 'Назад до класу',
+    },
+    [classroom?.name, classUuid],
   );
 
   const handleApplyFilter = () => {

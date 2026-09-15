@@ -1,5 +1,13 @@
 export { Layout } from './Layout/Layout';
-export { TeacherLayout } from './TeacherLayout';
+export {
+  TeacherLayout,
+  TeacherLayoutProvider,
+  useTeacherLayout,
+  useTeacherHeader,
+  type TeacherLayoutProps,
+  type TeacherHeaderConfig,
+  type TeacherLayoutContextValue,
+} from './TeacherLayout';
 export { StudentLayout } from './StudentLayout';
 export { ProtectedRoute } from './ProtectedRoute';
 export { PublicRoute } from './PublicRoute';

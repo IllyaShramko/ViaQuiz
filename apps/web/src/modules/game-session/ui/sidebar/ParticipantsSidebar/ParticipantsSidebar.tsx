@@ -30,14 +30,12 @@ export function ParticipantsSidebar({
 	const [kickTarget, setKickTarget] = useState<ParticipantDto | null>(null);
 	const [hoveredId, setHoveredId] = useState<number | null>(null);
 
-	// Sort participants by score when game has started; keep join order during lobby (AWAITING)
+	// Sort participants by score when game has started; preserve join order when scores are tied
 	const displayParticipants = useMemo(() => {
 		if (status === 'AWAITING') {
 			return participants;
 		}
-		return [...participants].sort(
-			(a, b) => b.score - a.score || a.nickname.localeCompare(b.nickname),
-		);
+		return [...participants].sort((a, b) => b.score - a.score);
 	}, [participants, status]);
 
 	// FLIP animation for smooth list reordering and additions (only triggered when participant list/order changes)

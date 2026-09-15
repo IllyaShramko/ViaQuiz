@@ -10,6 +10,7 @@ import {
   QuizDetailsSkeleton,
   QuizDetailsError,
 } from '../../../modules/quiz-details';
+import { useTeacherHeader } from '../../../shared';
 import styles from '../../../modules/quiz-details/ui/QuizDetails.module.css';
 
 export function QuizDetailsPage() {
@@ -32,6 +33,16 @@ export function QuizDetailsPage() {
   } = useGetQuizByUuidQuery(uuid || '', {
     skip: !uuid,
   });
+
+  useTeacherHeader(
+    {
+      title: quiz?.name || 'Вікторина',
+      showBack: true,
+      backTo: '/dashboard',
+      backLabel: 'Назад до головної',
+    },
+    [quiz?.name],
+  );
 
   if (isLoading) {
     return (
