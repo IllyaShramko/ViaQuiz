@@ -1,12 +1,19 @@
 import { z } from "zod";
+import { USER_CONSTRAINTS } from "@viaquiz/shared-types";
 
 export const loginFieldSchema = z
 	.string()
 	.trim()
-	.min(3, "Login must be at least 3 characters long")
-	.max(20, "Login cannot exceed 20 characters")
+	.min(
+		USER_CONSTRAINTS.LOGIN_MIN_LENGTH,
+		`Login must be at least ${USER_CONSTRAINTS.LOGIN_MIN_LENGTH} characters long`,
+	)
+	.max(
+		USER_CONSTRAINTS.LOGIN_MAX_LENGTH,
+		`Login cannot exceed ${USER_CONSTRAINTS.LOGIN_MAX_LENGTH} characters`,
+	)
 	.regex(
-		/^[a-zA-Z0-9_-]+$/,
+		USER_CONSTRAINTS.LOGIN_REGEX,
 		"Login can only contain Latin letters, numbers, hyphens, and underscores",
 	);
 
@@ -17,13 +24,25 @@ export const emailFieldSchema = z
 
 export const passwordFieldSchema = z
 	.string()
-	.min(6, "Password must be at least 6 characters long")
-	.max(64, "Password cannot exceed 64 characters");
+	.min(
+		USER_CONSTRAINTS.PASSWORD_MIN_LENGTH,
+		`Password must be at least ${USER_CONSTRAINTS.PASSWORD_MIN_LENGTH} characters long`,
+	)
+	.max(
+		USER_CONSTRAINTS.PASSWORD_MAX_LENGTH,
+		`Password cannot exceed ${USER_CONSTRAINTS.PASSWORD_MAX_LENGTH} characters`,
+	);
 
 export const codeFieldSchema = z
 	.string()
-	.length(6, "Verification code must be exactly 6 digits")
-	.regex(/^\d{6}$/, "Verification code must contain digits only");
+	.length(
+		USER_CONSTRAINTS.VERIFICATION_CODE_LENGTH,
+		`Verification code must be exactly ${USER_CONSTRAINTS.VERIFICATION_CODE_LENGTH} digits`,
+	)
+	.regex(
+		USER_CONSTRAINTS.VERIFICATION_CODE_REGEX,
+		"Verification code must contain digits only",
+	);
 
 export const checkUniqueSchema = z.object({
 	login: loginFieldSchema,
@@ -43,13 +62,19 @@ export const registerSchema = z
 		firstName: z
 			.string()
 			.trim()
-			.max(50, "First name cannot exceed 50 characters")
+			.max(
+				USER_CONSTRAINTS.FIRST_NAME_MAX_LENGTH,
+				`First name cannot exceed ${USER_CONSTRAINTS.FIRST_NAME_MAX_LENGTH} characters`,
+			)
 			.optional()
 			.or(z.literal("")),
 		lastName: z
 			.string()
 			.trim()
-			.max(50, "Last name cannot exceed 50 characters")
+			.max(
+				USER_CONSTRAINTS.LAST_NAME_MAX_LENGTH,
+				`Last name cannot exceed ${USER_CONSTRAINTS.LAST_NAME_MAX_LENGTH} characters`,
+			)
 			.optional()
 			.or(z.literal("")),
 		code: codeFieldSchema,

@@ -12,6 +12,7 @@ export {
   StudentDetailsPage,
   ReportsListPage,
   SessionReportPage,
+  PublicUserProfilePage,
 } from './main';
 export {
   StudentDashboardPage,

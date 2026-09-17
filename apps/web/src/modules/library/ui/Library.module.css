@@ -379,6 +379,18 @@
   font-weight: 500;
 }
 
+.library-card__author-link {
+  color: var(--color-accent, #8b5cf6) !important;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.library-card__author-link:hover {
+  text-decoration: underline;
+  color: var(--color-accent-hover, #a78bfa) !important;
+}
+
 .library-card__desc {
   font-size: 0.85rem;
   color: var(--color-text-secondary, #9090a8);

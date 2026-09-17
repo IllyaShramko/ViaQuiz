@@ -213,6 +213,20 @@
   color: var(--color-text-primary, #f0f0f5);
 }
 
+.quiz-author-link {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-accent, #8b5cf6);
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+  cursor: pointer;
+}
+
+.quiz-author-link:hover {
+  text-decoration: underline;
+  color: var(--color-accent-hover, #a78bfa);
+}
+
 /* Questions Section */
 .quiz-questions-section {
   display: flex;
@@ -285,6 +299,10 @@
 }
 
 .param-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  line-height: 1;
   background-color: var(--color-bg-surface, #1a1a26);
   color: var(--color-text-secondary, #9090a8);
   font-size: 0.75rem;

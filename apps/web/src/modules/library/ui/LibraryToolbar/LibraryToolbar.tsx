@@ -1,3 +1,4 @@
+import { SearchInput } from '../../../../shared';
 import type { LibrarySortBy } from '../../models';
 import type { LibraryToolbarProps } from './LibraryToolbar.types';
 import styles from '../Library.module.css';
@@ -15,42 +16,13 @@ export function LibraryToolbar({
   return (
     <div className={styles['library-toolbar']}>
       {/* Search Input */}
-      <div className={styles['library-search-wrapper']}>
-        <svg
-          className={styles['library-search-icon']}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Пошук у бібліотеці..."
-          className={styles['library-search-input']}
-        />
-
-        {searchTerm && (
-          <button
-            type="button"
-            className={styles['library-search-clear-btn']}
-            onClick={onClearSearch}
-            aria-label="Очистити пошук"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        )}
-      </div>
+      <SearchInput
+        value={searchTerm}
+        onChange={onSearchChange}
+        onClear={onClearSearch}
+        placeholder="Пошук у бібліотеці..."
+        maxWidth={400}
+      />
 
       {/* Sort Options */}
       <div className={styles['library-sort-wrapper']}>

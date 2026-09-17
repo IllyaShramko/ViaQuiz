@@ -1,4 +1,7 @@
+import type { QuestionType } from "./quiz";
+
 export type RoomStatus = "AWAITING" | "PROGRESS" | "REVIEWING" | "FINISHED";
+
 
 export interface CreateRoomDto {
 	quizId: number;
@@ -47,11 +50,12 @@ export interface QuestionVariantDto {
 }
 
 export interface GameQuestionDto {
+	questionId?: number | undefined;
 	questionIndex: number;
 	totalQuestions: number;
 	text: string;
 	media?: string | null | undefined;
-	type: "ONE_ANSWER" | "MANY_ANSWERS" | "TYPE_ANSWER_V1" | "TYPE_ANSWER_V2" | string;
+	type: QuestionType | string;
 	points: number;
 	timeLimit: number;
 	startedAt: number;

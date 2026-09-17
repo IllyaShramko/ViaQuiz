@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetTeacherSessionsQuery } from '../../api';
-import { useTeacherHeader } from '../../../../shared';
+import { useTeacherHeader, SearchInput } from '../../../../shared';
 import styles from '../Reports.module.css';
 
 export const ReportsListPage: React.FC = () => {
@@ -46,38 +46,12 @@ export const ReportsListPage: React.FC = () => {
 
 	return (
 		<div className={styles['reports-page']}>
-			<div className={styles['reports-search-box']}>
-				<svg
-					className={styles['reports-search-icon']}
-					width="18"
-					height="18"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				>
-					<circle cx="11" cy="11" r="8" />
-					<line x1="21" y1="21" x2="16.65" y2="16.65" />
-				</svg>
-				<input
-					type="text"
-					placeholder="Пошук звітів..."
-					value={searchInput}
-					onChange={(e) => setSearchInput(e.target.value)}
-				/>
-				{searchInput && (
-					<button
-						type="button"
-						className={styles['reports-search-clear-btn']}
-						onClick={() => setSearchInput('')}
-						aria-label="Очистити пошук"
-					>
-						✕
-					</button>
-				)}
-			</div>
+			<SearchInput
+				value={searchInput}
+				onChange={setSearchInput}
+				placeholder="Пошук звітів..."
+				maxWidth={360}
+			/>
 
 			{isLoading && <p>Завантаження...</p>}
 			{isError && <p>Помилка при завантаженні звітів.</p>}

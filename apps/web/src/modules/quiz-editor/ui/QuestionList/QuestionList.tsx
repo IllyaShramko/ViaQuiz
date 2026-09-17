@@ -15,7 +15,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { QuestionListProps, SortableItemProps } from './QuestionList.types';
-import { OneAnswerIcon, MultipleIcon, EnterIcon, BinIcon, PlusIcon } from '../../../../shared';
+import { OneAnswerIcon, MultipleIcon, EnterIcon, BinIcon, PlusIcon, CopyIcon, WarningIcon } from '../../../../shared';
 import { validateQuestion } from '../../utils/quizValidation';
 import styles from './QuestionList.module.css';
 
@@ -85,7 +85,7 @@ const SortableQuestionItem: React.FC<SortableItemProps> = ({
               title={questionErrors.join('\n')}
               aria-label={questionErrors.join(', ')}
             >
-              ⚠️
+              <WarningIcon size={14} />
             </span>
           )}
         </div>
@@ -100,7 +100,7 @@ const SortableQuestionItem: React.FC<SortableItemProps> = ({
           title="Дублювати"
           aria-label="Дублювати"
         >
-          ⎘
+          <CopyIcon size={14} />
         </button>
         <button
           type="button"

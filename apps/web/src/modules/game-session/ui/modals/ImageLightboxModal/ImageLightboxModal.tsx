@@ -1,4 +1,5 @@
 import type { ImageLightboxModalProps } from './ImageLightboxModal.types';
+import { CloseIcon } from '../../../../../shared/ui/icons';
 import styles from '../../GameSession.module.css';
 
 export function ImageLightboxModal({
@@ -25,9 +26,9 @@ export function ImageLightboxModal({
 					type="button"
 					className={styles['modal-close-btn']}
 					onClick={onClose}
-					style={{ top: '-2.5rem', right: '0', color: '#fff', fontSize: '1.5rem' }}
+					style={{ top: '-2.5rem', right: '0', color: '#fff' }}
 				>
-					✕
+					<CloseIcon size={22} />
 				</button>
 				<img
 					src={imageUrl}

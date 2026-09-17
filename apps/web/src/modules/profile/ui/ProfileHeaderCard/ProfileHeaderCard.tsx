@@ -12,6 +12,14 @@ export function ProfileHeaderCard({
 
   const username = user?.login || 'username';
 
+  const formattedDate = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('uk-UA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null;
+
   return (
     <div className={styles['profile-header-card']}>
       <div className={styles['profile-avatar-wrapper']}>
@@ -30,6 +38,11 @@ export function ProfileHeaderCard({
 
         <div className={styles['profile-badge']}>
           <span className={styles['badge-role']}>{roleLabel}</span>
+          {formattedDate && (
+            <span className={styles['profile-created-date']}>
+              На платформі з {formattedDate}
+            </span>
+          )}
         </div>
       </div>
     </div>

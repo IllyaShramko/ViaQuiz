@@ -6,7 +6,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
-	padding: 1.5rem;
+	padding: 0 0 2rem 0;
 }
 
 .reports-search-box {
@@ -453,6 +453,8 @@
 .overview-name-container {
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
+	min-height: 40px;
 	gap: 0.15rem;
 }
 
@@ -477,10 +479,12 @@
 }
 
 .overview-table td {
-	padding: 1rem;
+	height: 64px;
+	padding: 0.5rem 1rem;
 	border-bottom: 1px solid var(--color-border);
 	color: var(--color-text-primary);
 	vertical-align: middle;
+	box-sizing: border-box;
 }
 
 .overview-col-name {
@@ -560,6 +564,7 @@
 }
 
 .overview-row {
+	height: 64px;
 	cursor: pointer;
 	transition: background var(--transition-fast);
 }

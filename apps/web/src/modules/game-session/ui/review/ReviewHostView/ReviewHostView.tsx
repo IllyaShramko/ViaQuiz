@@ -6,7 +6,7 @@ import correctIcon from '../../../../../assets/icons/correct_answers.svg';
 import wrongIcon from '../../../../../assets/icons/wrong_answers.svg';
 import skippedIcon from '../../../../../assets/icons/skipped_answers.svg';
 import nextIcon from '../../../../../assets/icons/next.svg';
-import { TimerIcon, CheckIcon } from '../../../../../shared/ui/icons';
+import { TimerIcon, CheckIcon, UserIcon, IncorrectCrossIcon } from '../../../../../shared/ui/icons';
 import { pluralizeAnswers } from '../../../../../shared';
 import styles from '../../GameSession.module.css';
 
@@ -327,7 +327,7 @@ export function ReviewHostView({
 													>
 														<div className={styles['student-answer-header']}>
 															<div className={styles['student-answer-name']}>
-																<span className={styles['student-avatar-icon']}>👤</span>
+																<span className={styles['student-avatar-icon']}><UserIcon size={14} /></span>
 																<span>{student.nickname}</span>
 															</div>
 															{student.isCorrect ? (
@@ -340,7 +340,7 @@ export function ReviewHostView({
 																<span
 																	className={`${styles['student-status-badge']} ${styles['status-wrong']}`}
 																>
-																	✗ Неправильно (+0)
+																	<IncorrectCrossIcon size={10} /> Неправильно (+0)
 																</span>
 															)}
 														</div>

@@ -52,8 +52,8 @@ export function StudentHistoryPage() {
                   </div>
 
                   <div className={classesStyles['history-grade-badge']}>
-                    <span>Оцінка:</span>
-                    <span>{item.grade}</span>
+                    <span className={classesStyles['history-grade-label']}>Оцінка:</span>
+                    <span className={classesStyles['history-grade-val']}>{item.grade}</span>
                   </div>
                 </div>
               );

@@ -18,6 +18,7 @@
 		"@socket.io/redis-adapter": "^8.3.0",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@viaquiz/shared-types": "workspace:*",
+		"@viaquiz/utils": "workspace:*",
 		"bcryptjs": "^3.0.3",
 		"cloudinary": "^2.10.0",
 		"cors": "^2.8.6",

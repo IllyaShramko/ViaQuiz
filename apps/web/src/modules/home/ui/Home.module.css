@@ -152,7 +152,7 @@
 }
 
 /* Sections Shared */
-section {
+:global(.homepage) section {
   padding: 5rem 0;
 }
 
@@ -338,6 +338,18 @@ section {
 .quiz-card__author span {
   color: var(--color-text-secondary, #a1a1aa);
   font-weight: 500;
+}
+
+.quiz-card__author-link {
+  color: var(--color-accent, #8b5cf6) !important;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.quiz-card__author-link:hover {
+  text-decoration: underline;
+  color: var(--color-accent-hover, #a78bfa) !important;
 }
 
 .quiz-card__desc {

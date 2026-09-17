@@ -4,4 +4,5 @@ export type {
   PublicQuizSummary,
 } from '../../home/models';
 
-export type { TeacherProfileStatsDto } from '@viaquiz/shared-types';
+export type { TeacherProfileStatsDto, PublicUserProfileDto } from '@viaquiz/shared-types';
+

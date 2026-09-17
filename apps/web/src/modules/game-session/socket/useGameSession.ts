@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { Socket } from 'socket.io-client';
-import { getGameSocket, closeGameSocket } from './socketClient';
+import { getGameSocket, closeGameSocket, type GameSocket } from './socketClient';
 import type {
 	ParticipantDto,
 	GameQuestionDto,
@@ -41,7 +40,7 @@ export function useGameSession({
 	const [kickedReason, setKickedReason] = useState<string | null>(null);
 	const [isConnected, setIsConnected] = useState<boolean>(false);
 
-	const socketRef = useRef<Socket | null>(null);
+	const socketRef = useRef<GameSocket | null>(null);
 	const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 

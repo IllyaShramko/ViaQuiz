@@ -83,6 +83,9 @@
 }
 
 .infoBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   background: rgba(134, 59, 255, 0.08);
   border: 1px solid rgba(134, 59, 255, 0.2);
   border-radius: var(--radius-lg, 0.5rem);
@@ -90,6 +93,11 @@
   font-size: 0.85rem;
   color: #c4b5fd;
   line-height: 1.4;
+}
+
+.infoBox svg {
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .formGroup {

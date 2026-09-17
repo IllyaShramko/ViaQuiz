@@ -2,6 +2,7 @@ export {
   profileApi,
   useGetMyQuizzesQuery,
   useGetProfileStatsQuery,
+  useGetPublicProfileQuery,
 } from './api';
 
 export type {

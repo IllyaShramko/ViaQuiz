@@ -1,6 +1,8 @@
-export type QuestionType = 'ONE_ANSWER' | 'MANY_ANSWERS' | 'TYPE_ANSWER_V1' | 'TYPE_ANSWER_V2';
-export type VariantType = 'TEXT' | 'IMAGE';
+import type { QuestionType, VariantType } from '@viaquiz/shared-types';
+
+export type { QuestionType, VariantType };
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+
 
 export interface EditorVariant {
   id?: number;

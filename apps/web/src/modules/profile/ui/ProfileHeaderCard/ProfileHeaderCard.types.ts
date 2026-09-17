@@ -1,6 +1,11 @@
-import type { User } from '../../../../modules/auth/models';
+export interface ProfileHeaderCardUser {
+  firstName?: string | null;
+  lastName?: string | null;
+  login?: string;
+  createdAt?: string | Date;
+}
 
 export interface ProfileHeaderCardProps {
-  user: User | null;
+  user: ProfileHeaderCardUser | null;
   roleLabel?: string;
 }

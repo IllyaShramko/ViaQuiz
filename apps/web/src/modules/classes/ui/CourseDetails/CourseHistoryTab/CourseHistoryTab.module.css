@@ -124,7 +124,10 @@
 }
 
 .emptyIcon {
-  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted, #606078);
   margin-bottom: 4px;
 }
 
@@ -201,6 +204,9 @@
 }
 
 .participantsCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--color-text-secondary, #9090a8);
 }
 
@@ -208,27 +214,26 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 120px;
 }
 
 .accuracyBarBg {
   flex: 1;
   height: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
   overflow: hidden;
+  max-width: 80px;
 }
 
 .accuracyBarFill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 999px;
   transition: width 0.3s ease;
 }
 
 .accuracyText {
-  font-size: 0.825rem;
-  font-weight: 700;
-  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.85rem;
+  font-weight: 600;
   min-width: 36px;
 }
 
@@ -238,6 +243,9 @@
 }
 
 .btnViewReport {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: transparent;
   border: 1px solid var(--color-border, #2a2a3a);
   color: var(--color-accent, #863bff);
@@ -263,6 +271,9 @@
 }
 
 .paginationBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--color-bg-surface, #1a1a26);
   border: 1px solid var(--color-border, #2a2a3a);
   color: #fff;

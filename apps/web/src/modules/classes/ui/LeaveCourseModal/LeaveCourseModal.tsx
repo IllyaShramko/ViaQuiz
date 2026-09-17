@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLeaveCourseMutation } from '../../api/classesApi';
+import { WarningIcon } from '../../../../shared';
 import type { LeaveCourseModalProps } from './LeaveCourseModal.types';
 import styles from './LeaveCourseModal.module.css';
 
@@ -53,7 +54,10 @@ export function LeaveCourseModal({
           </p>
 
           <div className={styles.warningBox}>
-            ⚠️ Керівництво курсом автоматично повернеться до куратора класу. Усі створені сесії та результати учнів залишаться у курсі.
+            <WarningIcon size={18} />
+            <span>
+              Керівництво курсом автоматично повернеться до куратора класу. Усі створені сесії та результати учнів залишаться у курсі.
+            </span>
           </div>
 
           {errorMessage && <p className={styles.error}>{errorMessage}</p>}

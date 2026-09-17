@@ -7,6 +7,7 @@ import {
   type InviteTeacherFormData,
   type InviteTeacherModalProps,
 } from './InviteTeacherModal.types';
+import { MailIcon } from '../../../../shared';
 import styles from './InviteTeacherModal.module.css';
 
 export function InviteTeacherModal({
@@ -79,7 +80,10 @@ export function InviteTeacherModal({
           </p>
 
           <div className={styles.infoBox}>
-            ✉️ Запрошення буде надіслано на email або надійде у кабінет викладача. Якщо користувач ще не зареєстрований, він отримає посилання для реєстрації.
+            <MailIcon size={18} />
+            <span>
+              Запрошення буде надіслано на email або надійде у кабінет викладача. Якщо користувач ще не зареєстрований, він отримає посилання для реєстрації.
+            </span>
           </div>
 
           <div className={styles.formGroup}>

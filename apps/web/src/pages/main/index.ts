@@ -10,3 +10,5 @@ export { CourseDetailsPage } from './CourseDetailsPage/CourseDetailsPage';
 export { StudentDetailsPage } from './StudentDetailsPage/StudentDetailsPage';
 export { ReportsListPage } from '../../modules/reports/ui/ReportsListPage';
 export { SessionReportPage } from '../../modules/reports/ui/SessionReportPage';
+export { PublicUserProfilePage } from './PublicUserProfilePage';
+

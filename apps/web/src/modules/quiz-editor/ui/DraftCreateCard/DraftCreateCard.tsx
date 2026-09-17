@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlusIcon } from '../../../../shared';
+import { PlusIcon, WarningIcon } from '../../../../shared';
 import type { DraftCreateCardProps } from './DraftCreateCard.types';
 import styles from '../Drafts.module.css';
 
@@ -13,7 +13,7 @@ export function DraftCreateCard({
     return (
       <div className={styles['draft-limit-card']}>
         <div className={styles['draft-limit-card__inner']}>
-          <span className={styles['limit-icon']}>⚠️</span>
+          <span className={styles['limit-icon']}><WarningIcon size={24} /></span>
           <span className={styles['limit-title']}>Ліміт вичерпано</span>
           <span className={styles['limit-desc']}>
             У вас уже створено {maxDrafts} чернетки. Опублікуйте або видаліть одну з них для створення нової.

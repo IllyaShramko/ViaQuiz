@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   useGetQuizByUuidQuery,
   useRecordViewMutation,
-  QuizBackButton,
   QuizDetailsHero,
   QuizLaunchCard,
   QuizQuestionsList,
@@ -65,7 +64,6 @@ export function QuizDetailsPage() {
 
   return (
     <div className={styles['quiz-details-page']}>
-      <QuizBackButton onBack={() => navigate('/dashboard')} />
       <QuizDetailsHero quiz={quiz} />
       <QuizLaunchCard quiz={quiz} />
       <hr className={styles['quiz-details-divider']} />

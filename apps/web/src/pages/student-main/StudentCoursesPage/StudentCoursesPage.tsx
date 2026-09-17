@@ -37,9 +37,6 @@ export function StudentCoursesPage() {
                     Клас: {course.classroom?.name || 'Мій клас'} • {course._count?.rooms || 0} сесій
                   </p>
                 </div>
-                <span style={{ color: '#22c55e', fontWeight: 700, fontSize: '0.85rem' }}>
-                  Зараховано
-                </span>
               </div>
             ))}
           </div>

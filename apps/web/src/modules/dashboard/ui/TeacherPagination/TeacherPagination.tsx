@@ -1,4 +1,5 @@
 import type { TeacherPaginationProps } from './TeacherPagination.types';
+import { ArrowLeftIcon, ArrowRightIcon } from '../../../../shared';
 import styles from '../Dashboard.module.css';
 
 export function TeacherPagination({
@@ -16,7 +17,8 @@ export function TeacherPagination({
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
       >
-        ← Попередня
+        <ArrowLeftIcon size={14} />
+        <span>Попередня</span>
       </button>
 
       <span className={styles['teacher-pagination-info']}>
@@ -29,7 +31,8 @@ export function TeacherPagination({
         disabled={page >= totalPages}
         onClick={() => onPageChange(page + 1)}
       >
-        Наступна →
+        <span>Наступна</span>
+        <ArrowRightIcon size={14} />
       </button>
     </div>
   );

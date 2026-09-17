@@ -264,7 +264,7 @@
 /* Content Area */
 .teacher-content {
   flex: 1;
-  padding: 2.5rem 3rem;
+  padding: 2rem 2.5rem 3rem;
   overflow-y: auto;
 }
 

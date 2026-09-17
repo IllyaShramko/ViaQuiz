@@ -13,7 +13,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.5rem 0 0;
+  padding: 0;
 }
 
 .teacher-hero-search__title {
@@ -24,66 +24,6 @@
   margin-bottom: 1.25rem;
 }
 
-.teacher-search-box {
-  width: 100%;
-  max-width: 680px;
-  background-color: #ffffff;
-  border-radius: var(--radius-full, 9999px);
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem 0.5rem 1.25rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  transition: transform var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
-}
-
-.teacher-search-box:focus-within {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(134, 59, 255, 0.25);
-}
-
-.teacher-search-icon {
-  width: 22px;
-  height: 22px;
-  color: #64748b;
-  flex-shrink: 0;
-  margin-right: 0.75rem;
-}
-
-.teacher-search-input {
-  flex: 1;
-  border: none;
-  background: transparent;
-  color: #1e293b;
-  font-size: 1rem;
-  font-weight: 500;
-  outline: none;
-  box-shadow: none;
-}
-
-.teacher-search-input:focus,
-.teacher-search-input:focus-visible {
-  outline: none;
-  box-shadow: none;
-}
-
-.teacher-search-input::placeholder {
-  color: #94a3b8;
-}
-
-.teacher-search-clear-btn {
-  background: none;
-  border: none;
-  color: #64748b;
-  font-size: 0.9rem;
-  padding: 0.4rem 0.6rem;
-  cursor: pointer;
-  border-radius: var(--radius-full, 9999px);
-  transition: color var(--transition-fast, 150ms ease);
-}
-
-.teacher-search-clear-btn:hover {
-  color: #0f172a;
-}
 
 /* Quizzes Header */
 .teacher-quizzes-header {
@@ -193,6 +133,18 @@
   font-weight: 500;
 }
 
+.teacher-quiz-card__author-link {
+  color: var(--color-accent, #8b5cf6) !important;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.teacher-quiz-card__author-link:hover {
+  text-decoration: underline;
+  color: var(--color-accent-hover, #a78bfa) !important;
+}
+
 .teacher-quiz-card__desc {
   font-size: 0.85rem;
   color: var(--color-text-secondary, #9090a8);
@@ -240,6 +192,7 @@
   transition: color 0.2s ease, transform 0.2s ease;
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
 }
 
 .teacher-quiz-card:hover .teacher-quiz-card__action-hint {
@@ -328,6 +281,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
   background-color: var(--color-bg-surface, #1a1a26);
   border: 1px solid var(--color-border, #2a2a3a);
   color: var(--color-text-primary, #f0f0f5);

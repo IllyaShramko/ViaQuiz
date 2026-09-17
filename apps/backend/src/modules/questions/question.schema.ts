@@ -1,20 +1,23 @@
 import { z } from "zod";
-import { MAX_QUESTION_VARIANTS } from "@viaquiz/shared-types";
+import {
+	QUESTION_TYPES,
+	VARIANT_TYPES,
+	QUESTION_LIMITS,
+	MAX_QUESTION_VARIANTS,
+} from "@viaquiz/shared-types";
 
-export const questionTypeEnum = z.enum([
-	"ONE_ANSWER",
-	"MANY_ANSWERS",
-	"TYPE_ANSWER_V1",
-	"TYPE_ANSWER_V2",
-]);
+export const questionTypeEnum = z.enum(QUESTION_TYPES);
 
-export const variantTypeEnum = z.enum(["TEXT", "IMAGE"]);
+export const variantTypeEnum = z.enum(VARIANT_TYPES);
 
 export const variantSchema = z.object({
 	id: z.number().int().positive().optional(),
 	text: z
 		.string()
-		.max(300, "Variant text cannot exceed 300 characters")
+		.max(
+			QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH,
+			`Variant text cannot exceed ${QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH} characters`,
+		)
 		.nullable()
 		.optional(),
 	media: z.url("Invalid media URL").nullable().optional().or(z.literal("")),

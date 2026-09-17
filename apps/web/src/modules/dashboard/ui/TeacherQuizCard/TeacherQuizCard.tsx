@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { OneAnswerIcon, ViewEyeIcon, pluralizeQuestions } from '../../../../shared';
+import { Link, useNavigate } from 'react-router-dom';
+import { OneAnswerIcon, ViewEyeIcon, ArrowRightIcon, pluralizeQuestions } from '../../../../shared';
 import type { TeacherQuizCardProps } from './TeacherQuizCard.types';
 import styles from '../Dashboard.module.css';
 
@@ -13,6 +13,7 @@ export const TEACHER_GRADIENTS = [
 ];
 
 export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardProps) {
+  const navigate = useNavigate();
   const authorName =
     quiz.author?.firstName && quiz.author?.lastName
       ? `${quiz.author.firstName} ${quiz.author.lastName}`
@@ -57,7 +58,30 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
       <div className={styles['teacher-quiz-card__body']}>
         <h4 className={styles['teacher-quiz-card__title']}>{quiz.name}</h4>
         <p className={styles['teacher-quiz-card__author']}>
-          Автор: <span>{authorName}</span>
+          Автор:{' '}
+          {quiz.author?.uuid ? (
+            <span
+              role="button"
+              tabIndex={0}
+              className={styles['teacher-quiz-card__author-link']}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(`/users/${quiz.author.uuid}`);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate(`/users/${quiz.author.uuid}`);
+                }
+              }}
+            >
+              {authorName}
+            </span>
+          ) : (
+            <span>{authorName}</span>
+          )}
         </p>
         <p className={styles['teacher-quiz-card__desc']}>
           {quiz.description || 'Немає опису для цієї вікторини.'}
@@ -74,7 +98,10 @@ export function TeacherQuizCard({ quiz, index = 0, onClick }: TeacherQuizCardPro
               <span>{viewsCount}</span>
             </span>
           </div>
-          <span className={styles['teacher-quiz-card__action-hint']}>Переглянути →</span>
+          <span className={styles['teacher-quiz-card__action-hint']}>
+            <span>Переглянути</span>
+            <ArrowRightIcon size={14} />
+          </span>
         </div>
       </div>
     </Link>

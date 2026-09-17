@@ -5,7 +5,7 @@
   width: 100%;
   max-width: 1300px;
   margin: 0 auto;
-  padding: 8px 0 40px 0;
+  padding: 0 0 40px 0;
 }
 
 .classes-header {
@@ -458,17 +458,27 @@
 }
 
 .history-grade-badge {
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-size: 0.9rem;
   color: var(--success, #22c55e);
   background: rgba(34, 197, 94, 0.12);
   border: 1px solid rgba(34, 197, 94, 0.3);
-  padding: 6px 14px;
-  border-radius: 10px;
+  padding: 4px 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   flex-shrink: 0;
+}
+
+.history-grade-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.history-grade-val {
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
 @media (max-width: 680px) {

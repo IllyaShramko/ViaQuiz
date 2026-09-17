@@ -20,17 +20,6 @@
   gap: 20px;
 }
 
-.banner::after {
-  content: '';
-  position: absolute;
-  right: -30px;
-  top: -30px;
-  width: 160px;
-  height: 160px;
-  background: radial-gradient(circle, rgba(134, 59, 255, 0.3) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
 
 .banner-info {
   display: flex;

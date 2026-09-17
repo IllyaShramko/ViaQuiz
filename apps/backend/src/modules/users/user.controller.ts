@@ -87,4 +87,14 @@ export const UserController: UserControllerContract = {
 			next(error);
 		}
 	},
+
+	async getPublicProfile(req, res, next) {
+		try {
+			const { uuid } = req.params;
+			const profile = await UserService.getPublicProfile(uuid);
+			res.status(200).json(profile);
+		} catch (error) {
+			next(error);
+		}
+	},
 };

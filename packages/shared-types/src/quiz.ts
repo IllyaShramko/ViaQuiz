@@ -22,3 +22,30 @@ export interface GetLikedQuizzesParams
 
 export const MIN_QUESTION_VARIANTS = 2;
 export const MAX_QUESTION_VARIANTS = 6;
+
+export const QUESTION_TYPES = [
+	"ONE_ANSWER",
+	"MANY_ANSWERS",
+	"TYPE_ANSWER_V1",
+	"TYPE_ANSWER_V2",
+] as const;
+
+export type QuestionType = (typeof QUESTION_TYPES)[number];
+
+export const VARIANT_TYPES = ["TEXT", "IMAGE"] as const;
+
+export type VariantType = (typeof VARIANT_TYPES)[number];
+
+export const QUESTION_LIMITS = {
+	MIN_VARIANTS: MIN_QUESTION_VARIANTS,
+	MAX_VARIANTS: MAX_QUESTION_VARIANTS,
+	DEFAULT_TIME_LIMIT_MS: 30000,
+	MIN_TIME_LIMIT_MS: 1000,
+	MAX_TIME_LIMIT_MS: 600000,
+	DEFAULT_POINTS: 1000,
+	MIN_POINTS: 0,
+	MAX_POINTS: 5000,
+	MAX_TEXT_LENGTH: 1000,
+	MAX_VARIANT_TEXT_LENGTH: 300,
+} as const;
+

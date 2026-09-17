@@ -80,15 +80,15 @@ export function LibraryPage() {
     { skip: activeTab !== 'liked' }
   );
 
-  // Background counts for tabs
-  const myCountQuery = useGetMyLibraryQuizzesQuery({ limit: 1 }, { skip: activeTab === 'my' });
-  const likedCountQuery = useGetLikedLibraryQuizzesQuery({ limit: 1 }, { skip: activeTab === 'liked' });
+  // Background counts for tabs to ensure badge totals persist across tab switches
+  const myCountQuery = useGetMyLibraryQuizzesQuery({ limit: 1 });
+  const likedCountQuery = useGetLikedLibraryQuizzesQuery({ limit: 1 });
 
   const [deleteQuiz] = useDeleteLibraryQuizMutation();
   const [toggleLike] = useToggleLibraryLikeMutation();
 
-  const myTotal = activeTab === 'my' ? myQuery.data?.total || 0 : myCountQuery.data?.total || 0;
-  const likedTotal = activeTab === 'liked' ? likedQuery.data?.total || 0 : likedCountQuery.data?.total || 0;
+  const myTotal = myCountQuery.data?.total ?? myQuery.data?.total ?? 0;
+  const likedTotal = likedCountQuery.data?.total ?? likedQuery.data?.total ?? 0;
 
   const currentQuery = activeTab === 'my' ? myQuery : likedQuery;
   const quizzes = currentQuery.data?.quizzes || [];

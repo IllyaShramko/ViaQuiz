@@ -67,6 +67,15 @@
 
 .profile-badge {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.profile-created-date {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #71717a);
+  font-weight: 500;
 }
 
 .badge-role {

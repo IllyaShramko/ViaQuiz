@@ -1,3 +1,11 @@
+export const CLASSROOM_LIMITS = {
+	MAX_ACTIVE_CLASSES_PER_TEACHER: 8,
+	MAX_ACTIVE_COURSES_PER_TEACHER: 30,
+	MAX_COURSES_PER_CLASSROOM: 15,
+	MAX_STUDENTS_PER_CLASSROOM: 50,
+	MAX_STUDENTS_PER_COURSE: 50,
+} as const;
+
 export interface ClassroomLimits {
 	maxClasses: number;
 	currentActiveClasses: number;
@@ -7,6 +15,7 @@ export interface ClassroomLimits {
 	maxCoursesPerClass: number;
 	maxStudentsPerCourse: number;
 }
+
 
 export interface StudentDto {
 	id: number;

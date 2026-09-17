@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetTeacherSessionsQuery } from '../../../../reports';
+import { SearchInput, UsersIcon, ClipboardIcon, ArrowLeftIcon, ArrowRightIcon } from '../../../../../shared';
 import type { CourseHistoryTabProps } from './CourseHistoryTab.types';
 import styles from './CourseHistoryTab.module.css';
 
@@ -55,36 +56,12 @@ export function CourseHistoryTab({ courseUuid }: CourseHistoryTabProps) {
     <div className={styles.container}>
       {/* Search & Stats Bar */}
       <div className={styles.controls}>
-        <div className={styles.searchBox}>
-          <svg
-            className={styles.searchIcon}
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Пошук за назвою вікторини..."
-            value={historySearchInput}
-            onChange={(e) => setHistorySearchInput(e.target.value)}
-            className={styles.searchInput}
-          />
-          {historySearchInput && (
-            <button
-              type="button"
-              className={styles.searchClearBtn}
-              onClick={() => setHistorySearchInput('')}
-            >
-              ✕
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={historySearchInput}
+          onChange={setHistorySearchInput}
+          placeholder="Пошук за назвою вікторини..."
+          maxWidth={360}
+        />
 
         {historyData && (
           <div className={styles.totalBadge}>
@@ -111,7 +88,7 @@ export function CourseHistoryTab({ courseUuid }: CourseHistoryTabProps) {
       {/* Empty state */}
       {!isHistoryLoading && !isHistoryError && (!historyData || historyData.sessions.length === 0) && (
         <div className={styles.empty}>
-          <div className={styles.emptyIcon}>📋</div>
+          <div className={styles.emptyIcon}><ClipboardIcon size={40} /></div>
           <h4>Сесій ще не проводилося</h4>
           <p>
             {historySearchQuery
@@ -155,7 +132,8 @@ export function CourseHistoryTab({ courseUuid }: CourseHistoryTabProps) {
                     </td>
                     <td>
                       <span className={styles.participantsCount}>
-                        👥 {session.participantsCount}
+                        <UsersIcon size={16} />
+                        <span>{session.participantsCount}</span>
                       </span>
                     </td>
                     <td>
@@ -189,7 +167,8 @@ export function CourseHistoryTab({ courseUuid }: CourseHistoryTabProps) {
                           navigate(`/reports/session/${session.roomUuid}`);
                         }}
                       >
-                        Звіт →
+                        <span>Звіт</span>
+                        <ArrowRightIcon size={14} />
                       </button>
                     </td>
                   </tr>
@@ -207,7 +186,8 @@ export function CourseHistoryTab({ courseUuid }: CourseHistoryTabProps) {
                 disabled={historyPage === 1}
                 onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
               >
-                ← Попередня
+                <ArrowLeftIcon size={14} />
+                <span>Попередня</span>
               </button>
               <span className={styles.paginationInfo}>
                 Сторінка {historyPage} з {totalHistoryPages}
@@ -218,7 +198,8 @@ export function CourseHistoryTab({ courseUuid }: CourseHistoryTabProps) {
                 disabled={historyPage === totalHistoryPages}
                 onClick={() => setHistoryPage((p) => Math.min(totalHistoryPages, p + 1))}
               >
-                Наступна →
+                <span>Наступна</span>
+                <ArrowRightIcon size={14} />
               </button>
             </div>
           )}

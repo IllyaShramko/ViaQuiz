@@ -1,4 +1,5 @@
 import { useCancelInvitationMutation } from '../../../api/classesApi';
+import { HourglassIcon } from '../../../../../shared';
 import type { CourseInstructorCardProps } from './CourseInstructorCard.types';
 import styles from './CourseInstructorCard.module.css';
 
@@ -103,7 +104,7 @@ export function CourseInstructorCard({
       {pendingInvitation && (
         <div className={styles.pendingBox}>
           <div className={styles.pendingText}>
-            <span>⏳</span>
+            <HourglassIcon size={16} />
             <span>
               Очікує підтвердження від:{' '}
               <strong>

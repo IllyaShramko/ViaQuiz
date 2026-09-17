@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { TeacherProfileStatsDto } from "@viaquiz/shared-types";
+import type { TeacherProfileStatsDto, PublicUserProfileDto } from "@viaquiz/shared-types";
 import type { AuthenticatedUser } from "../../../types/token";
 import type { PaginationLocals } from "../../../middlewares/paginationMiddleware";
 import type {
@@ -46,6 +46,7 @@ export type UserServiceContract = {
 		skip: number;
 		take: number;
 	}) => Promise<{ users: User[]; total: number }>;
+	getPublicProfile: (uuid: string) => Promise<PublicUserProfileDto>;
 };
 
 export type UserControllerContract = {
@@ -88,6 +89,11 @@ export type UserControllerContract = {
 			AuthenticatedUser & PaginationLocals
 		>,
 		res: Response<User[], AuthenticatedUser & PaginationLocals>,
+		next: NextFunction,
+	) => Promise<void>;
+	getPublicProfile: (
+		req: Request<{ uuid: string }, PublicUserProfileDto>,
+		res: Response<PublicUserProfileDto>,
 		next: NextFunction,
 	) => Promise<void>;
 };

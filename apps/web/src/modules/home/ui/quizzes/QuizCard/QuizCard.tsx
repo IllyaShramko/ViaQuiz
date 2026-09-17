@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon } from '../../../../../shared';
 import { useLocale } from '../../../../../shared/i18n/useLocale';
 import type { QuizCardProps } from './QuizCard.types';
@@ -13,6 +14,7 @@ export const HOME_QUIZ_GRADIENTS = [
 ];
 
 export function QuizCard({ quiz, index = 0, onClick }: QuizCardProps) {
+  const navigate = useNavigate();
   const { t, pluralize } = useLocale();
 
   const getAuthorName = (author: {
@@ -70,7 +72,28 @@ export function QuizCard({ quiz, index = 0, onClick }: QuizCardProps) {
       <div className={styles['quiz-card__body']}>
         <h3 className={styles['quiz-card__title']}>{quiz.name}</h3>
         <p className={styles['quiz-card__author']}>
-          {t('quizzes.author')}: <span>{getAuthorName(quiz.author)}</span>
+          {t('quizzes.author')}:{' '}
+          {quiz.author?.uuid ? (
+            <span
+              role="button"
+              tabIndex={0}
+              className={styles['quiz-card__author-link']}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/users/${quiz.author.uuid}`);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.stopPropagation();
+                  navigate(`/users/${quiz.author.uuid}`);
+                }
+              }}
+            >
+              {getAuthorName(quiz.author)}
+            </span>
+          ) : (
+            <span>{getAuthorName(quiz.author)}</span>
+          )}
         </p>
         {quiz.description && (
           <p className={styles['quiz-card__desc']}>{quiz.description}</p>

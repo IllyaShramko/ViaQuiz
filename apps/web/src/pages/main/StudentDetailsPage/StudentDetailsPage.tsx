@@ -182,8 +182,8 @@ export function StudentDetailsPage() {
                 </div>
 
                 <div className={styles['history-grade-badge']}>
-                  <span>Оцінка:</span>
-                  <span>{item.grade}</span>
+                  <span className={styles['history-grade-label']}>Оцінка:</span>
+                  <span className={styles['history-grade-val']}>{item.grade}</span>
                 </div>
               </div>
             ))}

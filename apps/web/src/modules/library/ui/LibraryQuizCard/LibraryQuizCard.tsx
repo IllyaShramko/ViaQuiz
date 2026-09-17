@@ -1,5 +1,6 @@
 import React from 'react';
-import { OneAnswerIcon, ViewEyeIcon } from '../../../../shared';
+import { useNavigate } from 'react-router-dom';
+import { OneAnswerIcon, ViewEyeIcon, HeartIcon } from '../../../../shared';
 import type { LibraryQuizCardProps } from './LibraryQuizCard.types';
 import styles from '../Library.module.css';
 
@@ -21,6 +22,7 @@ export function LibraryQuizCard({
   onDelete,
   onUnlike,
 }: LibraryQuizCardProps) {
+  const navigate = useNavigate();
   const gradient = LIBRARY_GRADIENTS[index % LIBRARY_GRADIENTS.length];
   const questionsCount = quiz._count?.questions || 0;
   const viewsCount = quiz._count?.views || 0;
@@ -109,7 +111,28 @@ export function LibraryQuizCard({
 
         {authorName && (
           <p className={styles['library-card__author']}>
-            Автор: <span>{authorName}</span>
+            Автор:{' '}
+            {author?.uuid ? (
+              <span
+                role="button"
+                tabIndex={0}
+                className={styles['library-card__author-link']}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/users/${author.uuid}`);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.stopPropagation();
+                    navigate(`/users/${author.uuid}`);
+                  }
+                }}
+              >
+                {authorName}
+              </span>
+            ) : (
+              <span>{authorName}</span>
+            )}
           </p>
         )}
 
@@ -130,7 +153,8 @@ export function LibraryQuizCard({
             </span>
             {likesCount > 0 && (
               <span className={styles['library-card__stat']}>
-                ❤️ {likesCount}
+                <HeartIcon size={15} />
+                <span>{likesCount}</span>
               </span>
             )}
           </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { QuizDetailsHeroProps } from './QuizDetailsHero.types';
 import { useToggleLikeMutation } from '../../api';
 import styles from '../QuizDetails.module.css';
@@ -74,9 +75,11 @@ export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
       {/* Info & Meta */}
       <div className={styles['quiz-hero-info']}>
         <div className={styles['quiz-hero-badge-row']}>
-          <span className={`${styles['quiz-status-pill']} ${quiz.isDraft ? styles['is-draft'] : styles['is-published']}`}>
-            {quiz.isDraft ? 'Чернетка' : 'Опубліковано'}
-          </span>
+          {quiz.isDraft && (
+            <span className={`${styles['quiz-status-pill']} ${styles['is-draft']}`}>
+              Чернетка
+            </span>
+          )}
 
           <button
             type="button"
@@ -109,7 +112,13 @@ export function QuizDetailsHero({ quiz }: QuizDetailsHeroProps) {
         <div className={styles['quiz-hero-meta-list']}>
           <div className={styles['quiz-hero-meta-item']}>
             <span className={styles['quiz-hero-meta-label']}>Автор</span>
-            <span className={styles['quiz-hero-meta-val']}>{authorName}</span>
+            {quiz.author?.uuid ? (
+              <Link to={`/users/${quiz.author.uuid}`} className={styles['quiz-author-link']}>
+                {authorName}
+              </Link>
+            ) : (
+              <span className={styles['quiz-hero-meta-val']}>{authorName}</span>
+            )}
           </div>
 
           <div className={styles['quiz-hero-meta-item']}>

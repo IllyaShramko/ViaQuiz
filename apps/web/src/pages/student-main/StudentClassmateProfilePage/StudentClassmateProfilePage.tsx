@@ -1,10 +1,17 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useGetClassmateProfileQuery } from '../../../modules/students';
+import { useStudentHeader, LockIcon } from '../../../shared';
 import styles from './StudentClassmateProfilePage.module.css';
 
 export function StudentClassmateProfilePage() {
   const { uuid } = useParams<{ uuid: string }>();
-  const navigate = useNavigate();
+
+  useStudentHeader({
+    title: 'Профіль',
+    showBack: true,
+    backTo: '/student/class',
+    backLabel: 'Назад до списку класу',
+  });
 
   const { data: profile, isLoading, error } = useGetClassmateProfileQuery(
     uuid || '',
@@ -24,13 +31,6 @@ export function StudentClassmateProfilePage() {
   if (error || !profile) {
     return (
       <div className={styles.container}>
-        <button
-          type="button"
-          className={styles['back-button']}
-          onClick={() => navigate('/student/class')}
-        >
-          ← До списку класу
-        </button>
         <div className={styles['empty-state']}>
           Учня не знайдено або він не належить до вашого класу.
         </div>
@@ -56,14 +56,6 @@ export function StudentClassmateProfilePage() {
 
   return (
     <div className={styles.container}>
-      <button
-        type="button"
-        className={styles['back-button']}
-        onClick={() => navigate('/student/class')}
-      >
-        ← До списку класу
-      </button>
-
       <div className={styles['profile-card']}>
         {/* Header with avatar & name */}
         <div className={styles['header-row']}>
@@ -78,29 +70,31 @@ export function StudentClassmateProfilePage() {
           </div>
         </div>
 
-        {/* Public Information Grid */}
-        <div className={styles.grid}>
-          <div className={styles['stat-item']}>
-            <span className={styles['stat-label']}>Клас</span>
-            <span className={styles['stat-value']}>{profile.classroomName}</span>
+        {/* Info Grid */}
+        <div className={styles['info-grid']}>
+          <div className={styles['info-item']}>
+            <span className={styles['info-label']}>Клас</span>
+            <span className={styles['info-value']}>
+              {profile.classroomName || '—'}
+            </span>
           </div>
 
-          <div className={styles['stat-item']}>
-            <span className={styles['stat-label']}>У класі з</span>
-            <span className={styles['stat-value']}>{formattedDate}</span>
+          <div className={styles['info-item']}>
+            <span className={styles['info-label']}>У класі з</span>
+            <span className={styles['info-value']}>{formattedDate}</span>
           </div>
 
-          <div className={styles['stat-item']}>
-            <span className={styles['stat-label']}>Пройдено тестів</span>
-            <span className={styles['stat-value']}>
-              {profile.stats.totalQuizzesPassed}
+          <div className={styles['info-item']}>
+            <span className={styles['info-label']}>Пройдено тестів</span>
+            <span className={styles['info-value']}>
+              {profile.stats?.totalQuizzesPassed ?? 0}
             </span>
           </div>
         </div>
 
-        {/* Privacy Shield Notice */}
+        {/* Privacy Notice */}
         <div className={styles['privacy-notice']}>
-          <span className={styles['privacy-icon']}>🔒</span>
+          <span className={styles['privacy-icon']}><LockIcon size={18} /></span>
           <span>
             Це публічний профіль однокласника. Логін та особисті дані приховані з метою безпеки.
           </span>

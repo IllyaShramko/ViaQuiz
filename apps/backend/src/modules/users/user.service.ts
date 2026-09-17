@@ -337,4 +337,72 @@ export const UserService: UserServiceContract = {
 
 		return { users, total };
 	},
+
+	async getPublicProfile(uuid: string) {
+		const userRecord = await PRISMA_CLIENT.user.findUnique({
+			where: { uuid },
+			select: {
+				id: true,
+				uuid: true,
+				login: true,
+				firstName: true,
+				lastName: true,
+				createdAt: true,
+			},
+		});
+
+		if (!userRecord) {
+			throw new NotFoundError("User not found");
+		}
+
+		const [totalQuizzes, gamesCount, quizzes] = await Promise.all([
+			PRISMA_CLIENT.quiz.count({
+				where: {
+					authorId: userRecord.id,
+					isDraft: false,
+				},
+			}),
+			PRISMA_CLIENT.room.count({
+				where: {
+					status: "FINISHED",
+					OR: [
+						{ hostId: userRecord.id },
+						{ classroom: { teacherId: userRecord.id } },
+						{ course: { classroom: { teacherId: userRecord.id } } },
+					],
+				},
+			}),
+			PRISMA_CLIENT.quiz.findMany({
+				where: {
+					authorId: userRecord.id,
+					isDraft: false,
+				},
+				orderBy: { createdAt: "desc" },
+				include: {
+					author: {
+						select: {
+							id: true,
+							uuid: true,
+							login: true,
+							firstName: true,
+							lastName: true,
+						},
+					},
+					keywords: true,
+					_count: {
+						select: { questions: true, views: true, likes: true },
+					},
+				},
+			}),
+		]);
+
+		return {
+			user: userRecord,
+			stats: {
+				totalQuizzes: totalQuizzes || 0,
+				gamesCount: gamesCount || 0,
+			},
+			quizzes: quizzes || [],
+		};
+	},
 };

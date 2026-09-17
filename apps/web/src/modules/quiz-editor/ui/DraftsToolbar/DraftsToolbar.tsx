@@ -1,4 +1,5 @@
 import type { DraftsToolbarProps } from './DraftsToolbar.types';
+import { ClockIcon, CalendarIcon } from '../../../../shared';
 import styles from '../Drafts.module.css';
 
 export function DraftsToolbar({
@@ -18,7 +19,8 @@ export function DraftsToolbar({
             className={`${styles['sort-btn']} ${sortBy === 'updatedAt' ? styles['is-active'] : ''}`}
             onClick={() => onSortByChange('updatedAt')}
           >
-            🕒 За датою оновлення
+            <ClockIcon size={14} />
+            <span>За датою оновлення</span>
           </button>
 
           <button
@@ -26,7 +28,8 @@ export function DraftsToolbar({
             className={`${styles['sort-btn']} ${sortBy === 'createdAt' ? styles['is-active'] : ''}`}
             onClick={() => onSortByChange('createdAt')}
           >
-            📅 За датою створення
+            <CalendarIcon size={14} />
+            <span>За датою створення</span>
           </button>
         </div>
 

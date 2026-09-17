@@ -4,6 +4,7 @@ import { ConfettiCanvas } from '../ConfettiCanvas';
 import { ResultsHeader } from '../ResultsHeader';
 import { PodiumStage } from '../PodiumStage';
 import { LeaderboardList } from '../LeaderboardList';
+import { NextIcon } from '../../../../../shared/ui/icons';
 import styles from './FinalResultsHost.module.css';
 
 export function FinalResultsHost({
@@ -46,7 +47,7 @@ export function FinalResultsHost({
 						title="Показати всі результати одразу"
 					>
 						<span>Пропустити анімацію</span>
-						<span aria-hidden="true">⏭</span>
+						<span aria-hidden="true"><NextIcon size={12} /></span>
 					</button>
 				)}
 

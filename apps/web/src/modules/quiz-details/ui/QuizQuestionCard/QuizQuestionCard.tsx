@@ -1,6 +1,6 @@
 import type { QuestionVariant } from '../../models';
 import type { QuizQuestionCardProps } from './QuizQuestionCard.types';
-import { TimerIcon } from '../../../../shared/ui/icons';
+import { TimerIcon, StarIcon } from '../../../../shared/ui/icons';
 import styles from '../QuizDetails.module.css';
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
@@ -28,7 +28,11 @@ export function QuizQuestionCard({ question, index }: QuizQuestionCardProps) {
               <TimerIcon size={14} /> {timeSec}с
             </span>
           )}
-          {question.points && <span className={styles['param-pill']}>⭐ {question.points} б.</span>}
+          {question.points && (
+            <span className={styles['param-pill']}>
+              <StarIcon size={13} /> {question.points} б.
+            </span>
+          )}
         </div>
       </div>
 

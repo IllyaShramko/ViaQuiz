@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
 import { isTeacher } from '../../../modules/auth/utils';
+import { StudentLayoutProvider, useStudentLayout } from './StudentLayout.context';
+import type { StudentLayoutProps } from './StudentLayout.types';
 import styles from './StudentLayout.module.css';
 
-export function StudentLayout() {
+function StudentLayoutInner({ children }: StudentLayoutProps) {
   const { user, logout } = useUserContext();
   const location = useLocation();
   const navigate = useNavigate();
+  const { headerConfig } = useStudentLayout();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Close mobile drawer on route change
@@ -26,10 +29,35 @@ export function StudentLayout() {
     }, 10);
   };
 
+  const handleBackClick = () => {
+    if (typeof headerConfig.backTo === 'function') {
+      headerConfig.backTo();
+    } else if (typeof headerConfig.backTo === 'string') {
+      navigate(headerConfig.backTo);
+    } else {
+      navigate(-1);
+    }
+  };
+
   const displayName =
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`
       : user?.firstName || user?.login || 'Учень';
+
+  const defaultTitle =
+    location.pathname === '/student/dashboard'
+      ? 'Головна'
+      : location.pathname === '/student/class'
+      ? 'Мій клас'
+      : location.pathname === '/student/performance'
+      ? 'Моя успішність'
+      : location.pathname === '/student/history'
+      ? 'Історія тестувань'
+      : location.pathname === '/student/courses'
+      ? 'Мої курси'
+      : 'Профіль';
+
+  const title = headerConfig.title || defaultTitle;
 
   return (
     <div className={styles['student-layout']}>
@@ -118,18 +146,6 @@ export function StudentLayout() {
             </svg>
             <span>Мої курси</span>
           </Link>
-
-          <Link
-            to="/student/profile"
-            className={`${styles['student-nav-item']} ${location.pathname === '/student/profile' ? styles['is-active'] : ''}`}
-            onClick={() => setIsMobileNavOpen(false)}
-          >
-            <svg className={styles['student-nav-icon']} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Профіль</span>
-          </Link>
         </nav>
 
         <div className={styles['student-sidebar__footer']}>
@@ -155,22 +171,32 @@ export function StudentLayout() {
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
             </button>
+
+            {headerConfig.showBack && (
+              <button
+                type="button"
+                onClick={handleBackClick}
+                className={styles['student-back-btn']}
+                aria-label={headerConfig.backLabel || 'Назад'}
+                title={headerConfig.backLabel || 'Назад'}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+
             <h1 className={styles['student-topbar__title']}>
-              {location.pathname === '/student/dashboard'
-                ? 'Головна'
-                : location.pathname === '/student/class'
-                ? 'Мій клас'
-                : location.pathname === '/student/performance'
-                ? 'Моя успішність'
-                : location.pathname === '/student/history'
-                ? 'Історія тестувань'
-                : location.pathname === '/student/courses'
-                ? 'Мої курси'
-                : 'Профіль'}
+              {title}
             </h1>
+            {headerConfig.badge && (
+              <div className={styles['student-topbar__badge']}>{headerConfig.badge}</div>
+            )}
           </div>
 
           <div className={styles['student-topbar__actions']}>
+            {headerConfig.actions}
+
             <Link to="/join" className={styles['btn-enter-code']}>
               Введіть код
             </Link>
@@ -197,9 +223,17 @@ export function StudentLayout() {
 
         {/* Content Outlet */}
         <main className={styles['student-content']}>
-          <Outlet />
+          {children || <Outlet />}
         </main>
       </div>
     </div>
+  );
+}
+
+export function StudentLayout({ children }: StudentLayoutProps) {
+  return (
+    <StudentLayoutProvider>
+      <StudentLayoutInner>{children}</StudentLayoutInner>
+    </StudentLayoutProvider>
   );
 }

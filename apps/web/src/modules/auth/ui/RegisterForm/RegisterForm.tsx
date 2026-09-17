@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { RegisterFormProps } from './RegisterForm.types';
+import { MailIcon } from '../../../../shared';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import {
   useRegisterMutation,
@@ -208,10 +209,14 @@ export function RegisterForm({ onSuccess, onError }: RegisterFormProps) {
             marginBottom: '16px',
             fontSize: '0.85rem',
             color: '#c4b5fd',
-            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
           }}
         >
-          ✉️ Реєстрація за запрошенням на курс. Після завершення ви станете його викладачем.
+          <MailIcon size={16} />
+          <span>Реєстрація за запрошенням на курс. Після завершення ви станете його викладачем.</span>
         </div>
       )}
 

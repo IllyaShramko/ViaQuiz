@@ -172,6 +172,38 @@
   margin: 0;
 }
 
+.student-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  background: var(--color-bg-surface, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  cursor: pointer;
+  border-radius: var(--radius-md, 0.5rem);
+  transition: all var(--transition-fast, 150ms ease-in-out);
+  flex-shrink: 0;
+}
+
+.student-back-btn:hover {
+  color: var(--color-text-primary, #ffffff);
+  background: var(--color-bg-surface-hover, rgba(255, 255, 255, 0.08));
+  border-color: var(--color-border-hover, #3a3a4e);
+}
+
+.student-back-btn:active {
+  transform: scale(0.96);
+}
+
+.student-back-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
 .student-topbar__actions {
   display: flex;
   align-items: center;
@@ -240,7 +272,7 @@
 
 .student-content {
   flex: 1;
-  padding: 24px;
+  padding: 2rem 2.5rem 3rem;
   overflow-y: auto;
 }
 

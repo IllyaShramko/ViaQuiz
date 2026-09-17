@@ -83,6 +83,9 @@
 }
 
 .warningBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.25);
   border-radius: var(--radius-lg, 0.5rem);
@@ -90,6 +93,11 @@
   font-size: 0.85rem;
   color: #fca5a5;
   line-height: 1.4;
+}
+
+.warningBox svg {
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .error {

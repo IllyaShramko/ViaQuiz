@@ -1,9 +1,19 @@
-export type { User, CreateUserDto, TeacherProfileStatsDto } from "./user";
+export type {
+	User,
+	CreateUserDto,
+	TeacherProfileStatsDto,
+	PublicUserDto,
+	PublicUserStatsDto,
+	PublicUserProfileDto,
+} from "./user";
+export { USER_CONSTRAINTS } from "./user";
+
 export type {
 	SortOrder,
 	PaginationQueryParams,
 	SortQueryParams,
 } from "./common";
+
 export type {
 	PublishedQuizSortBy,
 	UserQuizSortBy,
@@ -12,8 +22,17 @@ export type {
 	GetPublishedQuizzesParams,
 	GetUserQuizzesParams,
 	GetLikedQuizzesParams,
+	QuestionType,
+	VariantType,
 } from "./quiz";
-export { MIN_QUESTION_VARIANTS, MAX_QUESTION_VARIANTS } from "./quiz";
+export {
+	MIN_QUESTION_VARIANTS,
+	MAX_QUESTION_VARIANTS,
+	QUESTION_TYPES,
+	VARIANT_TYPES,
+	QUESTION_LIMITS,
+} from "./quiz";
+
 export type {
 	ClassroomLimits,
 	StudentDto,
@@ -30,6 +49,8 @@ export type {
 	StudentClassroomDetailsDto,
 	ClassmateProfileDto,
 } from "./classroom";
+export { CLASSROOM_LIMITS } from "./classroom";
+
 export type {
 	RoomStatus,
 	CreateRoomDto,
@@ -47,10 +68,30 @@ export type {
 	QuestionReportDto,
 	StudentResultReportDto,
 } from "./game-session";
+
 export type {
 	TeacherSessionSummaryDto,
 	TeacherSessionsListDto,
 	SessionParticipantSummaryDto,
 	SessionQuestionStatsDto,
 	TeacherSessionReportDto,
-} from "./reports";
+} from "./reports";
+
+export type {
+	SocketData,
+	GameJoinPayload,
+	GameHostRoomPayload,
+	GameExtendTimePayload,
+	GameKickParticipantPayload,
+	GameSubmitAnswerPayload,
+	ParticipantJoinedPayload,
+	ParticipantLeftPayload,
+	ParticipantKickedPayload,
+	TimeExtendedPayload,
+	AnswerReceivedPayload,
+	FinishedResultPayload,
+	ClientToServerEvents,
+	ServerToClientEvents,
+	InterServerEvents,
+} from "./socket";
+export { SOCKET_EVENTS } from "./socket";

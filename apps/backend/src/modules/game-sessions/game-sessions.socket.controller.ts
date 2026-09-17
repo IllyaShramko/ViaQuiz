@@ -7,7 +7,13 @@ import { gameRedisService, type RedisQuestionData } from "./game-redis.service";
 import { GameSessionsRepository } from "./game-sessions.repository";
 import { PRISMA_CLIENT } from "../../config/database";
 import { logger } from "../../tools/logger";
-import type { ParticipantRoundAnswerDto } from "@viaquiz/shared-types";
+import type {
+	ParticipantRoundAnswerDto,
+	GameQuestionDto,
+	GameReviewDataDto,
+	GameFinishedDto,
+	ParticipantRoundResultDto,
+} from "@viaquiz/shared-types";
 
 // Store question timers in server memory by roomId
 const activeRoomTimers = new Map<number, NodeJS.Timeout>();
@@ -133,12 +139,12 @@ export const gameSessionsSocketController: SocketController = {
 					participants = await gameRedisService.getParticipants(roomId);
 				}
 
-				let currentQuestionSanitized: unknown = null;
+				let currentQuestionSanitized: GameQuestionDto | null = null;
 				let alreadyAnswered = false;
-				let reviewData: unknown = null;
+				let reviewData: GameReviewDataDto | null = null;
 				let answeredCount = 0;
 				let answeredParticipantIds: number[] = [];
-				let finishedData: unknown = null;
+				let finishedData: GameFinishedDto | null = null;
 
 				if (roomState && roomState.status === "PROGRESS") {
 					const cachedQ = await getOrCacheQuestion(
@@ -249,7 +255,7 @@ export const gameSessionsSocketController: SocketController = {
 							});
 						}
 
-						let participantResult: unknown = undefined;
+						let participantResult: ParticipantRoundResultDto | undefined = undefined;
 						if (participantId) {
 							const myAns = answers[participantId];
 							participantResult = {

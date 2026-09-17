@@ -3,6 +3,7 @@ import { ImageLightboxModal } from '../../modals';
 import type { QuestionHostViewProps } from './QuestionHostView.types';
 import timerIcon from '../../../../../assets/icons/timer.svg';
 import nextIcon from '../../../../../assets/icons/next.svg';
+import { KeyboardIcon, ViewEyeIcon, ViewEyeOffIcon } from '../../../../../shared/ui/icons';
 import styles from './QuestionHostView.module.css';
 
 export function QuestionHostView({
@@ -68,7 +69,7 @@ export function QuestionHostView({
 					<div className={styles.typedHostCard}>
 						<div className={styles.typedHostHeader}>
 							<div className={styles.typedHostTypeBadge}>
-								<span className={styles.typedHostIcon}>⌨️</span>
+								<KeyboardIcon size={16} />
 								<span>
 									{question.type === 'TYPE_ANSWER_V2'
 										? 'Тип запитання: Слово по буквах'
@@ -88,7 +89,7 @@ export function QuestionHostView({
 										: 'Показати правильну відповідь (обережно при демонстрації екрана)'
 								}
 							>
-								<span>{isAnswerRevealed ? '🙈' : '👁️'}</span>
+								{isAnswerRevealed ? <ViewEyeOffIcon size={16} /> : <ViewEyeIcon size={16} />}
 								<span>
 									{isAnswerRevealed ? 'Приховати відповідь' : 'Показати відповідь'}
 								</span>

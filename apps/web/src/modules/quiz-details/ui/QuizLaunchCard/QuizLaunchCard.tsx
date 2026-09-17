@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGetClassroomsQuery } from '../../../classes/api/classesApi';
 import { useCreateRoomMutation } from '../../../game-session/api/gameSessionApi';
 import type { QuizLaunchCardProps } from './QuizLaunchCard.types';
+import { PlayIcon } from '../../../../shared/ui/icons';
 
 export function QuizLaunchCard({ quiz }: QuizLaunchCardProps) {
 	const navigate = useNavigate();
@@ -133,7 +134,7 @@ export function QuizLaunchCard({ quiz }: QuizLaunchCardProps) {
 							cursor: isCreating ? 'not-allowed' : 'pointer',
 						}}
 					>
-						<span>▶</span>
+						<PlayIcon size={14} />
 						<span>{isCreating ? 'Створення...' : 'Почати вікторину'}</span>
 					</button>
 				</div>

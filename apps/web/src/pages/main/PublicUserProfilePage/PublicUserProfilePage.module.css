@@ -1,0 +1,56 @@
+.public-profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.quizzes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0;
+  margin: 0;
+}
+
+.quizzes-section__title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #f0f0f5);
+  margin: 0;
+}
+
+.quizzes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.empty-quizzes {
+  padding: 3rem 1rem;
+  text-align: center;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px dashed var(--color-border, #2a2a3a);
+  border-radius: var(--radius-xl, 1rem);
+  color: var(--color-text-muted, #9090a8);
+  font-size: 0.95rem;
+}
+
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted, #9090a8);
+}
+
+.error-state h3 {
+  font-size: 1.25rem;
+  color: #ef4444;
+  margin-bottom: 0.5rem;
+}

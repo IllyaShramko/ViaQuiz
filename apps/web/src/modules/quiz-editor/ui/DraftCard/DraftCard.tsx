@@ -1,5 +1,4 @@
-import React from 'react';
-import { BinIcon, OneAnswerIcon, pluralizeQuestions } from '../../../../shared';
+import { BinIcon, OneAnswerIcon, CalendarIcon, ClockIcon, ArrowRightIcon, pluralizeQuestions } from '../../../../shared';
 import type { DraftCardProps } from './DraftCard.types';
 import styles from '../Drafts.module.css';
 
@@ -82,7 +81,17 @@ export function DraftCard({
             <span>{pluralizeQuestions(questionsCount, true)}</span>
           </span>
           <span className={styles['meta-date']} title={`Створено: ${createdFormatted}`}>
-            {sortBy === 'createdAt' ? `📅 ${createdFormatted}` : `🕒 ${updatedFormatted}`}
+            {sortBy === 'createdAt' ? (
+              <>
+                <CalendarIcon size={14} />
+                <span>{createdFormatted}</span>
+              </>
+            ) : (
+              <>
+                <ClockIcon size={14} />
+                <span>{updatedFormatted}</span>
+              </>
+            )}
           </span>
         </div>
 
@@ -96,7 +105,7 @@ export function DraftCard({
             }}
           >
             <span>Продовжити редагування</span>
-            <span className={styles['open-arrow']}>→</span>
+            <span className={styles['open-arrow']}><ArrowRightIcon size={16} /></span>
           </button>
         </div>
       </div>
