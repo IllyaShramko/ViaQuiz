@@ -31,10 +31,28 @@ export function QuizCard({ quiz, index = 0, onClick }: QuizCardProps) {
   const questionCount = quiz._count?.questions ?? 0;
   const gradient = HOME_QUIZ_GRADIENTS[index % HOME_QUIZ_GRADIENTS.length];
 
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick(quiz);
+    } else if (quiz.uuid && !quiz.uuid.startsWith('sample-')) {
+      navigate(`/quiz/${quiz.uuid}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
     <div
+      role="button"
+      tabIndex={0}
       className={`${styles['quiz-card']} card card--interactive`}
-      onClick={() => onClick?.(quiz)}
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
     >
       <div className={styles['quiz-card__header']}>
         {quiz.coverImg ? (
