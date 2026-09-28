@@ -1,7 +1,7 @@
-import type { LibraryHeaderProps } from './LibraryHeader.types';
 import styles from '../Library.module.css';
 
-export function LibraryHeader({ onCreateQuiz }: LibraryHeaderProps) {
+// No props needed — the create button is now only in the global topbar
+export function LibraryHeader() {
   return (
     <div className={styles['library-header']}>
       <div className={styles['library-header__left']}>
@@ -10,18 +10,6 @@ export function LibraryHeader({ onCreateQuiz }: LibraryHeaderProps) {
           Керуйте своїми створеними вікторинами та переглядайте збережене
         </p>
       </div>
-
-      <button
-        type="button"
-        className={styles['library-header__create-btn']}
-        onClick={onCreateQuiz}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-        <span>Створити вікторину</span>
-      </button>
     </div>
   );
 }

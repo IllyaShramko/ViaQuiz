@@ -133,7 +133,7 @@ export function LibraryPage() {
 
   return (
     <div className={styles['library-page']}>
-      <LibraryHeader onCreateQuiz={() => navigate('/quiz/drafts')} />
+      <LibraryHeader />
 
       <LibraryTabs
         activeTab={activeTab}
