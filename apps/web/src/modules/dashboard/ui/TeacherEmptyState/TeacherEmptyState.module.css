@@ -1,0 +1,20 @@
+/* TeacherEmptyState component styles */
+
+.teacher-quizzes-empty,
+.teacher-quizzes-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 1rem;
+  background-color: var(--color-bg-elevated, #12121a);
+  border: 1px dashed var(--color-border, #2a2a3a);
+  border-radius: var(--radius-xl, 0.75rem);
+}
+
+.teacher-quizzes-error {
+  border-color: rgba(239, 68, 68, 0.4);
+}

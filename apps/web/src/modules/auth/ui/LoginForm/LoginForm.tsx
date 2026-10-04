@@ -16,7 +16,7 @@ import { useStudentLoginMutation } from '../../../students/api/studentsApi';
 import { useUserContext } from '../../context';
 import { getSafeRedirectUrl } from '../../utils';
 import { PasswordInput } from '../PasswordInput';
-import styles from '../Auth.module.css';
+import styles from './LoginForm.module.css';
 
 export function LoginForm({ onSuccess, onError, defaultRole }: LoginFormProps) {
   const { t } = useLocale();

@@ -2,7 +2,7 @@ import type { TeacherQuizzesGridProps } from './TeacherQuizzesGrid.types';
 import { TeacherQuizCard } from '../TeacherQuizCard';
 import { TeacherQuizSkeleton } from '../TeacherQuizSkeleton';
 import { TeacherEmptyState } from '../TeacherEmptyState';
-import styles from '../Dashboard.module.css';
+import styles from './TeacherQuizzesGrid.module.css';
 
 export function TeacherQuizzesGrid({
   quizzes,

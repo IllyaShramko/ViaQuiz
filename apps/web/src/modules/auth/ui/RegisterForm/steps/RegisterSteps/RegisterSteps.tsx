@@ -1,7 +1,7 @@
 import type { RegisterStepsProps } from './RegisterSteps.types';
 import { useLocale } from '../../../../../../shared/i18n/useLocale';
 import { CheckIcon } from '../../../../../../shared';
-import styles from '../../../Auth.module.css';
+import styles from './RegisterSteps.module.css';
 
 export function RegisterSteps({ currentStep }: RegisterStepsProps) {
   const { t } = useLocale();

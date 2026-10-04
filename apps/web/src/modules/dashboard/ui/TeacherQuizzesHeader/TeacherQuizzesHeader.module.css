@@ -1,0 +1,19 @@
+/* TeacherQuizzesHeader component styles */
+
+.teacher-quizzes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.teacher-quizzes-header__title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.teacher-quizzes-count {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #606078);
+}

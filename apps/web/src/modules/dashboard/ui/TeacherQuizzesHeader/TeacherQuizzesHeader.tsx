@@ -1,5 +1,5 @@
 import type { TeacherQuizzesHeaderProps } from './TeacherQuizzesHeader.types';
-import styles from '../Dashboard.module.css';
+import styles from './TeacherQuizzesHeader.module.css';
 
 export function TeacherQuizzesHeader({
   title = 'Опубліковані вікторини',

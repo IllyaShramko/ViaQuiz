@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import podiumSound from '../../../../../assets/sounds/podium.ogg';
+import podiumSound from '../../../assets/sounds/podium.ogg';
 
 export interface UsePodiumAnimationOptions {
 	/** Whether the animation sequence should start automatically on mount */

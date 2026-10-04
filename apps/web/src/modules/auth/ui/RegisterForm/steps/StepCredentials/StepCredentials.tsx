@@ -1,7 +1,7 @@
 import type { StepCredentialsProps } from './StepCredentials.types';
 import { useLocale } from '../../../../../../shared/i18n/useLocale';
 import { PasswordInput } from '../../../PasswordInput';
-import styles from '../../../Auth.module.css';
+import styles from './StepCredentials.module.css';
 
 export function StepCredentials({
   register,
@@ -14,13 +14,7 @@ export function StepCredentials({
   const { t } = useLocale();
 
   return (
-    <div
-      style={{
-        display: isVisible ? 'flex' : 'none',
-        flexDirection: 'column',
-        gap: 'var(--space-4)',
-      }}
-    >
+    <div className={styles.step} style={{ display: isVisible ? 'flex' : 'none' }}>
       <div className="input-group">
         <label className="input-label" htmlFor="login">
           {t('register.login_label')}

@@ -8,7 +8,7 @@ import {
   TeacherPagination,
 } from '../../../modules/dashboard';
 import { useTeacherHeader } from '../../../shared';
-import styles from '../../../modules/dashboard/ui/Dashboard.module.css';
+import styles from './TeacherMainPage.module.css';
 
 export function TeacherMainPage() {
   useTeacherHeader({ title: 'Головна' });

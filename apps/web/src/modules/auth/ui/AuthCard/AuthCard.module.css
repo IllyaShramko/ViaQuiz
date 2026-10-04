@@ -1,0 +1,131 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg, #0a0a0f);
+  padding: var(--space-4, 1rem);
+}
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-xl, 0.75rem);
+  padding: 2rem 2rem 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.auth-card-wide {
+  max-width: 500px;
+}
+
+.auth-header-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.auth-lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-bg-surface, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 9999px;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.auth-lang-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #9090a8);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.auth-lang-btn:hover {
+  color: var(--color-text-primary, #fff);
+}
+
+.auth-lang-btn.is-active {
+  color: #fff;
+  background: var(--color-accent, #863bff);
+  box-shadow: 0 0 10px rgba(134, 59, 255, 0.4);
+}
+
+.auth-lang-divider {
+  color: var(--color-border, #444);
+  font-size: 0.7rem;
+  user-select: none;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-accent, #863bff);
+  text-decoration: none;
+  margin-bottom: 1.75rem;
+}
+
+.auth-logo svg {
+  width: 32px;
+  height: 32px;
+  color: var(--color-accent, #863bff);
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #f0f0f5);
+  margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #9090a8);
+  margin-bottom: 1.75rem;
+}
+
+.auth-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--color-error, #ef4444);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 0.375rem);
+  font-size: 0.875rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.auth-footer a {
+  color: var(--color-accent, #863bff);
+  font-weight: 500;
+  transition: color var(--transition-fast, 150ms ease);
+}
+
+.auth-footer a:hover {
+  color: var(--color-accent-hover, #752fe6);
+}

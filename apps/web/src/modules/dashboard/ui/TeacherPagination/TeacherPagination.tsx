@@ -1,6 +1,6 @@
 import type { TeacherPaginationProps } from './TeacherPagination.types';
 import { ArrowLeftIcon, ArrowRightIcon } from '../../../../shared';
-import styles from '../Dashboard.module.css';
+import styles from './TeacherPagination.module.css';
 
 export function TeacherPagination({
   page,

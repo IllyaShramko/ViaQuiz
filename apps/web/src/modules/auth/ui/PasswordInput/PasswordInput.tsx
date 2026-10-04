@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { PasswordInputProps } from './PasswordInput.types';
-import styles from '../Auth.module.css';
+import styles from './PasswordInput.module.css';
 
 export function PasswordInput({
   id,
