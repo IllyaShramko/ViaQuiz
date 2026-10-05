@@ -15,14 +15,24 @@ export const SessionReportPage: React.FC = () => {
 		skip: !roomUuid,
 	});
 
+	const reportDateLabel = (report?.startedAt ?? report?.endedAt)
+		? new Date((report?.startedAt ?? report?.endedAt) as string).toLocaleString('uk-UA', {
+				day: 'numeric',
+				month: 'short',
+				year: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+			})
+		: null;
+
 	useTeacherHeader(
 		{
-			title: report?.quizName || 'Результати вікторини',
+			title: reportDateLabel ? `Детальний звіт за ${reportDateLabel}` : 'Детальний звіт',
 			showBack: true,
 			backTo: '/dashboard/reports',
 			backLabel: 'Назад до звітів',
 		},
-		[report?.quizName],
+		[reportDateLabel],
 	);
 
 	useEffect(() => {

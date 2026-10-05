@@ -1,0 +1,84 @@
+.preview {
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 8px 8px 0 rgba(134, 59, 255, 0.35);
+  transform: rotate(1.5deg);
+  user-select: none;
+}
+
+.preview__bar,
+.preview__footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.preview__meta {
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted, #606078);
+  text-transform: uppercase;
+}
+
+.preview__timer {
+  height: 4px;
+  margin: 0.75rem 0 1.5rem;
+  background: var(--color-bg-surface, #1a1a26);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.preview__timer-fill {
+  display: block;
+  width: 65%;
+  height: 100%;
+  background: var(--color-accent, #863bff);
+}
+
+.preview__question {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary, #f0f0f5);
+  margin-bottom: 1.25rem;
+}
+
+.preview__answers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.preview__answer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-left-width: 3px;
+  border-radius: 6px;
+  background: var(--color-bg-surface, #1a1a26);
+  font-weight: 600;
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.preview__shape {
+  font-size: 0.8rem;
+}
+
+.preview__answer--a { border-left-color: #f87171; }
+.preview__answer--a .preview__shape { color: #f87171; }
+.preview__answer--b { border-left-color: #60a5fa; }
+.preview__answer--b .preview__shape { color: #60a5fa; }
+.preview__answer--c { border-left-color: #fbbf24; }
+.preview__answer--c .preview__shape { color: #fbbf24; }
+.preview__answer--d { border-left-color: #4ade80; }
+.preview__answer--d .preview__shape { color: #4ade80; }
+
+.preview__answer--correct {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: #60a5fa;
+}

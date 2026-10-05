@@ -138,11 +138,11 @@
 }
 
 .btnEnroll {
-  background: var(--color-success, #22c55e);
+  background: #26c065;
   color: #fff;
   border: none;
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
@@ -150,12 +150,12 @@
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 4px 12px rgba(38, 192, 101, 0.25);
   margin: 0 auto;
 }
 
 .btnEnroll:hover:not(:disabled) {
-  background: #16a34a;
+  background: #1fa857;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 6px 16px rgba(38, 192, 101, 0.35);
 }

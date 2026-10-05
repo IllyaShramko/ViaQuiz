@@ -3,18 +3,18 @@
 .teacher-quiz-card {
   background-color: var(--color-bg-elevated, #12121a);
   border: 1px solid var(--color-border, #2a2a3a);
-  border-radius: var(--radius-xl, 0.75rem);
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .teacher-quiz-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(134, 59, 255, 0.45);
-  box-shadow: 0 12px 32px -8px rgba(134, 59, 255, 0.25);
+  transform: translate(-3px, -3px);
+  border-color: var(--color-accent, #863bff);
+  box-shadow: 5px 5px 0 rgba(134, 59, 255, 0.45);
 }
 
 .teacher-quiz-card__header {

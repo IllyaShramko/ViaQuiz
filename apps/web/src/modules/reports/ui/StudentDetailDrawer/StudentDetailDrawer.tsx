@@ -35,7 +35,18 @@ export const StudentDetailDrawer: React.FC<StudentDetailDrawerProps> = ({
 		yaxis: { labels: { style: { colors: '#9090a8' }, formatter: (val) => `${val} с` } },
 		colors: ['#863bff'],
 		grid: { borderColor: '#2a2a3a' },
-		tooltip: { theme: 'dark' },
+		tooltip: {
+			theme: 'dark',
+			x: {
+				formatter: (_val, opts) => {
+					const idx = opts?.dataPointIndex ?? 0;
+					return report?.questions[idx]?.text || `Q${idx + 1}`;
+				},
+			},
+			y: {
+				formatter: (val) => `${Number(val).toFixed(1)} с`,
+			},
+		},
 	};
 
 	const timeSeries = [
