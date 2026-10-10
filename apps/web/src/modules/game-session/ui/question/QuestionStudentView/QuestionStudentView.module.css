@@ -144,7 +144,7 @@
   min-width: 0;
   aspect-ratio: 1 / 1;
   max-width: none;
-  border-radius: var(--radius-xl, 1rem);
+  border-radius: 10px;
   border: 3px solid transparent;
   outline: none;
   cursor: pointer;
@@ -155,20 +155,25 @@
   position: relative;
   padding: 1.25rem 0.875rem;
   text-align: center;
-  box-shadow: var(--shadow-md);
-  transition: transform var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease), filter var(--transition-fast, 150ms ease);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 180ms ease,
+              filter 180ms ease,
+              background-color 180ms ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 .studentVariantBtn:hover:not(:disabled) {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: var(--shadow-lg);
-  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.35);
+  filter: brightness(1.04);
 }
 
 .studentVariantBtn:active:not(:disabled) {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  filter: brightness(0.98);
 }
 
 .studentVariantBtn:disabled {
@@ -177,8 +182,8 @@
 }
 
 .studentVariantBtn.isSelected {
-  box-shadow: 0 0 0 3px #fff, 0 8px 24px rgba(0, 0, 0, 0.6) !important;
-  transform: scale(0.98);
+  box-shadow: 0 0 0 3px #fff, 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(0);
   border-color: #fff;
 }
 
@@ -205,8 +210,8 @@
 
 .variantBadgeCorner {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 10px;
+  left: 10px;
   width: 28px;
   height: 28px;
   background: rgba(0, 0, 0, 0.35);
@@ -224,8 +229,8 @@
 /* Multi-select Variant Checkbox (Top-right corner) */
 .variantCheckboxCorner {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   width: 28px;
   height: 28px;
   border-radius: var(--radius-md, 0.375rem);
@@ -484,7 +489,7 @@
     min-height: clamp(100px, 15vh, 145px);
     max-height: clamp(135px, 22vh, 190px);
     padding: 1.5rem 0.75rem 0.75rem;
-    border-radius: var(--radius-xl, 1rem);
+    border-radius: 10px;
     font-size: clamp(0.95rem, 3.6vw, 1.25rem);
     font-weight: 700;
     display: flex;
@@ -544,7 +549,7 @@
     min-height: clamp(100px, 15vh, 145px);
     max-height: clamp(135px, 22vh, 190px);
     padding: 1.5rem 0.75rem 0.75rem;
-    border-radius: var(--radius-xl, 1rem);
+    border-radius: 10px;
     font-size: clamp(0.95rem, 3.6vw, 1.25rem);
     font-weight: 700;
     display: flex;
@@ -573,7 +578,7 @@
     min-height: clamp(66px, 9.5vh, 84px);
     max-height: none;
     padding: 0.8rem 3.25rem 0.8rem 3.75rem;
-    border-radius: var(--radius-xl, 1rem);
+    border-radius: 10px;
     font-size: clamp(1.05rem, 4vw, 1.25rem);
     font-weight: 700;
     flex-direction: row;
@@ -622,7 +627,7 @@
     min-height: clamp(52px, 7.5vh, 64px);
     max-height: none;
     padding: 0.65rem 3.25rem 0.65rem 3.5rem;
-    border-radius: var(--radius-xl, 0.875rem);
+    border-radius: 10px;
     font-size: clamp(0.95rem, 3.6vw, 1.125rem);
     font-weight: 700;
     flex-direction: row;
