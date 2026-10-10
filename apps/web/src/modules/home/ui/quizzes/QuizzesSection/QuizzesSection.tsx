@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useLocale } from '../../../../../shared/i18n/useLocale';
 import { useGetPublishedQuizzesQuery } from '../../../api/quizApi';
 import type { PublicQuizSummary } from '../../../models';
@@ -20,7 +21,16 @@ const SAMPLE_COVERS = [
 const SAMPLE_COUNTS = [10, 15, 12, 20, 14, 18];
 
 export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
+  const navigate = useNavigate();
   const { t } = useLocale();
+
+  const handleSelectQuiz = (quiz: PublicQuizSummary) => {
+    if (onSelectQuiz) {
+      onSelectQuiz(quiz);
+    } else if (quiz.uuid && !quiz.uuid.startsWith('sample-')) {
+      navigate(`/quiz/${quiz.uuid}`);
+    }
+  };
 
   const { data, isLoading } = useGetPublishedQuizzesQuery({
     page: 1,
@@ -57,7 +67,7 @@ export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
                 key={quiz.id}
                 quiz={quiz}
                 index={index}
-                onClick={onSelectQuiz}
+                onClick={handleSelectQuiz}
               />
             ))}
           </div>
@@ -94,7 +104,7 @@ export function QuizzesSection({ onSelectQuiz }: QuizzesSectionProps) {
                     key={key}
                     quiz={sampleQuiz}
                     index={index}
-                    onClick={onSelectQuiz}
+                    onClick={handleSelectQuiz}
                   />
                 );
               })}

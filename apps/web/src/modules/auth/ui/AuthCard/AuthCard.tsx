@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { AuthCardProps } from './AuthCard.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
-import styles from '../Auth.module.css';
+import styles from './AuthCard.module.css';
 
 export function AuthCard({
   title,

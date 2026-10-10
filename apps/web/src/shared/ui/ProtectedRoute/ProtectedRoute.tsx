@@ -1,10 +1,10 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useUserContext } from '../../../modules/auth/context';
+import { createLoginRedirectUrl } from '../../../modules/auth';
 
 export function ProtectedRoute() {
-  const { isAuthenticated, isLoading, token } = useUserContext();
+  const { isAuthenticated, isLoading } = useUserContext();
   const location = useLocation();
-  console.log(isAuthenticated, isLoading, token)
 
   if (isLoading) {
     return (
@@ -25,7 +25,10 @@ export function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const targetUrl = createLoginRedirectUrl(
+      location.pathname + location.search,
+    );
+    return <Navigate to={targetUrl} replace />;
   }
 
   return <Outlet />;

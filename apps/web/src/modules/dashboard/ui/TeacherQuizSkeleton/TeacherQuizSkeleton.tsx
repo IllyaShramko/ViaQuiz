@@ -1,4 +1,4 @@
-import styles from '../Dashboard.module.css';
+import styles from './TeacherQuizSkeleton.module.css';
 
 export function TeacherQuizSkeleton() {
   return (

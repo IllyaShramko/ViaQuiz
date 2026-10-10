@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import type { HeroSectionProps } from './HeroSection.types';
 import { useLocale } from '../../../../shared/i18n/useLocale';
 import { HeroCodeForm } from './HeroCodeForm';
+import { HeroPreview } from './HeroPreview';
 import styles from '../Home.module.css';
 
 export function HeroSection({ onEnterCode }: HeroSectionProps) {
@@ -9,10 +10,9 @@ export function HeroSection({ onEnterCode }: HeroSectionProps) {
 
   return (
     <section className={styles['hero']}>
-      <div className={styles['hero__orb']} />
       <div className={styles['hero__content']}>
         <h1 className={styles['hero__title']}>
-          <span className={styles['hero__accent']}>{t('hero.titleAccent')}</span>{' '}
+          <span className={styles['hero__accent']}>{t('hero.titleAccent')}</span> —{' '}
           {t('hero.title')}
         </h1>
         <p className={styles['hero__subtitle']}>{t('hero.subtitle')}</p>
@@ -23,6 +23,7 @@ export function HeroSection({ onEnterCode }: HeroSectionProps) {
           <HeroCodeForm onSubmitCode={onEnterCode} />
         </div>
       </div>
+      <HeroPreview />
     </section>
   );
 }

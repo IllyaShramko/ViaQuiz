@@ -1,5 +1,5 @@
 import type { TeacherEmptyStateProps } from './TeacherEmptyState.types';
-import styles from '../Dashboard.module.css';
+import styles from './TeacherEmptyState.module.css';
 
 export function TeacherEmptyState({
   title = 'Нічого не знайдено',

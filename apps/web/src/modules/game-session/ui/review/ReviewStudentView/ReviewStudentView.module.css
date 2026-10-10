@@ -233,7 +233,7 @@
   min-width: 0;
   aspect-ratio: 1 / 1;
   max-width: none;
-  border-radius: var(--radius-xl, 1rem);
+  border-radius: 10px;
   border: 3px solid transparent;
   display: flex;
   flex-direction: column;
@@ -242,7 +242,7 @@
   position: relative;
   padding: 1.25rem 0.875rem;
   text-align: center;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   user-select: none;
   transition: opacity 0.3s ease, filter 0.3s ease;
 }
@@ -270,8 +270,8 @@
 
 .variantBadgeCorner {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 10px;
+  left: 10px;
   width: 28px;
   height: 28px;
   background: rgba(0, 0, 0, 0.35);
@@ -456,7 +456,7 @@
     min-height: clamp(100px, 15vh, 145px);
     max-height: clamp(135px, 22vh, 190px);
     padding: 1.5rem 0.75rem 0.75rem;
-    border-radius: var(--radius-xl, 1rem);
+    border-radius: 10px;
     font-size: clamp(0.95rem, 3.6vw, 1.25rem);
     font-weight: 700;
     display: flex;
@@ -507,7 +507,7 @@
     min-height: clamp(100px, 15vh, 145px);
     max-height: clamp(135px, 22vh, 190px);
     padding: 1.5rem 0.75rem 0.75rem;
-    border-radius: var(--radius-xl, 1rem);
+    border-radius: 10px;
     font-size: clamp(0.95rem, 3.6vw, 1.25rem);
     font-weight: 700;
     display: flex;
@@ -536,7 +536,7 @@
     min-height: clamp(66px, 9.5vh, 84px);
     max-height: none;
     padding: 0.8rem 1.15rem 0.8rem 3.75rem;
-    border-radius: var(--radius-xl, 1rem);
+    border-radius: 10px;
     font-size: clamp(1.05rem, 4vw, 1.25rem);
     font-weight: 700;
     flex-direction: row;
@@ -577,7 +577,7 @@
     min-height: clamp(52px, 7.5vh, 64px);
     max-height: none;
     padding: 0.65rem 1.15rem 0.65rem 3.5rem;
-    border-radius: var(--radius-xl, 0.875rem);
+    border-radius: 10px;
     font-size: clamp(0.95rem, 3.6vw, 1.125rem);
     font-weight: 700;
     flex-direction: row;

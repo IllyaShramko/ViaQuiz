@@ -37,11 +37,11 @@
 }
 
 .btn-create-class {
-  background: var(--success, #22c55e);
+  background: #26c065;
   color: #fff;
   border: none;
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
@@ -49,13 +49,13 @@
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+  box-shadow: 0 4px 12px rgba(38, 192, 101, 0.25);
 }
 
 .btn-create-class:hover:not(:disabled) {
-  background: #16a34a;
+  background: #1fa857;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 6px 16px rgba(38, 192, 101, 0.35);
 }
 
 .btn-create-class:disabled {
@@ -331,7 +331,7 @@
   color: #fff;
   border: none;
   padding: 8px 18px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -367,7 +367,7 @@
   border: 1px solid var(--border, #2a2a3a);
   color: var(--text-primary, #f0f0f5);
   padding: 8px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-weight: 600;
   font-size: 0.88rem;
   cursor: pointer;
@@ -583,7 +583,7 @@
   border: 1px solid var(--border, #2a2a3a);
   color: var(--text-primary, #f0f0f5);
   padding: 0.5rem 1rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;

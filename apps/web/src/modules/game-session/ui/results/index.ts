@@ -33,4 +33,4 @@ export {
 	usePodiumAnimation,
 	type UsePodiumAnimationOptions,
 	type UsePodiumAnimationResult,
-} from './hooks/usePodiumAnimation';
+} from '../../hooks';

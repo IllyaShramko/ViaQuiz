@@ -1,0 +1,72 @@
+/* TeacherQuizSkeleton component styles */
+
+/* Base card structure (duplicated from TeacherQuizCard for CSS module isolation) */
+.teacher-quiz-card {
+  background-color: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-xl, 0.75rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.teacher-quiz-card--skeleton {
+  pointer-events: none;
+}
+
+.teacher-quiz-card__header {
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-bg-surface, #1a1a26);
+}
+
+.teacher-quiz-card__header--skeleton {
+  height: 160px;
+  background: linear-gradient(110deg, var(--color-bg-surface, #1a1a26) 30%, var(--color-bg-hover, #22222e) 50%, var(--color-bg-surface, #1a1a26) 70%);
+  background-size: 300% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.teacher-quiz-card__body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.teacher-skeleton-line {
+  border-radius: var(--radius-sm, 0.25rem);
+  background: linear-gradient(110deg, var(--color-bg-surface, #1a1a26) 30%, var(--color-bg-hover, #22222e) 50%, var(--color-bg-surface, #1a1a26) 70%);
+  background-size: 300% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  margin-bottom: 0.6rem;
+}
+
+.teacher-skeleton-line--title {
+  width: 70%;
+  height: 18px;
+}
+
+.teacher-skeleton-line--author {
+  width: 50%;
+  height: 12px;
+  margin-bottom: 14px;
+}
+
+.teacher-skeleton-line--desc {
+  width: 100%;
+  height: 14px;
+}
+
+.teacher-skeleton-line--desc-short {
+  width: 45%;
+  height: 14px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

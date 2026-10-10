@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon, ArrowRightIcon, pluralizeQuestions } from '../../../../shared';
 import type { TeacherQuizCardProps } from './TeacherQuizCard.types';
-import styles from '../Dashboard.module.css';
+import styles from './TeacherQuizCard.module.css';
 
 export const TEACHER_GRADIENTS = [
   'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',

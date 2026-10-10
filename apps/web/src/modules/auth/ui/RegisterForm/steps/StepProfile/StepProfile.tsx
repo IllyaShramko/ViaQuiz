@@ -1,6 +1,6 @@
 import type { StepProfileProps } from './StepProfile.types';
 import { useLocale } from '../../../../../../shared/i18n/useLocale';
-import styles from '../../../Auth.module.css';
+import styles from './StepProfile.module.css';
 
 export function StepProfile({
   register,
@@ -13,13 +13,7 @@ export function StepProfile({
   const { t } = useLocale();
 
   return (
-    <div
-      style={{
-        display: isVisible ? 'flex' : 'none',
-        flexDirection: 'column',
-        gap: 'var(--space-4)',
-      }}
-    >
+    <div className={styles.step} style={{ display: isVisible ? 'flex' : 'none' }}>
       <div className="input-group">
         <label className="input-label" htmlFor="firstName">
           {t('register.first_name_label')} ({t('register.optional')})

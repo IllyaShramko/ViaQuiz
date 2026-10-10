@@ -181,7 +181,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: #22c55e;
+  background-color: #26c065;
   color: #052e16;
   font-size: 0.875rem;
   font-weight: 700;
@@ -193,7 +193,7 @@
 }
 
 .btn-teacher-create:hover {
-  background-color: #16a34a;
+  background-color: #1fa857;
   color: #ffffff;
 }
 

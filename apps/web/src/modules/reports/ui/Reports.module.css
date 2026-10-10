@@ -773,6 +773,19 @@
 	gap: 1rem;
 }
 
+.chart-container :global(.apexcharts-tooltip),
+.drawer-chart-section :global(.apexcharts-tooltip) {
+	white-space: normal;
+	max-width: 320px;
+}
+
+.chart-container :global(.apexcharts-tooltip-title),
+.drawer-chart-section :global(.apexcharts-tooltip-title) {
+	white-space: normal;
+	word-break: break-word;
+	line-height: 1.4;
+}
+
 .drawer-questions-section {
 	flex: 1;
 	display: flex;

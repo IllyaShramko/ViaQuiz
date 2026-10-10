@@ -1,5 +1,5 @@
 import type { FinalResultsHostProps } from './FinalResultsHost.types';
-import { usePodiumAnimation } from '../hooks/usePodiumAnimation';
+import { usePodiumAnimation } from '../../../hooks';
 import { ConfettiCanvas } from '../ConfettiCanvas';
 import { ResultsHeader } from '../ResultsHeader';
 import { PodiumStage } from '../PodiumStage';

@@ -1,5 +1,5 @@
 import type { StudentLobbyProps } from './StudentLobby.types';
-import styles from '../../GameSession.module.css';
+import styles from './StudentLobby.module.css';
 
 export function StudentLobby({
 	quizName = 'Вікторина',
@@ -8,11 +8,11 @@ export function StudentLobby({
 	participants,
 }: StudentLobbyProps) {
 	return (
-		<div className={styles['game-main-content']}>
-			<div className={styles['student-lobby-card']}>
-				<h2 className={styles['student-lobby-title']}>{quizName}</h2>
+		<div className={styles.container}>
+			<div className={styles.card}>
+				<h2 className={styles.title}>{quizName}</h2>
 
-				<div className={styles['student-lobby-meta']}>
+				<div className={styles.meta}>
 					<div>
 						<span style={{ color: 'var(--color-text-muted)' }}>Ім'я вчителя: </span>
 						<strong style={{ color: '#fff' }}>{teacherName}</strong>
@@ -23,19 +23,19 @@ export function StudentLobby({
 					</div>
 				</div>
 
-				<hr className={styles['student-lobby-divider']} />
+				<hr className={styles.divider} />
 
 				<div>
 					<div
-						className={styles['student-lobby-participants-title']}
+						className={styles['participants-title']}
 						style={{ marginBottom: '0.75rem' }}
 					>
 						Під'єднані користувачі ({participants.length}):
 					</div>
 
-					<div className={styles['student-lobby-participants-tags']}>
+					<div className={styles['participants-tags']}>
 						{participants.map((p, idx) => (
-							<span key={p.participantId || idx} className={styles['student-tag']}>
+							<span key={p.participantId || idx} className={styles.tag}>
 								{p.nickname}
 							</span>
 						))}
