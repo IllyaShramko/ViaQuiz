@@ -29,6 +29,7 @@
     "loading": "Loading quizzes...",
     "error": "Failed to load quizzes",
     "empty": "No published quizzes yet",
+    "noDescription": "No description for this quiz.",
     "samples": {
       "math": {
         "title": "Math & Logic",

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon } from '../../../../../shared';
 import { useLocale } from '../../../../../shared/i18n/useLocale';
 import type { QuizCardProps } from './QuizCard.types';
-import styles from '../../Home.module.css';
+import styles from './QuizCard.module.css';
 
 export const HOME_QUIZ_GRADIENTS = [
   'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
@@ -113,9 +113,9 @@ export function QuizCard({ quiz, index = 0, onClick }: QuizCardProps) {
             <span>{getAuthorName(quiz.author)}</span>
           )}
         </p>
-        {quiz.description && (
-          <p className={styles['quiz-card__desc']}>{quiz.description}</p>
-        )}
+        <p className={styles['quiz-card__desc']}>
+          {quiz.description?.trim() ? quiz.description : t('quizzes.noDescription')}
+        </p>
         <div className={styles['quiz-card__footer']}>
           <span className={styles['quiz-card__stat']}>
             <OneAnswerIcon size={16} />
