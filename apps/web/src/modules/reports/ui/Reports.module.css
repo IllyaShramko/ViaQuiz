@@ -1,6 +1,7 @@
 /* Global variables (assuming these are available in global scope or imported, but writing out inline styles as requested) */
 /* Reports List Page */
 .reports-page {
+	width: 100%;
 	max-width: 1200px;
 	margin: 0 auto;
 	display: flex;
