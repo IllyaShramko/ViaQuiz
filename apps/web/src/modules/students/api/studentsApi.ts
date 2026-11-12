@@ -8,7 +8,6 @@ import type {
 export interface StudentLoginRequest {
   login: string;
   password: string;
-  classCode?: string;
 }
 
 export interface StudentLoginResponse {
@@ -21,7 +20,6 @@ export interface StudentLoginResponse {
     login: string;
     classroomId: number;
     classroomName: string;
-    classroomCode: string | null;
   };
 }
 

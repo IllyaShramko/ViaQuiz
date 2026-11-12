@@ -26,7 +26,6 @@ export function CreateClassModal({
     resolver: zodResolver(createClassSchema),
     defaultValues: {
       name: '',
-      code: '',
     },
   });
 
@@ -46,7 +45,6 @@ export function CreateClassModal({
     try {
       await createClassroom({
         name: data.name.trim(),
-        code: data.code?.trim() || undefined,
       }).unwrap();
 
       reset();
@@ -115,32 +113,6 @@ export function CreateClassModal({
                   {errors.name.message}
                 </span>
               )}
-            </div>
-
-            <div className={styles['form-group']}>
-              <label className={styles['form-label']} htmlFor="class-code">
-                Код класу (необов'язково)
-              </label>
-              <input
-                id="class-code"
-                type="text"
-                disabled={isLimitReached}
-                placeholder="Авто-генерація, якщо не вказано"
-                className={`${styles['form-input']} ${errors.code ? styles['input--error'] : ''}`}
-                {...register('code', {
-                  onChange: (e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                  },
-                })}
-              />
-              {errors.code && (
-                <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
-                  {errors.code.message}
-                </span>
-              )}
-              <span className={styles['hint-text']}>
-                Унікальний код для швидкого пошуку або приєднання
-              </span>
             </div>
           </div>
 

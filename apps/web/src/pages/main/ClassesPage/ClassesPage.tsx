@@ -1,4 +1,4 @@
-import { useState, useEffect, type MouseEvent } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   useGetClassroomsQuery,
@@ -8,16 +8,17 @@ import {
   PendingInvitationsModal,
   LeaveCourseModal,
 } from '../../../modules/classes';
-import { CheckIcon, CopyIcon, copyToClipboard, useTeacherHeader } from '../../../shared';
-import styles from '../../../modules/classes/ui/Classes.module.css';
+import { ArrowRightIcon, PlusIcon, useTeacherHeader } from '../../../shared';
+import styles from './ClassesPage.module.css';
 
 export function ClassesPage() {
   useTeacherHeader({ title: 'Мої класи' });
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, isLoading, error } = useGetClassroomsQuery();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isPendingInvitationsOpen, setIsPendingInvitationsOpen] = useState(false);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [isPendingInvitationsOpen, setIsPendingInvitationsOpen] = useState(() =>
+    Boolean(searchParams.get('inviteToken')),
+  );
 
   // Leave course state
   const [leaveModalState, setLeaveModalState] = useState<{
@@ -46,25 +47,14 @@ export function ClassesPage() {
     maxStudentsPerCourse: 50,
   };
 
-  // Open invitations modal if inviteToken in search params or user clicks banner
+  // Clean up inviteToken query param after initializing modal visibility
   useEffect(() => {
     if (searchParams.get('inviteToken')) {
-      setIsPendingInvitationsOpen(true);
-      // Clean up param
-      searchParams.delete('inviteToken');
-      setSearchParams(searchParams, { replace: true });
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('inviteToken');
+      setSearchParams(nextParams, { replace: true });
     }
   }, [searchParams, setSearchParams]);
-
-  const handleCopyCode = async (e: MouseEvent, code: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const success = await copyToClipboard(code);
-    if (success) {
-      setCopiedCode(code);
-      setTimeout(() => setCopiedCode(null), 2000);
-    }
-  };
 
   const handleOpenLeaveCourse = (
     classUuid: string,
@@ -80,128 +70,116 @@ export function ClassesPage() {
   };
 
   return (
-    <div className={styles['classes-container']}>
-      {/* Pending Invitations Banner */}
+    <div className={styles.container}>
       <CourseInvitationsBanner
         count={pendingCount}
         onOpenModal={() => setIsPendingInvitationsOpen(true)}
       />
 
-      <div className={styles['classes-header']}>
-        <div>
-          <h1 className={styles['classes-title']}>
-            Мої класи
-            <span className={styles['badge-limit']}>
-              {limits.currentActiveClasses} / {limits.maxClasses} класів
+      <div className={styles.toolbar}>
+        <div className={styles.headingGroup}>
+          <div className={styles.headingRow}>
+            <h2 className={styles.sectionTitle}>Класи</h2>
+            <span className={styles.capacityBadge}>
+              {limits.currentActiveClasses} / {limits.maxClasses}
             </span>
-          </h1>
-          <p style={{ color: '#9090a8', margin: '6px 0 0 0', fontSize: '0.9rem' }}>
-            Керуйте своїми класами, додавайте учнів та створюйте курси для тестувань
+          </div>
+          <p className={styles.sectionSubtitle}>
+            Керуйте класами, учнями та навчальними курсами
           </p>
         </div>
 
         {classrooms.length > 0 && (
           <button
             type="button"
-            className={styles['btn-create-class']}
+            className={styles.primaryAction}
             onClick={() => setIsCreateModalOpen(true)}
             disabled={limits.currentActiveClasses >= limits.maxClasses}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Створити клас
+            <PlusIcon size={15} />
+            <span>Створити клас</span>
           </button>
         )}
       </div>
 
       {isLoading ? (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: '#9090a8' }}>
-          Завантаження класів...
-        </div>
+        <div className={styles.loadingState}>Завантаження класів...</div>
       ) : error ? (
-        <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid #ef4444', color: '#fca5a5', padding: '16px', borderRadius: '12px' }}>
+        <div className={styles.errorBanner}>
           Помилка завантаження списку класів. Спробуйте оновити сторінку.
         </div>
       ) : classrooms.length === 0 ? (
-        <div
-          style={{
-            background: '#1a1a26',
-            border: '1px dashed #2a2a3a',
-            borderRadius: '16px',
-            padding: '60px 20px',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#606078" strokeWidth="1.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+        <div className={styles.emptyCard}>
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className={styles.emptyIcon}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+            />
           </svg>
-          <div>
-            <h3 style={{ color: '#f0f0f5', margin: '0 0 6px 0', fontSize: '1.2rem' }}>У вас ще немає створених класів</h3>
-            <p style={{ color: '#9090a8', margin: 0, fontSize: '0.9rem' }}>
-              Створіть свій перший клас, додайте учнів та організовуйте курси
-            </p>
-          </div>
+          <h3 className={styles.emptyTitle}>У вас ще немає створених класів</h3>
+          <p className={styles.emptySubtitle}>
+            Створіть свій перший клас, додайте учнів та організовуйте курси
+          </p>
           <button
             type="button"
-            className={styles['btn-create-class']}
+            className={styles.primaryAction}
             onClick={() => setIsCreateModalOpen(true)}
           >
-            Створити перший клас
+            <PlusIcon size={15} />
+            <span>Створити перший клас</span>
           </button>
         </div>
       ) : (
-        <div className={styles['classes-grid']}>
-          {classrooms.map((c) => {
-            const studentCount = c._count?.students || 0;
-            const coursesCount = c._count?.courses || 0;
+        <div className={styles.grid}>
+          {classrooms.map((classroom) => {
+            const studentCount = classroom._count?.students || 0;
+            const coursesCount = classroom._count?.courses || 0;
+            const studentPercent = Math.min(
+              100,
+              Math.round((studentCount / limits.maxStudentsPerClass) * 100),
+            );
 
             return (
-              <Link key={c.uuid} to={`/classes/${c.uuid}`} className={styles['class-card']}>
-                <div className={styles['class-card-header']}>
-                  <h3 className={styles['class-name']}>{c.name}</h3>
-                  {c.code && (
-                    <button
-                      type="button"
-                      className={styles['class-code-badge']}
-                      onClick={(e) => handleCopyCode(e, c.code!)}
-                      title="Скопіювати код класу"
-                    >
-                      <span>{c.code}</span>
-                      {copiedCode === c.code ? (
-                        <CheckIcon size={14} style={{ color: '#22c55e' }} />
-                      ) : (
-                        <CopyIcon size={14} />
-                      )}
-                    </button>
-                  )}
+              <Link
+                key={classroom.uuid}
+                to={`/classes/${classroom.uuid}`}
+                className={styles.card}
+              >
+                <div className={styles.cardHeader}>
+                  <h3 className={styles.cardTitle}>{classroom.name}</h3>
+                  <ArrowRightIcon size={16} className={styles.cardArrow} />
                 </div>
 
-                <div className={styles['class-stats-row']}>
-                  <div className={styles['class-stat-item']}>
-                    <span className={styles['class-stat-label']}>Учнів</span>
-                    <span className={styles['class-stat-value']}>
-                      {studentCount} <span style={{ fontSize: '0.8rem', color: '#606078' }}>/ 50</span>
-                    </span>
-                  </div>
-                  <div className={styles['class-stat-item']}>
-                    <span className={styles['class-stat-label']}>Курсів</span>
-                    <span className={styles['class-stat-value']}>
-                      {coursesCount} <span style={{ fontSize: '0.8rem', color: '#606078' }}>/ 15</span>
-                    </span>
-                  </div>
+                <div className={styles.cardMeta}>
+                  <span>
+                    <span className={styles.metaStrong}>{studentCount}</span> /{' '}
+                    {limits.maxStudentsPerClass} учнів
+                  </span>
+                  <span className={styles.metaDot}>·</span>
+                  <span>
+                    <span className={styles.metaStrong}>{coursesCount}</span> /{' '}
+                    {limits.maxCoursesPerClass} курсів
+                  </span>
                 </div>
 
-                <div className={styles['class-footer-link']}>
-                  <span>Переглянути клас</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
+                <div
+                  className={styles.progressTrack}
+                  aria-label={`Заповненість класу: ${studentCount} з ${limits.maxStudentsPerClass}`}
+                >
+                  <div
+                    className={styles.progressFill}
+                    style={{ width: `${studentPercent}%` }}
+                  />
                 </div>
               </Link>
             );
@@ -209,19 +187,19 @@ export function ClassesPage() {
         </div>
       )}
 
-      {/* Section: Courses assigned to this teacher */}
       {assignedCourses.length > 0 && (
-        <div style={{ marginTop: '2.5rem' }}>
-          <div style={{ marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#fff', margin: 0 }}>
-              Курси під моїм керівництвом
-            </h2>
-            <p style={{ color: '#9090a8', margin: '4px 0 0 0', fontSize: '0.875rem' }}>
+        <section className={styles.assignedSection}>
+          <div className={styles.headingGroup}>
+            <div className={styles.headingRow}>
+              <h2 className={styles.sectionTitle}>Курси під моїм керівництвом</h2>
+              <span className={styles.capacityBadge}>{assignedCourses.length}</span>
+            </div>
+            <p className={styles.sectionSubtitle}>
               Курси в інших класах, де вас призначено ведучим викладачем
             </p>
           </div>
 
-          <div className={styles['classes-grid']}>
+          <div className={styles.grid}>
             {assignedCourses.map((course) => (
               <AssignedCourseCard
                 key={course.uuid}
@@ -230,10 +208,9 @@ export function ClassesPage() {
               />
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Modals */}
       <CreateClassModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -262,4 +239,4 @@ export function ClassesPage() {
       />
     </div>
   );
-};
+}

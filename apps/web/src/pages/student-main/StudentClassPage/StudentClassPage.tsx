@@ -55,11 +55,6 @@ export function StudentClassPage() {
             Вчитель: <strong>{teacherName}</strong> • Однокласників: <strong>{classmates.length}</strong>
           </p>
         </div>
-        {classroom.code && (
-          <div className={styles['banner-badge']}>
-            Код класу: {classroom.code}
-          </div>
-        )}
       </div>
 
       {/* Classmates Section */}

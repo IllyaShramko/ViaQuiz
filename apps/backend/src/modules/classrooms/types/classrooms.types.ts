@@ -46,7 +46,6 @@ export type AssignedCourseSummary = {
 		id: number;
 		uuid: string;
 		name: string;
-		code: string | null;
 	};
 	creator: {
 		id: number;
@@ -184,7 +183,6 @@ export type StudentWithGlobalClassroom = Prisma.StudentGetPayload<{
 				id: true;
 				uuid: true;
 				name: true;
-				code: true;
 				teacherId: true;
 			};
 		};
@@ -198,7 +196,6 @@ export type StudentWithDetails = Prisma.StudentGetPayload<{
 				id: true;
 				uuid: true;
 				name: true;
-				code: true;
 				teacherId: true;
 				teacher: {
 					select: {
@@ -242,7 +239,6 @@ export type CourseWithDetails = Prisma.CourseGetPayload<{
 				id: true;
 				uuid: true;
 				name: true;
-				code: true;
 			};
 		};
 		creator: {
@@ -437,4 +433,33 @@ export interface StudentAnalyticsResponse {
 		};
 	};
 	history: StudentAnalyticsHistoryItem[];
+}
+
+export type RawClassroomQuizResult = Prisma.ParticipantGetPayload<{
+	include: {
+		result: true;
+	};
+}>;
+
+export interface ClassroomPerformanceStudentItem {
+	uuid: string;
+	firstName: string;
+	lastName: string;
+	login: string;
+	passedTests: number;
+	averageGrade: number;
+	accuracyPercentage: number;
+}
+
+export interface ClassroomPerformanceResponse {
+	summary: {
+		totalStudents: number;
+		activeStudents: number;
+		totalPassedTests: number;
+		averageGrade: number;
+		accuracyPercentage: number;
+		totalCourses: number;
+		totalSessions: number;
+	};
+	students: ClassroomPerformanceStudentItem[];
 }

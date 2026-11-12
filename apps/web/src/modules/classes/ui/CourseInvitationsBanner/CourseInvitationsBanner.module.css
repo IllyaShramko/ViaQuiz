@@ -1,70 +1,69 @@
 .banner {
-  background: linear-gradient(135deg, rgba(134, 59, 255, 0.15), rgba(79, 70, 229, 0.15));
-  border: 1px solid rgba(134, 59, 255, 0.35);
-  border-radius: var(--radius-xl, 0.75rem);
-  padding: 1rem 1.25rem;
+  background: rgba(134, 59, 255, 0.08);
+  border: 1px solid rgba(134, 59, 255, 0.28);
+  border-radius: 10px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px rgba(134, 59, 255, 0.15);
+  gap: 12px;
 }
 
 .leftSection {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 12px;
 }
 
 .iconWrapper {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--color-accent, #863bff);
-  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(134, 59, 255, 0.16);
+  border: 1px solid rgba(134, 59, 255, 0.3);
+  color: #c4b5fd;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 15px rgba(134, 59, 255, 0.5);
   flex-shrink: 0;
 }
 
 .textContent {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f0f0f5);
   margin: 0;
 }
 
 .subtitle {
-  font-size: 0.825rem;
-  color: #c4c4d4;
-  margin: 0.15rem 0 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #9090a8);
+  margin: 0;
 }
 
 .viewBtn {
-  background: #fff;
-  color: #12121a;
-  border: none;
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding: 0.45rem 1.15rem;
-  border-radius: var(--radius-lg, 0.5rem);
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-accent, #863bff);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.8125rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
+  transition: background-color var(--transition-fast, 150ms ease-in-out);
+  display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 6px;
 }
 
 .viewBtn:hover {
-  background: #f0f0f5;
-  transform: translateY(-1px);
+  background: var(--color-accent-hover, #9b5cff);
 }

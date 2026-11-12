@@ -4,22 +4,8 @@ import { NotFoundError } from "../../errors/customErrors";
 import type { StudentRepositoryContract } from "./types/students.contracts";
 
 export const StudentRepository: StudentRepositoryContract = {
-	async findByLogin(login, classCode) {
+	async findByLogin(login) {
 		try {
-			if (classCode) {
-				return await PRISMA_CLIENT.student.findFirst({
-					where: {
-						login,
-						classroom: {
-							code: classCode,
-						},
-					},
-					include: {
-						classroom: true,
-					},
-				});
-			}
-
 			return await PRISMA_CLIENT.student.findFirst({
 				where: { login },
 				include: {
@@ -42,7 +28,6 @@ export const StudentRepository: StudentRepositoryContract = {
 							id: true,
 							uuid: true,
 							name: true,
-							code: true,
 							teacher: {
 								select: {
 									id: true,
@@ -188,7 +173,6 @@ export const StudentRepository: StudentRepositoryContract = {
 					id: true,
 					uuid: true,
 					name: true,
-					code: true,
 					teacher: {
 						select: {
 							id: true,
@@ -231,7 +215,6 @@ export const StudentRepository: StudentRepositoryContract = {
 				id: classroom.id,
 				uuid: classroom.uuid,
 				name: classroom.name,
-				code: classroom.code,
 				teacher: classroom.teacher,
 				courses: classroom.courses,
 				classmates: classroom.students.map((s) => ({

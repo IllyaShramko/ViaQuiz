@@ -1,131 +1,139 @@
 .card {
-  background: var(--color-bg-surface, #1a1a26);
+  background: var(--color-bg-elevated, #12121a);
   border: 1px solid var(--color-border, #2a2a3a);
-  border-radius: var(--radius-xl, 0.75rem);
-  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 1.25rem;
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
+  gap: 14px;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out),
+    transform 120ms ease;
 }
 
 .card:hover {
-  border-color: rgba(134, 59, 255, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: rgba(134, 59, 255, 0.45);
+  transform: translateY(-1px);
 }
 
-.topRow {
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.titleRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
-}
-
-.courseHeader {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  gap: 10px;
 }
 
 .courseName {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-text-primary, #f0f0f5);
   margin: 0;
 }
 
-.classBadge {
+.classTag {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.8rem;
-  color: var(--color-accent, #863bff);
-  background: rgba(134, 59, 255, 0.1);
   padding: 2px 8px;
-  border-radius: 6px;
-  width: fit-content;
-  margin-top: 4px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.84rem;
+  color: var(--color-text-secondary, #9090a8);
+  font-variant-numeric: tabular-nums;
+}
+
+.metaStrong {
+  color: var(--color-text-primary, #f0f0f5);
+  font-weight: 600;
+}
+
+.metaDot {
+  color: var(--color-text-muted, #606078);
 }
 
 .curatorText {
-  font-size: 0.825rem;
-  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #606078);
 }
 
 .curatorHighlight {
-  color: #fff;
-  font-weight: 600;
-}
-
-.statsRow {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--color-bg-elevated, #12121a);
-  border: 1px solid var(--color-border, #2a2a3a);
-  border-radius: var(--radius-lg, 0.5rem);
-}
-
-.statItem {
-  display: flex;
-  flex-direction: column;
-}
-
-.statLabel {
-  font-size: 0.75rem;
-  color: var(--color-text-muted, #606078);
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-.statValue {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #fff;
+  color: var(--color-text-secondary, #9090a8);
+  font-weight: 500;
 }
 
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid var(--color-border, #2a2a3a);
-  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
   margin-top: auto;
 }
 
 .viewLink {
-  color: var(--color-accent, #863bff);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  transition: all 0.2s ease;
+  gap: 6px;
+  color: var(--color-text-primary, #f0f0f5);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.84rem;
+  transition: color var(--transition-fast, 150ms ease-in-out);
+}
+
+.viewLinkArrow {
+  color: var(--color-text-muted, #606078);
+  transition:
+    color var(--transition-fast, 150ms ease-in-out),
+    transform var(--transition-fast, 150ms ease-in-out);
 }
 
 .viewLink:hover {
-  color: #a78bfa;
-  gap: 0.55rem;
+  color: var(--color-accent-hover, #9b5cff);
+}
+
+.viewLink:hover .viewLinkArrow {
+  color: var(--color-accent-hover, #9b5cff);
+  transform: translateX(2px);
 }
 
 .leaveButton {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--color-text-muted, #606078);
   font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
-  transition: all 0.2s ease;
+  transition:
+    color var(--transition-fast, 150ms ease-in-out),
+    background-color var(--transition-fast, 150ms ease-in-out);
 }
 
 .leaveButton:hover {
-  color: #ef4444;
+  color: #f87171;
   background: rgba(239, 68, 68, 0.1);
 }

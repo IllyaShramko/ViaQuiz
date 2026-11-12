@@ -3,5 +3,4 @@ export {
 	generateStudentLogin,
 	generateRandomDigits,
 	generateSimplePassword,
-	generateClassCode,
 } from "./credentials";

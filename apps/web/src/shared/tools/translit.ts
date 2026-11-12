@@ -3,6 +3,5 @@ export {
   transliterate,
   generateStudentLogin,
   generateSimplePassword,
-  generateClassCode,
   generateRandomDigits,
 } from '@viaquiz/utils';

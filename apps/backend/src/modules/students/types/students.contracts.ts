@@ -15,7 +15,6 @@ import type {
 export interface StudentRepositoryContract {
 	findByLogin(
 		login: string,
-		classCode?: string,
 	): Promise<StudentWithClassroom | null | undefined>;
 	findById(id: number): Promise<StudentMe>;
 	findStudentResults(

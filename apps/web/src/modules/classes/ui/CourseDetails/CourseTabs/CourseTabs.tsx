@@ -1,5 +1,6 @@
+import { PlusIcon } from '../../../../../shared';
 import type { CourseTabsProps } from './CourseTabs.types';
-import styles from '../../Classes.module.css';
+import styles from './CourseTabs.module.css';
 
 export function CourseTabs({
   activeTab,
@@ -9,49 +10,50 @@ export function CourseTabs({
   maxStudents = 50,
 }: CourseTabsProps) {
   return (
-    <div className={styles['class-detail-nav']}>
-      <div className={styles['class-tabs']}>
+    <div className={styles.nav}>
+      <div className={styles.tabs} role="tablist" aria-label="Розділи курсу">
         <button
           type="button"
-          className={`${styles['tab-btn']} ${activeTab === 'students' ? styles['is-active'] : ''}`}
+          role="tab"
+          aria-selected={activeTab === 'students'}
+          className={`${styles.tabButton} ${activeTab === 'students' ? styles.isActive : ''}`}
           onClick={() => onTabChange('students')}
         >
-          Учні ({studentsCount})
+          <span>Учні</span>
+          <span className={styles.countBadge}>{studentsCount}</span>
         </button>
+
         <button
           type="button"
-          className={`${styles['tab-btn']} ${activeTab === 'performance' ? styles['is-active'] : ''}`}
+          role="tab"
+          aria-selected={activeTab === 'performance'}
+          className={`${styles.tabButton} ${activeTab === 'performance' ? styles.isActive : ''}`}
           onClick={() => onTabChange('performance')}
         >
-          Успішність
+          <span>Успішність</span>
         </button>
+
         <button
           type="button"
-          className={`${styles['tab-btn']} ${activeTab === 'history' ? styles['is-active'] : ''}`}
+          role="tab"
+          aria-selected={activeTab === 'history'}
+          className={`${styles.tabButton} ${activeTab === 'history' ? styles.isActive : ''}`}
           onClick={() => onTabChange('history')}
         >
-          Історія
+          <span>Історія сесій</span>
         </button>
       </div>
 
-      <div className={styles['class-actions-row']}>
-        {activeTab === 'students' && studentsCount > 0 && (
+      <div className={styles.actions}>
+        {activeTab === 'students' && (
           <button
             type="button"
-            className={styles['btn-create-class']}
+            className={styles.primaryAction}
             onClick={onOpenEnrollModal}
             disabled={studentsCount >= maxStudents}
-            title={
-              studentsCount >= maxStudents
-                ? `Досягнуто ліміту в ${maxStudents} учнів для курсу`
-                : 'Зарахувати учнів з класу до цього курсу'
-            }
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Зарахувати учнів
+            <PlusIcon size={15} />
+            <span>Зарахувати учнів</span>
           </button>
         )}
       </div>

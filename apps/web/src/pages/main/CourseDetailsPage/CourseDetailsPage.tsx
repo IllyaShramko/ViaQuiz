@@ -15,7 +15,7 @@ import {
 } from '../../../modules/classes';
 import { useAuth } from '../../../modules/auth';
 import { useTeacherHeader } from '../../../shared';
-import styles from '../../../modules/classes/ui/Classes.module.css';
+import styles from './CourseDetailsPage.module.css';
 
 export function CourseDetailsPage() {
   const { classUuid, courseUuid } = useParams<{ classUuid: string; courseUuid: string }>();
@@ -51,7 +51,7 @@ export function CourseDetailsPage() {
 
   if (isCourseLoading) {
     return (
-      <div className={styles['classes-container']}>
+      <div className={styles.container}>
         <div style={{ textAlign: 'center', padding: '80px 0', color: '#9090a8' }}>
           Завантаження даних курсу...
         </div>
@@ -61,7 +61,7 @@ export function CourseDetailsPage() {
 
   if (courseError || !course) {
     return (
-      <div className={styles['classes-container']}>
+      <div className={styles.container}>
         <div
           style={{
             background: 'rgba(239, 68, 68, 0.1)',
@@ -76,7 +76,7 @@ export function CourseDetailsPage() {
           <button
             type="button"
             onClick={() => navigate(classUuid ? `/classes/${classUuid}` : '/classes')}
-            className={styles['btn-secondary']}
+            className={styles.backButton}
             style={{ marginTop: '12px' }}
           >
             ← Повернутися до класу
@@ -92,21 +92,19 @@ export function CourseDetailsPage() {
   const isCreator = user?.id ? (course.creatorId ? course.creatorId === user.id : true) : true;
 
   return (
-    <div className={styles['classes-container']}>
+    <div className={styles.container}>
       <CourseHeader
         name={course.name}
         studentsCount={courseStudents.length}
         maxStudents={50}
       />
 
-      <div style={{ margin: '1rem 0 1.5rem 0' }}>
-        <CourseInstructorCard
-          course={course}
-          classUuid={classUuid!}
-          isCreator={isCreator}
-          onOpenInviteModal={() => setIsInviteModalOpen(true)}
-        />
-      </div>
+      <CourseInstructorCard
+        course={course}
+        classUuid={classUuid!}
+        isCreator={isCreator}
+        onOpenInviteModal={() => setIsInviteModalOpen(true)}
+      />
 
       <CourseTabs
         activeTab={activeTab}
@@ -126,7 +124,9 @@ export function CourseDetailsPage() {
         />
       )}
 
-      {activeTab === 'performance' && <CoursePerformanceTab />}
+      {activeTab === 'performance' && (
+        <CoursePerformanceTab classUuid={classUuid!} courseUuid={courseUuid!} />
+      )}
 
       {activeTab === 'history' && <CourseHistoryTab courseUuid={course.uuid} />}
 

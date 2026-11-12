@@ -36,6 +36,24 @@ export const ClassroomController: ClassroomControllerContract = {
 		}
 	},
 
+	async getClassroomPerformance(req, res, next) {
+		try {
+			const teacherId = res.locals.userId as number;
+			const uuid = req.params.uuid as string;
+			const filter: { from?: string; to?: string } = {};
+			if (req.query.from) filter.from = String(req.query.from);
+			if (req.query.to) filter.to = String(req.query.to);
+			const result = await ClassroomService.getClassroomPerformance(
+				uuid,
+				teacherId,
+				filter,
+			);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
 	async updateClassroom(req, res, next) {
 		try {
 			const teacherId = res.locals.userId as number;
@@ -140,6 +158,26 @@ export const ClassroomController: ClassroomControllerContract = {
 				teacherId,
 			);
 			res.status(200).json(course);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async getCoursePerformance(req, res, next) {
+		try {
+			const teacherId = res.locals.userId as number;
+			const classUuid = req.params.classUuid as string;
+			const courseUuid = req.params.courseUuid as string;
+			const filter: { from?: string; to?: string } = {};
+			if (req.query.from) filter.from = String(req.query.from);
+			if (req.query.to) filter.to = String(req.query.to);
+			const result = await ClassroomService.getCoursePerformance(
+				classUuid,
+				courseUuid,
+				teacherId,
+				filter,
+			);
+			res.status(200).json(result);
 		} catch (error) {
 			next(error);
 		}

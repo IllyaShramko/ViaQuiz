@@ -8,6 +8,7 @@ import type {
   VerifyInvitationResponseDto,
   StudentAnalyticsDto,
   StudentDto,
+  ClassroomPerformanceDto,
 } from '@viaquiz/shared-types';
 
 export interface GetClassroomsResponse {
@@ -19,7 +20,6 @@ export interface GetClassroomsResponse {
 
 export interface CreateClassroomRequest {
   name: string;
-  code?: string;
 }
 
 export interface UpdateClassroomRequest {
@@ -74,6 +74,20 @@ export const classesApi = baseApi.injectEndpoints({
     getClassroom: builder.query<ClassroomDto, string>({
       query: (uuid) => `/classrooms/${uuid}`,
       providesTags: (_result, _error, uuid) => [{ type: 'Classroom', id: uuid }],
+    }),
+
+    getClassroomPerformance: builder.query<
+      ClassroomPerformanceDto,
+      { classUuid: string; from?: string; to?: string }
+    >({
+      query: ({ classUuid, from, to }) => {
+        const params = new URLSearchParams();
+        if (from) params.append('from', from);
+        if (to) params.append('to', to);
+        const qs = params.toString();
+        return `/classrooms/${classUuid}/performance${qs ? `?${qs}` : ''}`;
+      },
+      providesTags: (_result, _error, { classUuid }) => [{ type: 'Classroom', id: classUuid }],
     }),
 
     createClassroom: builder.mutation<ClassroomDto, CreateClassroomRequest>({
@@ -148,6 +162,24 @@ export const classesApi = baseApi.injectEndpoints({
 
     getCourse: builder.query<CourseDto, { classUuid: string; courseUuid: string }>({
       query: ({ classUuid, courseUuid }) => `/classrooms/${classUuid}/courses/${courseUuid}`,
+      providesTags: (_result, _error, { courseUuid }) => [
+        'Classroom',
+        'Course',
+        { type: 'Course', id: courseUuid },
+      ],
+    }),
+
+    getCoursePerformance: builder.query<
+      ClassroomPerformanceDto,
+      { classUuid: string; courseUuid: string; from?: string; to?: string }
+    >({
+      query: ({ classUuid, courseUuid, from, to }) => {
+        const params = new URLSearchParams();
+        if (from) params.append('from', from);
+        if (to) params.append('to', to);
+        const qs = params.toString();
+        return `/classrooms/${classUuid}/courses/${courseUuid}/performance${qs ? `?${qs}` : ''}`;
+      },
       providesTags: (_result, _error, { courseUuid }) => [
         'Classroom',
         'Course',
@@ -321,6 +353,7 @@ export const classesApi = baseApi.injectEndpoints({
 export const {
   useGetClassroomsQuery,
   useGetClassroomQuery,
+  useGetClassroomPerformanceQuery,
   useCreateClassroomMutation,
   useUpdateClassroomMutation,
   useDeleteClassroomMutation,
@@ -329,6 +362,7 @@ export const {
   useDeleteStudentMutation,
   useGetStudentAnalyticsQuery,
   useGetCourseQuery,
+  useGetCoursePerformanceQuery,
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useEnrollStudentsToCourseMutation,

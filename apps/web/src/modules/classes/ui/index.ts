@@ -66,6 +66,19 @@ export {
   type CourseTabsProps,
   type CourseTabType,
   type CourseStudentsTabProps,
+  type CoursePerformanceTabProps,
   type CourseHistoryTabProps,
   type CourseInstructorCardProps,
 } from './CourseDetails';
+
+export {
+  ClassTabs,
+  ClassStudentsTab,
+  ClassCoursesTab,
+  ClassPerformanceTab,
+  type ClassTabsProps,
+  type ClassTabType,
+  type ClassStudentsTabProps,
+  type ClassCoursesTabProps,
+  type ClassPerformanceTabProps,
+} from './ClassDetails';

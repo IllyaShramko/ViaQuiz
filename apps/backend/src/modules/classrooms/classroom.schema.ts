@@ -6,7 +6,6 @@ export const createClassroomSchema = z.object({
 		.trim()
 		.min(1, "Назва класу обов'язкова")
 		.max(50, "Назва класу не може перевищувати 50 символів"),
-	code: z.string().trim().max(10).optional(),
 });
 
 export const updateClassroomSchema = z.object({

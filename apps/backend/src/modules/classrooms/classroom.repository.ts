@@ -44,7 +44,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							id: true,
 							uuid: true,
 							name: true,
-							code: true,
 						},
 					},
 					creator: {
@@ -164,7 +163,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 			return await PRISMA_CLIENT.classroom.create({
 				data: {
 					name: data.name,
-					code: data.code,
 					teacherId: data.teacherId,
 				},
 			});
@@ -236,7 +234,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							id: true,
 							uuid: true,
 							name: true,
-							code: true,
 							teacherId: true,
 						},
 					},
@@ -257,7 +254,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							id: true,
 							uuid: true,
 							name: true,
-							code: true,
 							teacherId: true,
 							teacher: {
 								select: {
@@ -378,7 +374,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							id: true,
 							uuid: true,
 							name: true,
-							code: true,
 						},
 					},
 					creator: {
@@ -562,7 +557,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							id: true,
 							uuid: true,
 							name: true,
-							code: true,
 						},
 					},
 					creator: {
@@ -657,7 +651,6 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 							id: true,
 							uuid: true,
 							name: true,
-							code: true,
 						},
 					},
 					creator: {
@@ -774,6 +767,113 @@ export const ClassroomRepository: ClassroomRepositoryContract = {
 					},
 				},
 				orderBy: { joinedAt: "desc" },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findClassroomQuizResults(classroomId, fromDate, toDate) {
+		try {
+			const dateFilter =
+				fromDate || toDate
+					? {
+							joinedAt: {
+								...(fromDate ? { gte: fromDate } : {}),
+								...(toDate ? { lte: toDate } : {}),
+							},
+						}
+					: {};
+
+			return await PRISMA_CLIENT.participant.findMany({
+				where: {
+					student: { classroomId },
+					...dateFilter,
+					result: {
+						isNot: null,
+					},
+				},
+				include: {
+					result: true,
+				},
+				orderBy: { joinedAt: "desc" },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async countClassroomSessions(classroomId, fromDate, toDate) {
+		try {
+			const dateFilter =
+				fromDate || toDate
+					? {
+							createdAt: {
+								...(fromDate ? { gte: fromDate } : {}),
+								...(toDate ? { lte: toDate } : {}),
+							},
+						}
+					: {};
+
+			return await PRISMA_CLIENT.room.count({
+				where: {
+					OR: [{ classroomId }, { course: { classroomId } }],
+					...dateFilter,
+				},
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async findCourseQuizResults(courseId, fromDate, toDate) {
+		try {
+			const dateFilter =
+				fromDate || toDate
+					? {
+							joinedAt: {
+								...(fromDate ? { gte: fromDate } : {}),
+								...(toDate ? { lte: toDate } : {}),
+							},
+						}
+					: {};
+
+			return await PRISMA_CLIENT.participant.findMany({
+				where: {
+					room: { courseId },
+					studentId: { not: null },
+					...dateFilter,
+					result: {
+						isNot: null,
+					},
+				},
+				include: {
+					result: true,
+				},
+				orderBy: { joinedAt: "desc" },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async countCourseSessions(courseId, fromDate, toDate) {
+		try {
+			const dateFilter =
+				fromDate || toDate
+					? {
+							createdAt: {
+								...(fromDate ? { gte: fromDate } : {}),
+								...(toDate ? { lte: toDate } : {}),
+							},
+						}
+					: {};
+
+			return await PRISMA_CLIENT.room.count({
+				where: {
+					courseId,
+					...dateFilter,
+				},
 			});
 		} catch (e) {
 			errorValidator(e);

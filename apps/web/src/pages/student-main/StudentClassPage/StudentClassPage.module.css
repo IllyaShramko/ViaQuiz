@@ -40,17 +40,6 @@
   margin: 0;
 }
 
-.banner-badge {
-  background: rgba(134, 59, 255, 0.2);
-  border: 1px solid #863bff;
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-weight: 700;
-  color: #f0f0f5;
-  font-size: 0.9rem;
-  white-space: nowrap;
-}
-
 .section {
   display: flex;
   flex-direction: column;

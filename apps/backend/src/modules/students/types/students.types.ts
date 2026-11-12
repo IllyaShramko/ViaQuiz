@@ -18,7 +18,6 @@ export type StudentMe = Prisma.StudentGetPayload<{
 				id: true;
 				uuid: true;
 				name: true;
-				code: true;
 				teacher: {
 					select: {
 						id: true;
@@ -92,7 +91,6 @@ export interface StudentAuthPayload {
 	login: string;
 	classroomId: number;
 	classroomName: string;
-	classroomCode: string | null;
 }
 
 export interface StudentLoginResponse {
@@ -136,7 +134,6 @@ export interface StudentDashboardResponse {
 		lastName: string;
 		login: string;
 		classroomName: string;
-		classroomCode: string | null;
 		teacherName: string;
 	};
 	stats: {

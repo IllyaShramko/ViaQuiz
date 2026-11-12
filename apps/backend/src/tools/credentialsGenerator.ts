@@ -4,5 +4,4 @@ export {
 	generateStudentLogin,
 	generateRandomDigits,
 	generateSimplePassword,
-	generateClassCode,
 } from "@viaquiz/utils";

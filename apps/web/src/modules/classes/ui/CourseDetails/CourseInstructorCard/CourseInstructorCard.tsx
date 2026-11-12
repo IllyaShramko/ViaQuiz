@@ -11,8 +11,9 @@ export function CourseInstructorCard({
 }: CourseInstructorCardProps) {
   const [cancelInvitation, { isLoading: isCanceling }] = useCancelInvitationMutation();
 
-  const isDelegatedTeacher =
-    course.teacher && course.creator && course.teacher.id !== course.creator.id;
+  const isDelegatedTeacher = Boolean(
+    course.teacher && course.creator && course.teacher.id !== course.creator.id,
+  );
 
   const currentTeacher = isDelegatedTeacher ? course.teacher : course.creator;
 
@@ -42,24 +43,30 @@ export function CourseInstructorCard({
     }
   };
 
+  const avatarLetter = teacherDisplayName.replace(/^@/, '').charAt(0) || '?';
+
   return (
-    <div className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.titleArea}>
-          <div className={styles.iconWrapper}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
-          <div>
-            <h4 className={styles.title}>Керівництво курсом</h4>
-            <p className={styles.subtitle}>
-              {isDelegatedTeacher
-                ? `Курс веде призначений викладач (Куратор: ${curatorDisplayName})`
-                : 'Курс веде куратор класу'}
-            </p>
-          </div>
+    <div className={styles.bar}>
+      <div className={styles.mainRow}>
+        <div className={styles.teacherInfo}>
+          <span className={styles.avatar} aria-hidden="true">
+            {avatarLetter}
+          </span>
+          <span className={styles.label}>Викладач:</span>
+          <span className={styles.teacherName}>{teacherDisplayName}</span>
+          {currentTeacher?.login && (
+            <span className={styles.teacherLogin}>@{currentTeacher.login}</span>
+          )}
+          <span
+            className={`${styles.roleTag} ${
+              isDelegatedTeacher ? styles.roleTagDelegated : ''
+            }`}
+          >
+            {isDelegatedTeacher ? 'Ведучий викладач' : 'Куратор курсу'}
+          </span>
+          {isDelegatedTeacher && curatorDisplayName && (
+            <span className={styles.curatorHint}>Куратор класу: {curatorDisplayName}</span>
+          )}
         </div>
 
         {isCreator && (
@@ -68,7 +75,17 @@ export function CourseInstructorCard({
             className={styles.inviteButton}
             onClick={onOpenInviteModal}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
               <circle cx="8.5" cy="7" r="4" />
               <line x1="20" y1="8" x2="20" y2="14" />
@@ -79,34 +96,12 @@ export function CourseInstructorCard({
         )}
       </div>
 
-      <div className={styles.teacherInfo}>
-        <div className={styles.teacherProfile}>
-          <div className={styles.avatar}>
-            {teacherDisplayName.charAt(0)}
-          </div>
-          <div className={styles.nameGroup}>
-            <span className={styles.teacherName}>{teacherDisplayName}</span>
-            {currentTeacher?.login && (
-              <span className={styles.teacherLogin}>@{currentTeacher.login}</span>
-            )}
-          </div>
-        </div>
-
-        <span
-          className={`${styles.roleBadge} ${
-            !isDelegatedTeacher ? styles.roleBadgeCurator : ''
-          }`}
-        >
-          {isDelegatedTeacher ? 'Ведучий викладач' : 'Куратор курсу'}
-        </span>
-      </div>
-
       {pendingInvitation && (
-        <div className={styles.pendingBox}>
+        <div className={styles.pendingRow}>
           <div className={styles.pendingText}>
-            <HourglassIcon size={16} />
+            <HourglassIcon size={14} />
             <span>
-              Очікує підтвердження від:{' '}
+              Очікує підтвердження від{' '}
               <strong>
                 {pendingInvitation.invitedLogin
                   ? `@${pendingInvitation.invitedLogin}`

@@ -79,7 +79,6 @@ export interface AssignedCourseSummaryDto {
 		id: number;
 		uuid: string;
 		name: string;
-		code: string | null;
 	};
 	creator: {
 		id: number;
@@ -112,7 +111,6 @@ export interface CourseDto {
 		id: number;
 		uuid: string;
 		name: string;
-		code?: string | null;
 		students?: StudentDto[];
 	};
 	students?: StudentDto[];
@@ -126,7 +124,6 @@ export interface ClassroomDto {
 	id: number;
 	uuid: string;
 	name: string;
-	code: string | null;
 	isActive: boolean;
 	isArchived: boolean;
 	createdAt: string;
@@ -196,7 +193,6 @@ export interface StudentDashboardDto {
 		lastName: string;
 		login: string;
 		classroomName: string;
-		classroomCode: string | null;
 		teacherName: string;
 	};
 	stats: {
@@ -249,7 +245,6 @@ export interface StudentClassroomDetailsDto {
 	id: number;
 	uuid: string;
 	name: string;
-	code: string | null;
 	teacher: {
 		id: number;
 		firstName: string | null;
@@ -272,5 +267,28 @@ export interface ClassmateProfileDto {
 	stats: {
 		totalQuizzesPassed: number;
 	};
+}
+
+export interface ClassroomPerformanceStudentDto {
+	uuid: string;
+	firstName: string;
+	lastName: string;
+	login: string;
+	passedTests: number;
+	averageGrade: number;
+	accuracyPercentage: number;
+}
+
+export interface ClassroomPerformanceDto {
+	summary: {
+		totalStudents: number;
+		activeStudents: number;
+		totalPassedTests: number;
+		averageGrade: number;
+		accuracyPercentage: number;
+		totalCourses: number;
+		totalSessions: number;
+	};
+	students: ClassroomPerformanceStudentDto[];
 }
 

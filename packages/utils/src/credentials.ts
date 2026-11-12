@@ -34,16 +34,3 @@ export function generateSimplePassword(length = 8): string {
 	}
 	return password;
 }
-
-/**
- * Generates an uppercase alphanumeric code (e.g. for joining a class or game session).
- */
-export function generateClassCode(length = 6): string {
-	const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-	let code = "";
-	for (let i = 0; i < length; i++) {
-		const randomIndex = Math.floor(Math.random() * chars.length);
-		code += chars[randomIndex];
-	}
-	return code;
-}

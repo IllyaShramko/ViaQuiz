@@ -1,0 +1,124 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 10px;
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast, 150ms ease-in-out),
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out);
+}
+
+.tabButton:hover:not(.isActive) {
+  color: var(--color-text-primary, #f0f0f5);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Override global *:focus-visible box around segmented tabs for keyboard-only focus */
+.tabButton:focus {
+  outline: none;
+}
+
+.tabButton:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: -2px;
+}
+
+.isActive {
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-primary, #f0f0f5);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.countBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted, #606078);
+  padding: 1px 6px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.isActive .countBadge {
+  color: var(--color-text-secondary, #9090a8);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.primaryAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-accent, #863bff);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out),
+    transform 100ms ease;
+}
+
+.primaryAction:hover:not(:disabled) {
+  background: var(--color-accent-hover, #9b5cff);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.primaryAction:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.primaryAction:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 680px) {
+  .tabs {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .tabButton {
+    white-space: nowrap;
+  }
+}

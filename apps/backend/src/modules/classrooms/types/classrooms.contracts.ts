@@ -22,6 +22,8 @@ import type {
 	AssignedCourseSummary,
 	CourseInvitationWithDetails,
 	VerifyInvitationResponse,
+	RawClassroomQuizResult,
+	ClassroomPerformanceResponse,
 } from "./classrooms.types";
 
 export interface ClassroomRepositoryContract {
@@ -39,7 +41,6 @@ export interface ClassroomRepositoryContract {
 	): Promise<ClassroomDetail>;
 	createClassroom(data: {
 		name: string;
-		code: string;
 		teacherId: number;
 	}): Promise<Classroom>;
 	updateClassroom(id: number, data: UpdateClassroomDTO): Promise<Classroom>;
@@ -102,6 +103,26 @@ export interface ClassroomRepositoryContract {
 		fromDate?: Date,
 		toDate?: Date,
 	): Promise<RawStudentQuizResult[]>;
+	findClassroomQuizResults(
+		classroomId: number,
+		fromDate?: Date,
+		toDate?: Date,
+	): Promise<RawClassroomQuizResult[]>;
+	countClassroomSessions(
+		classroomId: number,
+		fromDate?: Date,
+		toDate?: Date,
+	): Promise<number>;
+	findCourseQuizResults(
+		courseId: number,
+		fromDate?: Date,
+		toDate?: Date,
+	): Promise<RawClassroomQuizResult[]>;
+	countCourseSessions(
+		courseId: number,
+		fromDate?: Date,
+		toDate?: Date,
+	): Promise<number>;
 	findUserByLoginOrEmail(
 		search: string,
 	): Promise<{ id: number; uuid: string; firstName: string | null; lastName: string | null; login: string; email: string } | null>;
@@ -144,6 +165,11 @@ export interface ClassroomServiceContract {
 		data: CreateClassroomDTO,
 	): Promise<Classroom>;
 	getClassroom(uuid: string, teacherId: number): Promise<ClassroomDetail>;
+	getClassroomPerformance(
+		uuid: string,
+		teacherId: number,
+		filter?: DateFilterDTO,
+	): Promise<ClassroomPerformanceResponse>;
 	updateClassroom(
 		uuid: string,
 		teacherId: number,
@@ -176,6 +202,12 @@ export interface ClassroomServiceContract {
 		courseUuid: string,
 		teacherId: number,
 	): Promise<CourseWithDetails>;
+	getCoursePerformance(
+		classUuid: string,
+		courseUuid: string,
+		teacherId: number,
+		filter?: DateFilterDTO,
+	): Promise<ClassroomPerformanceResponse>;
 	createCourse(
 		classUuid: string,
 		teacherId: number,
@@ -258,6 +290,11 @@ export interface ClassroomControllerContract {
 		res: Response,
 		next: NextFunction,
 	): Promise<void>;
+	getClassroomPerformance(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
 	updateClassroom(
 		req: Request,
 		res: Response,
@@ -285,6 +322,11 @@ export interface ClassroomControllerContract {
 		next: NextFunction,
 	): Promise<void>;
 	getCourse(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void>;
+	getCoursePerformance(
 		req: Request,
 		res: Response,
 		next: NextFunction,

@@ -15,7 +15,6 @@ export const StudentService: StudentServiceContract = {
 	async login(credentials) {
 		const studentWithPassword = await StudentRepository.findByLogin(
 			credentials.login.trim().toLowerCase(),
-			credentials.classCode?.trim().toUpperCase(),
 		);
 
 		if (!studentWithPassword) {
@@ -59,7 +58,6 @@ export const StudentService: StudentServiceContract = {
 				login: student.login,
 				classroomId: student.classroomId,
 				classroomName: student.classroom.name,
-				classroomCode: student.classroom.code,
 			},
 		};
 	},
@@ -121,7 +119,6 @@ export const StudentService: StudentServiceContract = {
 				lastName: student.lastName,
 				login: student.login,
 				classroomName: student.classroom.name,
-				classroomCode: student.classroom.code,
 				teacherName: student.classroom.teacher
 					? `${student.classroom.teacher.firstName || ""} ${student.classroom.teacher.lastName || ""}`.trim()
 					: "Вчитель",

@@ -48,6 +48,8 @@ export type {
 	ClassmateSummaryDto,
 	StudentClassroomDetailsDto,
 	ClassmateProfileDto,
+	ClassroomPerformanceStudentDto,
+	ClassroomPerformanceDto,
 } from "./classroom";
 export { CLASSROOM_LIMITS } from "./classroom";
 

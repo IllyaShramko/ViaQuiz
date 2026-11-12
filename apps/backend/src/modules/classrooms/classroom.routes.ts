@@ -45,6 +45,10 @@ classroomRouter.post(
 	ClassroomController.createClassroom,
 );
 classroomRouter.get("/:uuid", ClassroomController.getClassroom);
+classroomRouter.get(
+	"/:uuid/performance",
+	ClassroomController.getClassroomPerformance,
+);
 classroomRouter.put(
 	"/:uuid",
 	validateBody(updateClassroomSchema),
@@ -75,6 +79,10 @@ classroomRouter.get(
 classroomRouter.get(
 	"/:classUuid/courses/:courseUuid",
 	ClassroomController.getCourse,
+);
+classroomRouter.get(
+	"/:classUuid/courses/:courseUuid/performance",
+	ClassroomController.getCoursePerformance,
 );
 classroomRouter.post(
 	"/:uuid/courses",

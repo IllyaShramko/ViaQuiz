@@ -6,12 +6,6 @@ export const createClassSchema = z.object({
     .trim()
     .min(1, "Назва класу обов'язкова")
     .max(50, 'Назва класу не може перевищувати 50 символів'),
-  code: z
-    .string()
-    .trim()
-    .max(10, 'Код не може перевищувати 10 символів')
-    .optional()
-    .or(z.literal('')),
 });
 
 export type CreateClassFormData = z.infer<typeof createClassSchema>;

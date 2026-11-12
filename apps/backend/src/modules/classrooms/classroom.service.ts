@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import { CLASSROOM_LIMITS } from "../../config/limits";
 import { BadRequestError, ForbiddenError, NotFoundError } from "../../errors/customErrors";
 import {
-	generateClassCode,
 	generateRandomDigits,
 	generateSimplePassword,
 	generateStudentLogin,
@@ -11,7 +10,146 @@ import { UserRepository } from "../users/user.repository";
 import { sendCourseInvitationEmail } from "./classroom.mail";
 import { ClassroomRepository } from "./classroom.repository";
 import type { ClassroomServiceContract } from "./types/classrooms.contracts";
-import type { StudentAnalyticsHistoryItem } from "./types/classrooms.types";
+import type {
+	ClassroomPerformanceResponse,
+	DateFilterDTO,
+	RawClassroomQuizResult,
+	StudentAnalyticsHistoryItem,
+} from "./types/classrooms.types";
+
+function parseDateFilter(filter?: DateFilterDTO): {
+	fromDate?: Date | undefined;
+	toDate?: Date | undefined;
+} {
+	let fromDate: Date | undefined;
+	let toDate: Date | undefined;
+
+	if (filter?.from) {
+		fromDate = new Date(filter.from);
+		if (Number.isNaN(fromDate.getTime())) {
+			throw new BadRequestError("Некоректна початкова дата");
+		}
+	}
+
+	if (filter?.to) {
+		toDate = new Date(filter.to.includes("T") ? filter.to : `${filter.to}T23:59:59.999Z`);
+		if (Number.isNaN(toDate.getTime())) {
+			throw new BadRequestError("Некоректна кінцева дата");
+		}
+	}
+
+	return { fromDate, toDate };
+}
+
+function computeGrade12(correctAnswersCount: number, totalQuestionsCount: number): number {
+	const maxQuestions = totalQuestionsCount || 1;
+	const grade12 = Math.round((correctAnswersCount / maxQuestions) * 12);
+	return Math.max(1, Math.min(12, grade12 || 1));
+}
+
+function aggregatePerformanceStats(
+	studentsList: Array<{
+		id: number;
+		uuid: string;
+		firstName: string;
+		lastName: string;
+		login: string;
+	}>,
+	participants: RawClassroomQuizResult[],
+	totalCourses: number,
+	totalSessions: number,
+): ClassroomPerformanceResponse {
+	const perStudent = new Map<
+		number,
+		{
+			passedTests: number;
+			gradeSum: number;
+			correctAnswers: number;
+			totalQuestions: number;
+		}
+	>();
+
+	let totalGradeSum = 0;
+	let totalCorrectAnswers = 0;
+	let totalQuestions = 0;
+
+	for (const participant of participants || []) {
+		if (!participant.studentId || !participant.result) continue;
+
+		const res = participant.result;
+		const grade = computeGrade12(res.correctAnswersCount, res.totalQuestionsCount);
+
+		const entry = perStudent.get(participant.studentId) ?? {
+			passedTests: 0,
+			gradeSum: 0,
+			correctAnswers: 0,
+			totalQuestions: 0,
+		};
+
+		entry.passedTests += 1;
+		entry.gradeSum += grade;
+		entry.correctAnswers += res.correctAnswersCount;
+		entry.totalQuestions += res.totalQuestionsCount;
+		perStudent.set(participant.studentId, entry);
+
+		totalGradeSum += grade;
+		totalCorrectAnswers += res.correctAnswersCount;
+		totalQuestions += res.totalQuestionsCount;
+	}
+
+	const students = studentsList
+		.map((student) => {
+			const stats = perStudent.get(student.id);
+			const passedTests = stats?.passedTests ?? 0;
+			const averageGrade =
+				passedTests > 0 && stats
+					? Number((stats.gradeSum / passedTests).toFixed(1))
+					: 0;
+			const accuracyPercentage =
+				stats && stats.totalQuestions > 0
+					? Math.round((stats.correctAnswers / stats.totalQuestions) * 100)
+					: 0;
+
+			return {
+				uuid: student.uuid,
+				firstName: student.firstName,
+				lastName: student.lastName,
+				login: student.login,
+				passedTests,
+				averageGrade,
+				accuracyPercentage,
+			};
+		})
+		.sort((a, b) => {
+			if (b.passedTests !== a.passedTests) return b.passedTests - a.passedTests;
+			if (b.averageGrade !== a.averageGrade) return b.averageGrade - a.averageGrade;
+			return a.lastName.localeCompare(b.lastName, "uk");
+		});
+
+	const totalPassedTests = participants.length;
+	const activeStudents = students.filter((s) => s.passedTests > 0).length;
+	const averageGrade =
+		totalPassedTests > 0
+			? Number((totalGradeSum / totalPassedTests).toFixed(1))
+			: 0;
+	const accuracyPercentage =
+		totalQuestions > 0
+			? Math.round((totalCorrectAnswers / totalQuestions) * 100)
+			: 0;
+
+	return {
+		summary: {
+			totalStudents: studentsList.length,
+			activeStudents,
+			totalPassedTests,
+			averageGrade,
+			accuracyPercentage,
+			totalCourses,
+			totalSessions,
+		},
+		students,
+	};
+}
 
 export const ClassroomService: ClassroomServiceContract = {
 	async getClassrooms(teacherId) {
@@ -48,14 +186,8 @@ export const ClassroomService: ClassroomServiceContract = {
 			);
 		}
 
-		let code = data.code?.toUpperCase().trim();
-		if (!code) {
-			code = generateClassCode(6);
-		}
-
 		return await ClassroomRepository.createClassroom({
 			name: data.name.trim(),
-			code,
 			teacherId,
 		});
 	},
@@ -66,6 +198,27 @@ export const ClassroomService: ClassroomServiceContract = {
 			throw new NotFoundError("Клас не знайдено");
 		}
 		return classroom;
+	},
+
+	async getClassroomPerformance(uuid, teacherId, filter) {
+		const classroom = await ClassroomRepository.findClassroomByUuid(uuid, teacherId);
+		if (!classroom) {
+			throw new NotFoundError("Клас не знайдено");
+		}
+
+		const { fromDate, toDate } = parseDateFilter(filter);
+
+		const [participants, totalSessions] = await Promise.all([
+			ClassroomRepository.findClassroomQuizResults(classroom.id, fromDate, toDate),
+			ClassroomRepository.countClassroomSessions(classroom.id, fromDate, toDate),
+		]);
+
+		return aggregatePerformanceStats(
+			classroom.students,
+			participants,
+			classroom.courses.length,
+			totalSessions,
+		);
 	},
 
 	async updateClassroom(uuid, teacherId, data) {
@@ -218,10 +371,7 @@ export const ClassroomService: ClassroomServiceContract = {
 			throw new NotFoundError("Учня не знайдено в цьому класі");
 		}
 
-		const fromDate = filter?.from ? new Date(filter.from) : undefined;
-		const toDate = filter?.to
-			? new Date(filter.to.includes("T") ? filter.to : `${filter.to}T23:59:59.999Z`)
-			: undefined;
+		const { fromDate, toDate } = parseDateFilter(filter);
 
 		const quizParticipants = await ClassroomRepository.findStudentQuizResults(
 			student.id,
@@ -249,9 +399,10 @@ export const ClassroomService: ClassroomServiceContract = {
 			const formattedFullDate = dateObj.toISOString().split("T")[0] || "";
 			const formattedTime = `${String(dateObj.getHours()).padStart(2, "0")}:${String(dateObj.getMinutes()).padStart(2, "0")}`;
 
-			const maxQuestions = res.totalQuestionsCount || 1;
-			const grade12 = Math.round((res.correctAnswersCount / maxQuestions) * 12);
-			const safeGrade = Math.max(1, Math.min(12, grade12 || 1));
+			const safeGrade = computeGrade12(
+				res.correctAnswersCount,
+				res.totalQuestionsCount,
+			);
 
 			const gradeKey = `Оцінка ${safeGrade}`;
 			gradeCounts[gradeKey] = (gradeCounts[gradeKey] || 0) + 1;
@@ -348,6 +499,31 @@ export const ClassroomService: ClassroomServiceContract = {
 		}
 
 		return course;
+	},
+
+	async getCoursePerformance(classUuid, courseUuid, teacherId, filter) {
+		const course = await ClassroomRepository.findCourseByUuid(courseUuid);
+		if (!course || course.classroom.uuid !== classUuid) {
+			throw new NotFoundError("Курс не знайдено у цьому класі");
+		}
+
+		if (course.creatorId !== teacherId && course.teacherId !== teacherId) {
+			throw new ForbiddenError("У вас немає доступу до цього курсу");
+		}
+
+		const { fromDate, toDate } = parseDateFilter(filter);
+
+		const [participants, totalSessions] = await Promise.all([
+			ClassroomRepository.findCourseQuizResults(course.id, fromDate, toDate),
+			ClassroomRepository.countCourseSessions(course.id, fromDate, toDate),
+		]);
+
+		return aggregatePerformanceStats(
+			course.students,
+			participants,
+			1,
+			totalSessions,
+		);
 	},
 
 	async createCourse(classUuid, teacherId, data) {
