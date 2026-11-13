@@ -19,6 +19,11 @@ server.listen(env.PORT, () => {
 	logger.info(
 		`Backend running in ${env.NODE_ENV} mode on http://${env.HOST}:${env.PORT}`,
 	);
+	if (env.NODE_ENV !== "production") {
+		logger.info(
+			`[Config] Client URL: ${env.CLIENT_URL} | CORS Origin: ${env.CORS_ORIGIN}`,
+		);
+	}
 });
 
 const gracefulShutdown = (signal: string) => {

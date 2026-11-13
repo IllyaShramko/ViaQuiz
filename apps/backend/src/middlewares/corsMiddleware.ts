@@ -1,4 +1,5 @@
 import cors, { type CorsOptions } from "cors";
+import { isPrivateIpv4 } from "@viaquiz/utils";
 import { env } from "../config/env";
 import { logger } from "../tools/logger";
 
@@ -25,6 +26,13 @@ export function getAllowedOrigins(): string[] {
 			"http://127.0.0.1:3000",
 			"http://127.0.0.1:4173",
 		);
+		if (env.HOST && env.HOST !== "0.0.0.0") {
+			rawOrigins.push(
+				`http://${env.HOST}:5173`,
+				`http://${env.HOST}:3000`,
+				`http://${env.HOST}:4173`,
+			);
+		}
 	}
 
 	return Array.from(
@@ -57,11 +65,15 @@ export function isOriginAllowed(origin?: string): boolean {
 		return true;
 	}
 
-	// In non-production environments, allow any localhost or 127.0.0.1 port
+	// In non-production environments, allow any localhost, 127.0.0.1, or private LAN IPv4 port
 	if (env.NODE_ENV !== "production") {
 		try {
 			const parsed = new URL(origin);
-			if (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1") {
+			if (
+				parsed.hostname === "localhost" ||
+				parsed.hostname === "127.0.0.1" ||
+				isPrivateIpv4(parsed.hostname)
+			) {
 				return true;
 			}
 		} catch {

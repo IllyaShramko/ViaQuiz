@@ -1,4 +1,4 @@
-const BASE_URL = (import.meta.env.VITE_API_URL as string) || "http://localhost:3000";
+import { BASE_URL } from "../constants/env";
 
 const TOKEN_KEY = "viaquiz-token";
 

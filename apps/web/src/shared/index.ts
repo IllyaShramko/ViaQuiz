@@ -26,6 +26,7 @@ export {
   BASE_URL,
   IS_DEV,
   IS_PROD,
+  getShareableOrigin,
   FONT_SIZES,
   type FontSizeKey,
 } from './constants';

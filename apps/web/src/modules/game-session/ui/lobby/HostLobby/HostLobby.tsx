@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { QrCodeModal } from '../../modals';
 import { CopyIcon, CheckIcon, PlayIcon } from '../../../../../shared/ui/icons';
 import { copyToClipboard } from '../../../../../shared/tools';
+import { getShareableOrigin } from '../../../../../shared/constants';
 import type { HostLobbyProps } from './HostLobby.types';
 import styles from './HostLobby.module.css';
 
@@ -20,7 +21,7 @@ export function HostLobby({
 	const urlTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const codeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-	const joinUrl = `${window.location.origin}/join?code=${joinCode}`;
+	const joinUrl = `${getShareableOrigin()}/join?code=${joinCode}`;
 
 	// Cleanup copy timeouts on unmount
 	useEffect(() => {

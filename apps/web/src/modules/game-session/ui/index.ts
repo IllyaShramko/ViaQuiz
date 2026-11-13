@@ -39,3 +39,8 @@ export {
   ParticipantsSidebar,
   type ParticipantsSidebarProps,
 } from './sidebar';
+
+export {
+  PinCodeInput,
+  type PinCodeInputProps,
+} from './join';
