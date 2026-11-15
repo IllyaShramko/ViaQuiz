@@ -25,6 +25,37 @@ export interface CreateUserDto {
 	password: string;
 }
 
+export interface UpdateProfileDto {
+	firstName?: string | null;
+	lastName?: string | null;
+}
+
+export interface SendEmailChangeCodeDto {
+	email: string;
+}
+
+export interface ChangeEmailDto {
+	email: string;
+	code: string;
+}
+
+export interface SendPasswordChangeCodeDto {
+	currentPassword: string;
+	newPassword: string;
+	confirmNewPassword: string;
+}
+
+export interface ChangePasswordDto {
+	currentPassword: string;
+	newPassword: string;
+	confirmNewPassword: string;
+	code: string;
+}
+
+export interface ChangePasswordResponseDto {
+	message: string;
+}
+
 export interface TeacherProfileStatsDto {
 	totalQuizzes: number;
 	activeClassesCount: number;

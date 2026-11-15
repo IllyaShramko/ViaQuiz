@@ -5,6 +5,7 @@ export {
   usePublishQuizMutation,
   useDeleteQuizMutation,
   useGetQuizForEditorQuery,
+  useLazyGetQuizForEditorQuery,
   useGetMyDraftsQuery,
   useCreateQuestionMutation,
   useUpdateQuestionMutation,
@@ -48,7 +49,7 @@ export {
   DraftCard,
   DraftCreateCard,
   DraftsGrid,
-  DEFAULT_COVER_GRADIENT,
+  DeleteDraftModal,
   type QuizEditorLayoutProps,
   type PublishModalProps,
   type EditorHeaderProps,
@@ -67,4 +68,5 @@ export {
   type DraftCardProps,
   type DraftCreateCardProps,
   type DraftsGridProps,
+  type DeleteDraftModalProps,
 } from './ui';

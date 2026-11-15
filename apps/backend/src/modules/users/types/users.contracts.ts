@@ -1,8 +1,14 @@
 import type { NextFunction, Request, Response } from "express";
-import type { TeacherProfileStatsDto, PublicUserProfileDto } from "@viaquiz/shared-types";
+import type {
+	TeacherProfileStatsDto,
+	PublicUserProfileDto,
+	ChangePasswordResponseDto,
+} from "@viaquiz/shared-types";
 import type { AuthenticatedUser } from "../../../types/token";
 import type { PaginationLocals } from "../../../middlewares/paginationMiddleware";
 import type {
+	ChangeEmailInput,
+	ChangePasswordInput,
 	CheckUniqueDTO,
 	CheckUniqueResponse,
 	CreateUserDTO,
@@ -10,7 +16,10 @@ import type {
 	RegisterCredentials,
 	SendCodeDTO,
 	SendCodeResponse,
+	SendEmailChangeCodeInput,
+	SendPasswordChangeCodeInput,
 	TokenDTO,
+	UpdateProfileInput,
 	User,
 	UserWithPassword,
 } from "./users.types";
@@ -20,7 +29,14 @@ export type UserRepositoryContract = {
 	findByEmail: (email: string) => Promise<UserWithPassword>;
 	findByLogin: (login: string) => Promise<UserWithPassword>;
 	findById: (id: number) => Promise<User>;
+	findByIdWithPassword: (id: number) => Promise<UserWithPassword>;
 	create: (data: CreateUserDTO) => Promise<User>;
+	updateProfile: (
+		id: number,
+		data: { firstName: string | null; lastName: string | null },
+	) => Promise<User>;
+	updateEmail: (id: number, email: string) => Promise<User>;
+	updatePassword: (id: number, hashedPassword: string) => Promise<void>;
 	findUsers: (pagination: { skip: number; take: number }) => Promise<User[]>;
 	countUsers: () => Promise<number>;
 	upsertVerificationCode: (data: {
@@ -41,6 +57,26 @@ export type UserServiceContract = {
 	register: (credentials: RegisterCredentials) => Promise<TokenDTO>;
 	login: (credentials: LoginCredentials) => Promise<TokenDTO>;
 	me: (userId: number) => Promise<User>;
+	updateProfile: (
+		userId: number,
+		data: UpdateProfileInput,
+	) => Promise<User>;
+	sendEmailChangeCode: (
+		userId: number,
+		data: SendEmailChangeCodeInput,
+	) => Promise<SendCodeResponse>;
+	changeEmail: (
+		userId: number,
+		data: ChangeEmailInput,
+	) => Promise<TokenDTO>;
+	sendPasswordChangeCode: (
+		userId: number,
+		data: SendPasswordChangeCodeInput,
+	) => Promise<SendCodeResponse>;
+	changePassword: (
+		userId: number,
+		data: ChangePasswordInput,
+	) => Promise<ChangePasswordResponseDto>;
 	getProfileStats: (userId: number) => Promise<TeacherProfileStatsDto>;
 	getUsers: (pagination: {
 		skip: number;
@@ -73,6 +109,49 @@ export type UserControllerContract = {
 	me: (
 		req: Request<object, User, object, object, AuthenticatedUser>,
 		res: Response<User, AuthenticatedUser>,
+		next: NextFunction,
+	) => Promise<void>;
+	updateProfile: (
+		req: Request<object, User, UpdateProfileInput, object, AuthenticatedUser>,
+		res: Response<User, AuthenticatedUser>,
+		next: NextFunction,
+	) => Promise<void>;
+	sendEmailChangeCode: (
+		req: Request<
+			object,
+			SendCodeResponse,
+			SendEmailChangeCodeInput,
+			object,
+			AuthenticatedUser
+		>,
+		res: Response<SendCodeResponse, AuthenticatedUser>,
+		next: NextFunction,
+	) => Promise<void>;
+	changeEmail: (
+		req: Request<object, TokenDTO, ChangeEmailInput, object, AuthenticatedUser>,
+		res: Response<TokenDTO, AuthenticatedUser>,
+		next: NextFunction,
+	) => Promise<void>;
+	sendPasswordChangeCode: (
+		req: Request<
+			object,
+			SendCodeResponse,
+			SendPasswordChangeCodeInput,
+			object,
+			AuthenticatedUser
+		>,
+		res: Response<SendCodeResponse, AuthenticatedUser>,
+		next: NextFunction,
+	) => Promise<void>;
+	changePassword: (
+		req: Request<
+			object,
+			ChangePasswordResponseDto,
+			ChangePasswordInput,
+			object,
+			AuthenticatedUser
+		>,
+		res: Response<ChangePasswordResponseDto, AuthenticatedUser>,
 		next: NextFunction,
 	) => Promise<void>;
 	getProfileStats: (

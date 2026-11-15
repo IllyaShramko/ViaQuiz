@@ -44,6 +44,28 @@ export const codeFieldSchema = z
 		"Verification code must contain digits only",
 	);
 
+export const firstNameFieldSchema = z
+	.string()
+	.trim()
+	.max(
+		USER_CONSTRAINTS.FIRST_NAME_MAX_LENGTH,
+		`First name cannot exceed ${USER_CONSTRAINTS.FIRST_NAME_MAX_LENGTH} characters`,
+	)
+	.nullable()
+	.optional()
+	.or(z.literal(""));
+
+export const lastNameFieldSchema = z
+	.string()
+	.trim()
+	.max(
+		USER_CONSTRAINTS.LAST_NAME_MAX_LENGTH,
+		`Last name cannot exceed ${USER_CONSTRAINTS.LAST_NAME_MAX_LENGTH} characters`,
+	)
+	.nullable()
+	.optional()
+	.or(z.literal(""));
+
 export const checkUniqueSchema = z.object({
 	login: loginFieldSchema,
 	email: emailFieldSchema,
@@ -59,24 +81,8 @@ export const registerSchema = z
 		email: emailFieldSchema,
 		password: passwordFieldSchema,
 		confirmPassword: z.string(),
-		firstName: z
-			.string()
-			.trim()
-			.max(
-				USER_CONSTRAINTS.FIRST_NAME_MAX_LENGTH,
-				`First name cannot exceed ${USER_CONSTRAINTS.FIRST_NAME_MAX_LENGTH} characters`,
-			)
-			.optional()
-			.or(z.literal("")),
-		lastName: z
-			.string()
-			.trim()
-			.max(
-				USER_CONSTRAINTS.LAST_NAME_MAX_LENGTH,
-				`Last name cannot exceed ${USER_CONSTRAINTS.LAST_NAME_MAX_LENGTH} characters`,
-			)
-			.optional()
-			.or(z.literal("")),
+		firstName: firstNameFieldSchema,
+		lastName: lastNameFieldSchema,
 		code: codeFieldSchema,
 		inviteToken: z.string().optional(),
 	})
@@ -89,3 +95,58 @@ export const loginSchema = z.object({
 	email: emailFieldSchema,
 	password: z.string().min(1, "Password is required"),
 });
+
+export const updateProfileSchema = z.object({
+	firstName: firstNameFieldSchema,
+	lastName: lastNameFieldSchema,
+});
+
+export const sendEmailChangeCodeSchema = z.object({
+	email: emailFieldSchema,
+});
+
+export const changeEmailSchema = z.object({
+	email: emailFieldSchema,
+	code: codeFieldSchema,
+});
+
+const passwordChangeBaseFields = {
+	currentPassword: z.string().min(1, "Current password is required"),
+	newPassword: passwordFieldSchema,
+	confirmNewPassword: z.string(),
+};
+
+function validatePasswordChangeFields(
+	data: {
+		currentPassword: string;
+		newPassword: string;
+		confirmNewPassword: string;
+	},
+	ctx: z.RefinementCtx,
+): void {
+	if (data.newPassword !== data.confirmNewPassword) {
+		ctx.addIssue({
+			code: "custom",
+			message: "Passwords do not match",
+			path: ["confirmNewPassword"],
+		});
+	}
+	if (data.newPassword === data.currentPassword) {
+		ctx.addIssue({
+			code: "custom",
+			message: "New password must be different from current password",
+			path: ["newPassword"],
+		});
+	}
+}
+
+export const sendPasswordChangeCodeSchema = z
+	.object(passwordChangeBaseFields)
+	.superRefine(validatePasswordChangeFields);
+
+export const changePasswordSchema = z
+	.object({
+		...passwordChangeBaseFields,
+		code: codeFieldSchema,
+	})
+	.superRefine(validatePasswordChangeFields);

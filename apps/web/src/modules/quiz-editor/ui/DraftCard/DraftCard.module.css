@@ -1,0 +1,363 @@
+.card {
+  position: relative;
+  min-height: 256px;
+  height: 100%;
+  background-color: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out),
+    transform 120ms ease;
+  animation: card-fade-up 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes card-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card:hover {
+  background-color: var(--color-bg-surface, #1a1a26);
+  border-color: rgba(134, 59, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+.card:focus {
+  outline: none;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: 2px;
+}
+
+.menuOpen {
+  z-index: 25;
+}
+
+.isDeleting {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Cover Area: media clips inside .coverMedia so .menuPopover never clips */
+.coverSection {
+  position: relative;
+  height: 100px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.coverMedia {
+  position: absolute;
+  inset: 0;
+  border-radius: 11px 11px 0 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(134, 59, 255, 0.1) 0%,
+    rgba(26, 26, 38, 0.9) 100%
+  );
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.coverScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 15, 0.35) 0%,
+    rgba(18, 18, 26, 0.55) 100%
+  );
+}
+
+.coverFallbackMark {
+  color: var(--color-text-secondary, #9090a8);
+  opacity: 0.14;
+  transition:
+    opacity var(--transition-fast, 150ms ease-in-out),
+    color var(--transition-fast, 150ms ease-in-out);
+}
+
+.card:hover .coverFallbackMark {
+  opacity: 0.22;
+  color: var(--color-accent-hover, #9b5cff);
+}
+
+.coverOverlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(10, 10, 15, 0.72);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.statusBadgeReady {
+  color: var(--color-text-primary, #f0f0f5);
+  border-color: rgba(134, 59, 255, 0.35);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-text-muted, #606078);
+  flex-shrink: 0;
+}
+
+.statusDotReady {
+  background-color: var(--color-accent-hover, #9b5cff);
+}
+
+/* Overflow Action Menu */
+.menuContainer {
+  position: relative;
+}
+
+.menuTrigger {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(10, 10, 15, 0.7);
+  backdrop-filter: blur(6px);
+  color: var(--color-text-secondary, #9090a8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out),
+    color var(--transition-fast, 150ms ease-in-out);
+}
+
+.menuTrigger:hover,
+.menuTrigger[aria-expanded='true'] {
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.menuPopover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 176px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menuItem {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary, #f0f0f5);
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.menuItem:hover:not(:disabled) {
+  background: var(--color-bg-hover, #22222e);
+}
+
+.menuItem:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.menuDivider {
+  height: 1px;
+  margin: 3px 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.menuItemDanger {
+  color: #f87171;
+}
+
+.menuItemDanger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* Card Body */
+.body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 10px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.025rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-text-primary, #f0f0f5);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--transition-fast, 150ms ease-in-out);
+}
+
+.card:hover .title {
+  color: #ffffff;
+}
+
+.titleArrow {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-text-muted, #606078);
+  transition:
+    color var(--transition-fast, 150ms ease-in-out),
+    transform var(--transition-fast, 150ms ease-in-out);
+}
+
+.card:hover .titleArrow {
+  color: var(--color-accent-hover, #9b5cff);
+  transform: translateX(2px);
+}
+
+.desc {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--color-text-secondary, #9090a8);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.descEmpty {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #606078);
+}
+
+.tagsRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tagPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.72rem;
+  font-weight: 500;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tagMore {
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #606078);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hairline Metadata Footer */
+.meta {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.metaItem svg {
+  flex-shrink: 0;
+  color: var(--color-text-muted, #606078);
+}
+
+.metaZero {
+  color: var(--color-text-muted, #606078);
+}
+
+.metaCount {
+  color: var(--color-text-primary, #f0f0f5);
+  font-weight: 500;
+}
+
+.metaDate {
+  white-space: nowrap;
+  color: var(--color-text-secondary, #9090a8);
+}

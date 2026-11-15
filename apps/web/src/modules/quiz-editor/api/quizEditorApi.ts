@@ -18,6 +18,7 @@ export const quizEditorApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['Quiz'],
     }),
 
     updateQuiz: builder.mutation<EditorQuiz, { id: number; body: UpdateQuizPayload }>({
@@ -148,6 +149,7 @@ export const {
   usePublishQuizMutation,
   useDeleteQuizMutation,
   useGetQuizForEditorQuery,
+  useLazyGetQuizForEditorQuery,
   useGetMyDraftsQuery,
   useCreateQuestionMutation,
   useUpdateQuestionMutation,

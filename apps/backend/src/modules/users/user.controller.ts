@@ -61,6 +61,82 @@ export const UserController: UserControllerContract = {
 		}
 	},
 
+	async updateProfile(req, res, next) {
+		try {
+			const userId = res.locals.userId;
+			if (!userId) {
+				throw new UnauthorizedError("Teacher authentication required");
+			}
+
+			const user = await UserService.updateProfile(userId, req.body);
+			res.status(200).json(user);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async sendEmailChangeCode(req, res, next) {
+		try {
+			const userId = res.locals.userId;
+			if (!userId) {
+				throw new UnauthorizedError("Teacher authentication required");
+			}
+
+			const result = await UserService.sendEmailChangeCode(
+				userId,
+				req.body,
+			);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async changeEmail(req, res, next) {
+		try {
+			const userId = res.locals.userId;
+			if (!userId) {
+				throw new UnauthorizedError("Teacher authentication required");
+			}
+
+			const tokenDTO = await UserService.changeEmail(userId, req.body);
+			res.status(200).json(tokenDTO);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async sendPasswordChangeCode(req, res, next) {
+		try {
+			const userId = res.locals.userId;
+			if (!userId) {
+				throw new UnauthorizedError("Teacher authentication required");
+			}
+
+			const result = await UserService.sendPasswordChangeCode(
+				userId,
+				req.body,
+			);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
+	async changePassword(req, res, next) {
+		try {
+			const userId = res.locals.userId;
+			if (!userId) {
+				throw new UnauthorizedError("Teacher authentication required");
+			}
+
+			const result = await UserService.changePassword(userId, req.body);
+			res.status(200).json(result);
+		} catch (error) {
+			next(error);
+		}
+	},
+
 	async getProfileStats(_req, res, next) {
 		try {
 			const userId = res.locals.userId;

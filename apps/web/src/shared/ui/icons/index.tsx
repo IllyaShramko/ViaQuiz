@@ -661,3 +661,41 @@ export const ViewEyeOffIcon: React.FC<IconProps> = ({ size = 20, width, height, 
     <line x1="1" y1="1" x2="23" y2="23" />
   </svg>
 );
+
+/** Downward chevron icon */
+export const ChevronDownIcon: React.FC<IconProps> = ({ size = 16, width, height, ...props }) => (
+  <svg
+    width={width ?? size}
+    height={height ?? size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+
+/** Logout / sign out icon */
+export const LogoutIcon: React.FC<IconProps> = ({ size = 18, width, height, ...props }) => (
+  <svg
+    width={width ?? size}
+    height={height ?? size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <polyline points="16 17 21 12 16 7" />
+    <line x1="21" y1="12" x2="9" y2="12" />
+  </svg>
+);

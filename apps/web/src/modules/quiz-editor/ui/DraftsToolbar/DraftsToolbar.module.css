@@ -1,0 +1,92 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 9px;
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out),
+    color var(--transition-fast, 150ms ease-in-out);
+}
+
+.tabButton:hover {
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.tabButton:focus {
+  outline: none;
+}
+
+.tabButton:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: -2px;
+}
+
+.isActive {
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-primary, #f0f0f5);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.directionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 38px;
+  padding: 0 12px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 9px;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out),
+    color var(--transition-fast, 150ms ease-in-out);
+}
+
+.directionBtn:hover {
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.directionBtn:focus {
+  outline: none;
+}
+
+.directionBtn:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: -2px;
+}

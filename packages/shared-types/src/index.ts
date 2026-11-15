@@ -1,6 +1,12 @@
 export type {
 	User,
 	CreateUserDto,
+	UpdateProfileDto,
+	SendEmailChangeCodeDto,
+	ChangeEmailDto,
+	SendPasswordChangeCodeDto,
+	ChangePasswordDto,
+	ChangePasswordResponseDto,
 	TeacherProfileStatsDto,
 	PublicUserDto,
 	PublicUserStatsDto,

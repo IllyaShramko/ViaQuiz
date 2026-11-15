@@ -5,6 +5,11 @@ import type {
 	sendCodeSchema,
 	registerSchema,
 	loginSchema,
+	updateProfileSchema,
+	sendEmailChangeCodeSchema,
+	changeEmailSchema,
+	sendPasswordChangeCodeSchema,
+	changePasswordSchema,
 } from "../user.schema";
 
 export type User = Prisma.UserGetPayload<{
@@ -31,6 +36,13 @@ export type CheckUniqueDTO = z.infer<typeof checkUniqueSchema>;
 export type SendCodeDTO = z.infer<typeof sendCodeSchema>;
 export type RegisterCredentials = z.infer<typeof registerSchema>;
 export type LoginCredentials = z.infer<typeof loginSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type SendEmailChangeCodeInput = z.infer<typeof sendEmailChangeCodeSchema>;
+export type ChangeEmailInput = z.infer<typeof changeEmailSchema>;
+export type SendPasswordChangeCodeInput = z.infer<
+	typeof sendPasswordChangeCodeSchema
+>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
 export type CheckUniqueResponse = {
 	loginIsTaken: boolean;

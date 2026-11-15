@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.contentPanel {
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .layoutGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}

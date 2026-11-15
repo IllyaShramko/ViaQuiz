@@ -1,6 +1,6 @@
 import { ArrowIcon } from '../../../../shared';
 import type { DraftsTopbarProps } from './DraftsTopbar.types';
-import styles from '../Drafts.module.css';
+import styles from './DraftsTopbar.module.css';
 
 export function DraftsTopbar({
   draftsCount,
@@ -12,25 +12,35 @@ export function DraftsTopbar({
   const isFull = draftsCount >= maxDrafts;
 
   return (
-    <header className={styles['drafts-topbar']}>
-      <div className={styles['drafts-topbar__left']}>
+    <header className={styles.topbar}>
+      <div className={styles.left}>
         <button
           type="button"
-          className={styles['drafts-back-btn']}
+          className={styles.backButton}
           onClick={onBack}
         >
-          <ArrowIcon width={16} height={16} />
+          <ArrowIcon width={15} height={15} />
           <span>{backText}</span>
         </button>
       </div>
 
-      <div className={styles['drafts-topbar__center']}>
-        <h1 className={styles['drafts-topbar__title']}>{title}</h1>
+      <div className={styles.center}>
+        <h1 className={styles.title}>{title}</h1>
       </div>
 
-      <div className={styles['drafts-topbar__right']}>
-        <div className={`${styles['drafts-counter-pill']} ${isFull ? styles['is-full'] : ''}`}>
-          <span className={styles['counter-dot']} />
+      <div className={styles.right}>
+        <div
+          className={`${styles.counterPill} ${isFull ? styles.isFull : ''}`}
+          aria-label={`Чернетки: ${draftsCount} з ${maxDrafts}`}
+        >
+          <span className={styles.slotTrack} aria-hidden="true">
+            {Array.from({ length: maxDrafts }, (_, idx) => (
+              <span
+                key={idx}
+                className={`${styles.slotPip} ${idx < draftsCount ? styles.slotPipFilled : ''}`}
+              />
+            ))}
+          </span>
           <span>
             Чернетки: <strong>{draftsCount}</strong> / {maxDrafts}
           </span>

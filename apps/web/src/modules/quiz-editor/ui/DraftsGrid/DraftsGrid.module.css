@@ -1,0 +1,219 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.limitBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.24);
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.limitBannerIcon {
+  color: var(--color-warning, #f59e0b);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.limitBanner strong {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* Empty State (0 drafts) */
+.emptyCard {
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px dashed var(--color-border, #2a2a3a);
+  border-radius: 12px;
+  padding: 56px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.emptyIconChip {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.emptyText {
+  margin: 0 0 8px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #9090a8);
+  max-width: 420px;
+  line-height: 1.45;
+}
+
+.emptyActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-accent, #863bff);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out);
+}
+
+.emptyActionBtn:hover:not(:disabled) {
+  background: var(--color-accent-hover, #9b5cff);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.emptyActionBtn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+/* Loading Skeletons */
+.skeletonCard {
+  min-height: 256px;
+  border-radius: 12px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.skeletonCover {
+  height: 100px;
+  background: var(--color-bg-surface, #1a1a26);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonBody {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.skeletonLine {
+  height: 14px;
+  border-radius: 6px;
+  background: var(--color-bg-surface, #1a1a26);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonLineShort {
+  width: 60%;
+}
+
+.skeletonFooter {
+  margin-top: auto;
+  height: 12px;
+  width: 100%;
+  border-radius: 6px;
+  background: var(--color-bg-surface, #1a1a26);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* Error State */
+.errorCard {
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 12px;
+  padding: 36px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 440px;
+  margin: 24px auto;
+}
+
+.errorTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.errorText {
+  margin: 0 0 6px 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.retryBtn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-accent, #863bff);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast, 150ms ease-in-out);
+}
+
+.retryBtn:hover {
+  background: var(--color-accent-hover, #9b5cff);
+}
+
+@media (max-width: 959px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

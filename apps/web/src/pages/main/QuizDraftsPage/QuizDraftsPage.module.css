@@ -1,0 +1,95 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--color-bg, #0a0a0f);
+  color: var(--color-text-primary, #f0f0f5);
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 36px 24px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.createActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-accent, #863bff);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out),
+    transform 100ms ease;
+}
+
+.createActionBtn:hover:not(:disabled) {
+  background: var(--color-accent-hover, #9b5cff);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.createActionBtn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.createActionBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.actionErrorBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #fca5a5;
+  font-size: 0.85rem;
+}
+
+.dismissErrorBtn {
+  background: transparent;
+  border: none;
+  color: #fca5a5;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.dismissErrorBtn:hover {
+  background: rgba(239, 68, 68, 0.14);
+}
+
+@media (max-width: 720px) {
+  .main {
+    padding: 24px 16px 40px;
+    gap: 20px;
+  }
+}

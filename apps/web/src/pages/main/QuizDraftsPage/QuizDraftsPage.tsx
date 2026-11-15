@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PlusIcon } from '../../../shared';
 import {
   useGetMyDraftsQuery,
   useCreateQuizMutation,
   useDeleteQuizMutation,
+  useLazyGetQuizForEditorQuery,
   DraftsTopbar,
   DraftsHero,
   DraftsToolbar,
   DraftsGrid,
+  DeleteDraftModal,
+  PublishModal,
   type DraftSortField,
   type DraftSortOrder,
+  type EditorQuiz,
 } from '../../../modules/quiz-editor';
-import styles from '../../../modules/quiz-editor/ui/Drafts.module.css';
+import styles from './QuizDraftsPage.module.css';
 
 const MAX_DRAFTS = 3;
 
@@ -20,10 +25,22 @@ export function QuizDraftsPage() {
   const [sortBy, setSortBy] = useState<DraftSortField>('updatedAt');
   const [sortOrder, setSortOrder] = useState<DraftSortOrder>('desc');
 
-  const { data, isLoading, isError, refetch } = useGetMyDraftsQuery({ sortBy, sortOrder });
+  const { data, isLoading, isError, refetch } = useGetMyDraftsQuery(
+    { sortBy, sortOrder },
+    { refetchOnMountOrArgChange: true },
+  );
+
   const [createQuiz, { isLoading: isCreating }] = useCreateQuizMutation();
   const [deleteQuiz, { isLoading: isDeleting }] = useDeleteQuizMutation();
+  const [triggerGetQuiz] = useLazyGetQuizForEditorQuery();
+
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [draftToDelete, setDraftToDelete] = useState<EditorQuiz | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const [publishingId, setPublishingId] = useState<number | null>(null);
+  const [quizToPublish, setQuizToPublish] = useState<EditorQuiz | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const drafts = data?.quizzes || [];
   const draftsCount = drafts.length;
@@ -31,11 +48,13 @@ export function QuizDraftsPage() {
 
   const handleCreateNew = async () => {
     if (!canCreateMore || isCreating) return;
+    setActionError(null);
     try {
       const newQuiz = await createQuiz({}).unwrap();
       navigate(`/quiz/${newQuiz.uuid}/edit`);
     } catch (err) {
       console.error('Failed to create new draft:', err);
+      setActionError('Не вдалося створити нову чернетку. Спробуйте ще раз.');
     }
   };
 
@@ -43,17 +62,37 @@ export function QuizDraftsPage() {
     navigate(`/quiz/${uuid}/edit`);
   };
 
-  const handleDeleteDraft = async (e: React.MouseEvent, id: number) => {
-    e.stopPropagation();
-    if (!confirm('Ви впевнені, що хочете видалити цю чернетку?')) return;
+  const handleRequestDelete = (draft: EditorQuiz) => {
+    setDeleteError(null);
+    setDraftToDelete(draft);
+  };
 
+  const handleConfirmDelete = async (draft: EditorQuiz) => {
+    setDeleteError(null);
     try {
-      setDeletingId(id);
-      await deleteQuiz(id).unwrap();
-    } catch (err) {
+      setDeletingId(draft.id);
+      await deleteQuiz(draft.id).unwrap();
+      setDraftToDelete(null);
+    } catch (err: unknown) {
       console.error('Failed to delete draft:', err);
+      const apiErr = err as { data?: { message?: string } };
+      setDeleteError(apiErr?.data?.message || 'Не вдалося видалити чернетку. Спробуйте пізніше.');
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleRequestPublish = async (draft: EditorQuiz) => {
+    setActionError(null);
+    try {
+      setPublishingId(draft.id);
+      const fullQuiz = await triggerGetQuiz(draft.uuid).unwrap();
+      setQuizToPublish(fullQuiz);
+    } catch (err) {
+      console.error('Failed to load draft for publishing:', err);
+      setActionError('Не вдалося завантажити чернетку для публікації.');
+    } finally {
+      setPublishingId(null);
     }
   };
 
@@ -62,22 +101,58 @@ export function QuizDraftsPage() {
   };
 
   return (
-    <div className={styles['quiz-drafts-page']}>
+    <div className={styles.page}>
       <DraftsTopbar
         draftsCount={draftsCount}
         maxDrafts={MAX_DRAFTS}
         onBack={() => navigate('/dashboard')}
       />
 
-      <main className={styles['drafts-main-content']}>
-        <DraftsHero maxDrafts={MAX_DRAFTS} />
+      <main className={styles.main}>
+        <DraftsHero
+          draftsCount={draftsCount}
+          maxDrafts={MAX_DRAFTS}
+          rightSlot={
+            draftsCount > 0 ? (
+              <div className={styles.headerActions}>
+                <DraftsToolbar
+                  sortBy={sortBy}
+                  sortOrder={sortOrder}
+                  onSortByChange={setSortBy}
+                  onToggleOrder={toggleSortOrder}
+                />
 
-        <DraftsToolbar
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onSortByChange={setSortBy}
-          onToggleOrder={toggleSortOrder}
+                <button
+                  type="button"
+                  className={styles.createActionBtn}
+                  onClick={handleCreateNew}
+                  disabled={!canCreateMore || isCreating}
+                  title={
+                    !canCreateMore
+                      ? `Досягнуто ліміту у ${MAX_DRAFTS} чернетки`
+                      : 'Створити нову чернетку'
+                  }
+                >
+                  <PlusIcon size={15} />
+                  <span>{isCreating ? 'Створення...' : 'Створити квіз'}</span>
+                </button>
+              </div>
+            ) : undefined
+          }
         />
+
+        {actionError && (
+          <div className={styles.actionErrorBanner} role="alert">
+            <span>{actionError}</span>
+            <button
+              type="button"
+              className={styles.dismissErrorBtn}
+              onClick={() => setActionError(null)}
+            >
+              Закрити
+            </button>
+          </div>
+        )}
 
         <DraftsGrid
           drafts={drafts}
@@ -87,14 +162,38 @@ export function QuizDraftsPage() {
           canCreateMore={canCreateMore}
           deletingId={deletingId}
           isDeleting={isDeleting}
+          publishingId={publishingId}
           sortBy={sortBy}
           maxDrafts={MAX_DRAFTS}
           onRetry={refetch}
           onCreateNew={handleCreateNew}
           onOpenDraft={handleOpenDraft}
-          onDeleteDraft={handleDeleteDraft}
+          onDeleteDraft={handleRequestDelete}
+          onPublishDraft={handleRequestPublish}
         />
       </main>
+
+      <DeleteDraftModal
+        draft={draftToDelete}
+        isDeleting={isDeleting}
+        errorMessage={deleteError}
+        onClose={() => {
+          if (!isDeleting) {
+            setDraftToDelete(null);
+            setDeleteError(null);
+          }
+        }}
+        onConfirm={handleConfirmDelete}
+      />
+
+      {quizToPublish && (
+        <PublishModal
+          isOpen={true}
+          quiz={quizToPublish}
+          onClose={() => setQuizToPublish(null)}
+          onPublishSuccess={() => setQuizToPublish(null)}
+        />
+      )}
     </div>
   );
 }

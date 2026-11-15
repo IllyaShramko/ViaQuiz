@@ -1,4 +1,3 @@
-import type React from 'react';
 import type { EditorQuiz } from '../../models';
 import type { DraftSortField } from '../DraftsToolbar/DraftsToolbar.types';
 
@@ -10,10 +9,12 @@ export interface DraftsGridProps {
   canCreateMore: boolean;
   deletingId?: number | null;
   isDeleting?: boolean;
+  publishingId?: number | null;
   sortBy?: DraftSortField;
   maxDrafts?: number;
   onRetry?: () => void;
   onCreateNew: () => void;
   onOpenDraft: (uuid: string) => void;
-  onDeleteDraft: (e: React.MouseEvent, id: number) => void;
+  onDeleteDraft: (draft: EditorQuiz) => void;
+  onPublishDraft?: (draft: EditorQuiz) => void;
 }

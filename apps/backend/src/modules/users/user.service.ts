@@ -21,6 +21,183 @@ const JWT_SECRET = env.JWT_SECRET;
 const COOLDOWN_SECONDS = 60;
 const MAX_ATTEMPTS = 5;
 
+function normalizeNullableName(value?: string | null): string | null {
+	const trimmed = value?.trim();
+	return trimmed ? trimmed : null;
+}
+
+function signTeacherToken(user: { id: number; email: string }): string {
+	return jwt.sign(
+		{ userId: user.id, email: user.email, role: "TEACHER" },
+		JWT_SECRET,
+		{ expiresIn: "7d" },
+	);
+}
+
+async function validatePasswordChangeInputs(
+	userId: number,
+	currentPassword: string,
+	newPassword: string,
+): Promise<UserWithPassword> {
+	const userWithPassword = await UserRepository.findByIdWithPassword(userId);
+
+	const isCurrentValid = await bcrypt.compare(
+		currentPassword,
+		userWithPassword.password,
+	);
+	if (!isCurrentValid) {
+		throw new BadRequestError("Current password is incorrect");
+	}
+
+	const isSamePassword = await bcrypt.compare(
+		newPassword,
+		userWithPassword.password,
+	);
+	if (isSamePassword) {
+		throw new BadRequestError(
+			"New password must be different from current password",
+		);
+	}
+
+	return userWithPassword;
+}
+
+async function ensureEmailAvailable(email: string): Promise<void> {
+	let existingUser = false;
+	try {
+		await UserRepository.findByEmail(email);
+		existingUser = true;
+	} catch (err) {
+		if (!(err instanceof NotFoundError)) {
+			throw err;
+		}
+	}
+
+	if (existingUser) {
+		throw new ConflictError("User with this email already exists");
+	}
+}
+
+async function issueVerificationCode(
+	email: string,
+	mailContent: { subject: string; heading: string; intro: string },
+) {
+	try {
+		const existingCodeRecord =
+			await UserRepository.findVerificationCodeByEmail(email);
+		const secondsPassed =
+			(Date.now() - new Date(existingCodeRecord.createdAt).getTime()) /
+			1000;
+		if (secondsPassed < COOLDOWN_SECONDS) {
+			const remainingCooldown = Math.ceil(
+				COOLDOWN_SECONDS - secondsPassed,
+			);
+			throw new BadRequestError(
+				`Please wait ${remainingCooldown} seconds before requesting a new code`,
+				{
+					cooldownSeconds: remainingCooldown,
+				},
+			);
+		}
+	} catch (err) {
+		if (err instanceof BadRequestError) {
+			throw err;
+		}
+		if (!(err instanceof NotFoundError)) {
+			throw err;
+		}
+	}
+
+	const rawCode = Math.floor(100000 + Math.random() * 900000).toString();
+	const hashedCode = await bcrypt.hash(rawCode, 10);
+	const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes TTL
+
+	await UserRepository.upsertVerificationCode({
+		email,
+		code: hashedCode,
+		expiresAt,
+	});
+
+	try {
+		await transporter.sendMail({
+			from: `"ViaQuiz" <${env.BREVO_SMTP_SENDER}>`,
+			to: email,
+			subject: mailContent.subject,
+			text: `Your verification code is: ${rawCode}. It expires in 10 minutes.`,
+			html: `
+				<div style="font-family: sans-serif; padding: 20px;">
+					<h2>${mailContent.heading}</h2>
+					<p>${mailContent.intro}</p>
+					<h1 style="font-size: 32px; letter-spacing: 4px; color: #4F46E5;">${rawCode}</h1>
+					<p>This code will expire in 10 minutes.</p>
+				</div>
+			`,
+		});
+	} catch (mailError) {
+		logger.error(`Failed to send email to ${email}:`, mailError);
+		if (env.NODE_ENV === "development") {
+			logger.info(
+				`[DEV MODE ONLY] Verification code for ${email} is: ${rawCode}`,
+			);
+		}
+	}
+
+	return {
+		message: "Verification code sent to email",
+		cooldownSeconds: COOLDOWN_SECONDS,
+	};
+}
+
+async function verifyEmailCode(email: string, rawCode: string): Promise<void> {
+	let verificationRecord: VerificationCode;
+	try {
+		verificationRecord =
+			await UserRepository.findVerificationCodeByEmail(email);
+	} catch (err) {
+		if (err instanceof NotFoundError) {
+			throw new BadRequestError(
+				"Verification code not found. Please request a new code",
+			);
+		}
+		throw err;
+	}
+
+	if (new Date(verificationRecord.expiresAt) < new Date()) {
+		throw new BadRequestError(
+			"Verification code has expired. Please request a new code",
+		);
+	}
+
+	if (verificationRecord.attempts >= MAX_ATTEMPTS) {
+		throw new BadRequestError(
+			"Maximum verification attempts exceeded. Please request a new code",
+		);
+	}
+
+	const isCodeValid = await bcrypt.compare(rawCode, verificationRecord.code);
+	if (!isCodeValid) {
+		const updatedRecord =
+			await UserRepository.incrementVerificationCodeAttempts(email);
+		const remainingAttempts = MAX_ATTEMPTS - updatedRecord.attempts;
+
+		if (remainingAttempts <= 0) {
+			throw new BadRequestError(
+				"Maximum verification attempts exceeded. Please request a new code",
+				{
+					remainingAttempts: 0,
+				},
+			);
+		}
+
+		throw new BadRequestError(
+			`Invalid verification code. Remaining attempts: ${remainingAttempts}`,
+			{
+				remainingAttempts,
+			},
+		);
+	}
+}
+
 export const UserService: UserServiceContract = {
 	async checkUnique({ login, email }) {
 		const [loginIsTaken, emailIsTaken] = await Promise.all([
@@ -39,143 +216,16 @@ export const UserService: UserServiceContract = {
 	},
 
 	async sendCode({ email }) {
-		let existingUser = false;
-		try {
-			await UserRepository.findByEmail(email);
-			existingUser = true;
-		} catch (err) {
-			if (!(err instanceof NotFoundError)) {
-				throw err;
-			}
-		}
-
-		if (existingUser) {
-			throw new ConflictError("User with this email already exists");
-		}
-
-		try {
-			const existingCodeRecord =
-				await UserRepository.findVerificationCodeByEmail(email);
-			const secondsPassed =
-				(Date.now() -
-					new Date(existingCodeRecord.createdAt).getTime()) /
-				1000;
-			if (secondsPassed < COOLDOWN_SECONDS) {
-				const remainingCooldown = Math.ceil(
-					COOLDOWN_SECONDS - secondsPassed,
-				);
-				throw new BadRequestError(
-					`Please wait ${remainingCooldown} seconds before requesting a new code`,
-					{
-						cooldownSeconds: remainingCooldown,
-					},
-				);
-			}
-		} catch (err) {
-			if (err instanceof BadRequestError) {
-				throw err;
-			}
-			if (!(err instanceof NotFoundError)) {
-				throw err;
-			}
-		}
-
-		const rawCode = Math.floor(100000 + Math.random() * 900000).toString();
-		const hashedCode = await bcrypt.hash(rawCode, 10);
-		const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes TTL
-
-		await UserRepository.upsertVerificationCode({
-			email,
-			code: hashedCode,
-			expiresAt,
+		await ensureEmailAvailable(email);
+		return await issueVerificationCode(email, {
+			subject: "ViaQuiz - Email Verification Code",
+			heading: "Welcome to ViaQuiz!",
+			intro: "Your 6-digit verification code is:",
 		});
-
-		try {
-			const response = await transporter.sendMail({
-				from: `"ViaQuiz" <${env.BREVO_SMTP_SENDER}>`,
-				to: email,
-				subject: "ViaQuiz - Email Verification Code",
-				text: `Your verification code is: ${rawCode}. It expires in 10 minutes.`,
-				html: `
-					<div style="font-family: sans-serif; padding: 20px;">
-						<h2>Welcome to ViaQuiz!</h2>
-						<p>Your 6-digit verification code is:</p>
-						<h1 style="font-size: 32px; letter-spacing: 4px; color: #4F46E5;">${rawCode}</h1>
-						<p>This code will expire in 10 minutes.</p>
-					</div>
-				`,
-			});
-			console.log(response);
-		} catch (mailError) {
-			logger.error(`Failed to send email to ${email}:`, mailError);
-			if (env.NODE_ENV === "development") {
-				logger.info(
-					`[DEV MODE ONLY] Verification code for ${email} is: ${rawCode}`,
-				);
-			}
-		}
-
-		return {
-			message: "Verification code sent to email",
-			cooldownSeconds: COOLDOWN_SECONDS,
-		};
 	},
 
 	async register(credentials) {
-		let verificationRecord: VerificationCode;
-		try {
-			verificationRecord =
-				await UserRepository.findVerificationCodeByEmail(
-					credentials.email,
-				);
-		} catch (err) {
-			if (err instanceof NotFoundError) {
-				throw new BadRequestError(
-					"Verification code not found. Please request a new code",
-				);
-			}
-			throw err;
-		}
-
-		if (new Date(verificationRecord.expiresAt) < new Date()) {
-			throw new BadRequestError(
-				"Verification code has expired. Please request a new code",
-			);
-		}
-
-		if (verificationRecord.attempts >= MAX_ATTEMPTS) {
-			throw new BadRequestError(
-				"Maximum verification attempts exceeded. Please request a new code",
-			);
-		}
-
-		const isCodeValid = await bcrypt.compare(
-			credentials.code,
-			verificationRecord.code,
-		);
-		if (!isCodeValid) {
-			const updatedRecord =
-				await UserRepository.incrementVerificationCodeAttempts(
-					credentials.email,
-				);
-			const remainingAttempts = MAX_ATTEMPTS - updatedRecord.attempts;
-
-			if (remainingAttempts <= 0) {
-				throw new BadRequestError(
-					"Maximum verification attempts exceeded. Please request a new code",
-					{
-						remainingAttempts: 0,
-					},
-				);
-			}
-
-			throw new BadRequestError(
-				`Invalid verification code. Remaining attempts: ${remainingAttempts}`,
-				{
-					remainingAttempts,
-				},
-			);
-		}
+		await verifyEmailCode(credentials.email, credentials.code);
 
 		const [loginExists, emailExists] = await Promise.all([
 			UserRepository.findByLogin(credentials.login)
@@ -204,8 +254,8 @@ export const UserService: UserServiceContract = {
 			login: credentials.login,
 			email: credentials.email,
 			password: hashedPassword,
-			firstName: credentials.firstName,
-			lastName: credentials.lastName,
+			firstName: normalizeNullableName(credentials.firstName),
+			lastName: normalizeNullableName(credentials.lastName),
 		});
 
 		await UserRepository.deleteVerificationCode(credentials.email);
@@ -245,13 +295,7 @@ export const UserService: UserServiceContract = {
 			}
 		}
 
-		const token = jwt.sign(
-			{ userId: user.id, email: user.email, role: "TEACHER" },
-			JWT_SECRET,
-			{
-				expiresIn: "7d",
-			},
-		);
+		const token = signTeacherToken(user);
 
 		return { token, user: { ...user, role: "TEACHER" } };
 	},
@@ -290,20 +334,90 @@ export const UserService: UserServiceContract = {
 		}
 
 		const { password: _p, ...user } = userWithPassword;
-
-		const token = jwt.sign(
-			{ userId: user.id, email: user.email, role: "TEACHER" },
-			JWT_SECRET,
-			{
-				expiresIn: "7d",
-			},
-		);
+		const token = signTeacherToken(user);
 
 		return { token, user: { ...user, role: "TEACHER" } };
 	},
 
 	async me(userId) {
 		return await UserRepository.findById(userId);
+	},
+
+	async updateProfile(userId, data) {
+		const updatedUser = await UserRepository.updateProfile(userId, {
+			firstName: normalizeNullableName(data.firstName),
+			lastName: normalizeNullableName(data.lastName),
+		});
+
+		return {
+			...updatedUser,
+			role: "TEACHER",
+		};
+	},
+
+	async sendEmailChangeCode(userId, { email }) {
+		const currentUser = await UserRepository.findById(userId);
+		if (currentUser.email.toLowerCase() === email) {
+			throw new BadRequestError("New email matches your current email");
+		}
+
+		await ensureEmailAvailable(email);
+
+		return await issueVerificationCode(email, {
+			subject: "ViaQuiz - Email Change Verification Code",
+			heading: "Confirm your new email address",
+			intro: "Enter this 6-digit verification code to update your ViaQuiz account email:",
+		});
+	},
+
+	async changeEmail(userId, { email, code }) {
+		const currentUser = await UserRepository.findById(userId);
+		if (currentUser.email.toLowerCase() === email) {
+			throw new BadRequestError("New email matches your current email");
+		}
+
+		await ensureEmailAvailable(email);
+		await verifyEmailCode(email, code);
+
+		const updatedUser = await UserRepository.updateEmail(userId, email);
+		await UserRepository.deleteVerificationCode(email);
+
+		const token = signTeacherToken(updatedUser);
+
+		return {
+			token,
+			user: { ...updatedUser, role: "TEACHER" },
+		};
+	},
+
+	async sendPasswordChangeCode(userId, { currentPassword, newPassword }) {
+		const userWithPassword = await validatePasswordChangeInputs(
+			userId,
+			currentPassword,
+			newPassword,
+		);
+
+		return await issueVerificationCode(userWithPassword.email, {
+			subject: "ViaQuiz - Password Change Verification Code",
+			heading: "Confirm password change",
+			intro: "Enter this 6-digit verification code to confirm changing your ViaQuiz account password:",
+		});
+	},
+
+	async changePassword(userId, { currentPassword, newPassword, code }) {
+		const userWithPassword = await validatePasswordChangeInputs(
+			userId,
+			currentPassword,
+			newPassword,
+		);
+
+		await verifyEmailCode(userWithPassword.email, code);
+
+		const hashedPassword = await bcrypt.hash(newPassword, 10);
+		await UserRepository.updatePassword(userId, hashedPassword);
+		await UserRepository.deleteVerificationCode(userWithPassword.email);
+
+		return { message: "Password updated successfully" };
 	},
 
 	async getProfileStats(userId) {

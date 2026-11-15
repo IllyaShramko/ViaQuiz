@@ -38,6 +38,8 @@ export {
   transliterate,
   generateStudentLogin,
   generateSimplePassword,
+  getUserDisplayName,
+  getUserInitials,
   type PickImageOptions,
 } from './tools';
 export {
@@ -98,6 +100,8 @@ export {
   HourglassIcon,
   KeyboardIcon,
   ViewEyeOffIcon,
+  ChevronDownIcon,
+  LogoutIcon,
   type IconProps,
 } from './ui';
 export {

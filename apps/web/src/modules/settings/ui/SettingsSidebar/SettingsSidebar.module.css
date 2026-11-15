@@ -1,0 +1,108 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.groupTitle {
+  padding: 0 10px 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, #606078);
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out);
+}
+
+.navItem:not(.navItemActive):hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.navItem:focus {
+  outline: none;
+}
+
+.navItem:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: -2px;
+}
+
+.navItemActive,
+.navItemActive:hover {
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #f0f0f5);
+  font-weight: 600;
+}
+
+.navItemActive::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--color-accent, #863bff);
+}
+
+.navIcon {
+  color: var(--color-text-muted, #606078);
+  flex-shrink: 0;
+  transition: color var(--transition-fast, 150ms ease-in-out);
+}
+
+.navItem:hover .navIcon,
+.navItemActive .navIcon {
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+@media (max-width: 860px) {
+  .navList {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .navItem {
+    width: auto;
+  }
+
+  .navItemActive::before {
+    display: none;
+  }
+}

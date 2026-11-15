@@ -116,7 +116,7 @@
   padding: 0 2rem;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 30;
 }
 
 .teacher-topbar__left {
@@ -220,45 +220,6 @@
 .btn-teacher-code:hover {
   border-color: var(--color-text-muted, #606078);
   background-color: var(--color-bg-hover, #22222e);
-}
-
-/* User Name Profile Link */
-.teacher-user-profile-link {
-  text-decoration: none;
-  color: var(--color-text-primary, #f0f0f5);
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--radius-md, 0.375rem);
-  transition: color var(--transition-fast, 150ms ease-in-out);
-}
-
-.teacher-user-profile-link:hover {
-  color: var(--color-accent, #863bff);
-}
-
-/* Logout Button */
-.teacher-logout-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  color: var(--color-text-secondary, #9090a8);
-  padding: 0.5rem;
-  border-radius: var(--radius-md, 0.375rem);
-  cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease-in-out);
-}
-
-.teacher-logout-btn:hover {
-  color: var(--color-error, #ef4444);
-  background-color: rgba(239, 68, 68, 0.1);
-}
-
-.teacher-logout-btn svg {
-  width: 22px;
-  height: 22px;
 }
 
 /* Content Area */

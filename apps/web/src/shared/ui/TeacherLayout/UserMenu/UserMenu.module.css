@@ -1,0 +1,208 @@
+.menuWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px 0 6px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-primary, #f0f0f5);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    border-color var(--transition-fast, 150ms ease-in-out);
+}
+
+.trigger:hover {
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: var(--color-border, #2a2a3a);
+}
+
+.trigger:focus {
+  outline: none;
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: 2px;
+}
+
+.triggerOpen {
+  background: var(--color-bg-surface, #1a1a26);
+  border-color: var(--color-border, #2a2a3a);
+}
+
+.avatarChip {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.triggerOpen .avatarChip {
+  background: var(--color-bg-hover, #22222e);
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.triggerName {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  color: var(--color-text-muted, #606078);
+  transition: transform var(--transition-fast, 150ms ease-in-out), color var(--transition-fast, 150ms ease-in-out);
+  flex-shrink: 0;
+}
+
+.trigger:hover .chevron,
+.triggerOpen .chevron {
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 232px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: 10px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+  z-index: 50;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.identityHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.identityName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f0f0f5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.identityHandle {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary, #9090a8);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 150ms ease-in-out),
+    color var(--transition-fast, 150ms ease-in-out);
+}
+
+.menuItem:hover {
+  background: var(--color-bg-hover, #22222e);
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.menuItem:focus {
+  outline: none;
+}
+
+.menuItem:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: -2px;
+}
+
+.menuItemActive {
+  background: var(--color-bg-surface, #1a1a26);
+  color: var(--color-text-primary, #f0f0f5);
+  font-weight: 600;
+}
+
+.menuItemIcon {
+  color: var(--color-text-muted, #606078);
+  flex-shrink: 0;
+  transition: color var(--transition-fast, 150ms ease-in-out);
+}
+
+.menuItem:hover .menuItemIcon,
+.menuItemActive .menuItemIcon {
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.divider {
+  height: 1px;
+  margin: 4px 2px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.menuItemDanger {
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.menuItemDanger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.menuItemDanger:hover .menuItemIcon {
+  color: #fca5a5;
+}
+
+@media (max-width: 640px) {
+  .trigger {
+    padding: 0 6px;
+  }
+
+  .triggerName {
+    display: none;
+  }
+}

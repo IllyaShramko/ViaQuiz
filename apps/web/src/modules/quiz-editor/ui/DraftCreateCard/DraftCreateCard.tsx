@@ -1,21 +1,23 @@
-import React from 'react';
-import { PlusIcon, WarningIcon } from '../../../../shared';
+import { PlusIcon, WarningIcon, pluralizeUk } from '../../../../shared';
 import type { DraftCreateCardProps } from './DraftCreateCard.types';
-import styles from '../Drafts.module.css';
+import styles from './DraftCreateCard.module.css';
 
 export function DraftCreateCard({
   canCreateMore,
   isCreating,
   maxDrafts = 3,
+  remainingSlots,
   onCreate,
 }: DraftCreateCardProps) {
   if (!canCreateMore) {
     return (
-      <div className={styles['draft-limit-card']}>
-        <div className={styles['draft-limit-card__inner']}>
-          <span className={styles['limit-icon']}><WarningIcon size={24} /></span>
-          <span className={styles['limit-title']}>Ліміт вичерпано</span>
-          <span className={styles['limit-desc']}>
+      <div className={styles.limitCard}>
+        <div className={styles.inner}>
+          <span className={styles.limitIcon}>
+            <WarningIcon size={22} />
+          </span>
+          <span className={styles.limitTitle}>Ліміт вичерпано</span>
+          <span className={styles.limitDesc}>
             У вас уже створено {maxDrafts} чернетки. Опублікуйте або видаліть одну з них для створення нової.
           </span>
         </div>
@@ -23,37 +25,34 @@ export function DraftCreateCard({
     );
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onCreate();
-    }
-  };
+  const slotHint =
+    typeof remainingSlots === 'number' && remainingSlots < maxDrafts
+      ? `Доступно ще ${remainingSlots} ${pluralizeUk(remainingSlots, ['слот', 'слоти', 'слотів'])}`
+      : 'Почати з чистого аркуша';
 
   return (
-    <div
-      className={`${styles['draft-create-card']} ${isCreating ? styles['is-loading'] : ''}`}
+    <button
+      type="button"
+      className={styles.card}
       onClick={onCreate}
-      role="button"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
+      disabled={isCreating}
     >
-      <div className={styles['draft-create-card__inner']}>
+      <div className={styles.inner}>
         {isCreating ? (
           <>
-            <div className={styles['drafts-spinner']} />
-            <span className={styles['create-text-main']}>Створення...</span>
+            <div className={styles.spinner} />
+            <span className={styles.mainText}>Створення квізу...</span>
           </>
         ) : (
           <>
-            <div className={styles['create-icon-bubble']}>
-              <PlusIcon width={32} height={32} />
+            <div className={styles.iconChip}>
+              <PlusIcon width={20} height={20} />
             </div>
-            <span className={styles['create-text-main']}>+ Створити новий квіз</span>
-            <span className={styles['create-text-sub']}>Почати з чистого аркуша</span>
+            <span className={styles.mainText}>Створити новий квіз</span>
+            <span className={styles.subText}>{slotHint}</span>
           </>
         )}
       </div>
-    </div>
+    </button>
   );
 }

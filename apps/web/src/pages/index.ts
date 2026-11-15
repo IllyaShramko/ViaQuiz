@@ -2,6 +2,7 @@ export { HomePage, LoginPage, RegisterPage } from './landing';
 export {
   TeacherMainPage,
   ProfilePage,
+  SettingsPage,
   QuizDetailsPage,
   QuizEditorPage,
   QuizDraftsPage,

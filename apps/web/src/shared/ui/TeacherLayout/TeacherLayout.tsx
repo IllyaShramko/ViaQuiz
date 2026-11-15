@@ -3,6 +3,7 @@ import { useUserContext } from '../../../modules/auth/context';
 import { isStudent } from '../../../modules/auth/utils';
 import { removeAuthToken } from '../../api/headers';
 import { TeacherLayoutProvider, useTeacherLayout } from './TeacherLayout.context';
+import { UserMenu } from './UserMenu';
 import type { TeacherLayoutProps } from './TeacherLayout.types';
 import styles from './TeacherLayout.module.css';
 
@@ -34,11 +35,6 @@ function TeacherLayoutInner({ children }: TeacherLayoutProps) {
       navigate(-1);
     }
   };
-
-  const displayName =
-    user?.firstName && user?.lastName
-      ? `${user.firstName} ${user.lastName}`
-      : user?.firstName || user?.login || 'Користувач';
 
   return (
     <div className={styles['teacher-layout']}>
@@ -156,23 +152,7 @@ function TeacherLayoutInner({ children }: TeacherLayoutProps) {
               Введіть код
             </Link>
 
-            <Link to="/profile" className={styles['teacher-user-profile-link']} title="Перейти до профілю">
-              <span className={styles['teacher-user-name']}>{displayName}</span>
-            </Link>
-
-            <button
-              type="button"
-              className={styles['teacher-logout-btn']}
-              onClick={handleLogout}
-              title="Вийти з акаунту"
-              aria-label="Вийти"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-            </button>
+            <UserMenu user={user} onLogout={handleLogout} />
           </div>
         </header>
 

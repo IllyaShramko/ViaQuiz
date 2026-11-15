@@ -34,6 +34,16 @@ export const UserRepository: UserRepositoryContract = {
 		}
 	},
 
+	async findByIdWithPassword(id) {
+		try {
+			return await PRISMA_CLIENT.user.findUniqueOrThrow({
+				where: { id },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
 	async create(data) {
 		try {
 			return await PRISMA_CLIENT.user.create({
@@ -45,6 +55,44 @@ export const UserRepository: UserRepositoryContract = {
 					lastName: data.lastName || null,
 				},
 				omit: { password: true },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async updateProfile(id, data) {
+		try {
+			return await PRISMA_CLIENT.user.update({
+				where: { id },
+				data: {
+					firstName: data.firstName,
+					lastName: data.lastName,
+				},
+				omit: { password: true },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async updateEmail(id, email) {
+		try {
+			return await PRISMA_CLIENT.user.update({
+				where: { id },
+				data: { email },
+				omit: { password: true },
+			});
+		} catch (e) {
+			errorValidator(e);
+		}
+	},
+
+	async updatePassword(id, hashedPassword) {
+		try {
+			await PRISMA_CLIENT.user.update({
+				where: { id },
+				data: { password: hashedPassword },
 			});
 		} catch (e) {
 			errorValidator(e);
