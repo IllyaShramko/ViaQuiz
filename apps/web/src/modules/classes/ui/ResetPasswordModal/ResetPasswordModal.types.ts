@@ -4,4 +4,5 @@ export interface ResetPasswordModalProps {
   studentName: string;
   isOpen: boolean;
   onClose: () => void;
+  onAfterClose?: () => void;
 }

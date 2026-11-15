@@ -1,26 +1,31 @@
+import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, Modal } from '../../../../shared';
 import { useCreateClassroomMutation } from '../../api/classesApi';
 import {
   createClassSchema,
   type CreateClassFormData,
+  type CreateClassFormProps,
   type CreateClassModalProps,
 } from './CreateClassModal.types';
-import styles from '../AddStudentModal/AddStudentModal.module.css';
+import styles from './CreateClassModal.module.css';
 
-export function CreateClassModal({
-  isOpen,
-  onClose,
+function CreateClassForm({
+  formId,
   currentActiveClasses,
   maxClasses,
-}: CreateClassModalProps) {
-  const [createClassroom, { isLoading, error }] = useCreateClassroomMutation();
+  isLimitReached,
+  isLoading,
+  errorMessage,
+  onSubmitForm,
+}: CreateClassFormProps) {
+  const inputId = useId();
+  const errorId = useId();
 
   const {
     register,
     handleSubmit,
-    reset,
-    watch,
     formState: { errors },
   } = useForm<CreateClassFormData>({
     resolver: zodResolver(createClassSchema),
@@ -29,17 +34,70 @@ export function CreateClassModal({
     },
   });
 
-  if (!isOpen) return null;
+  return (
+    <form id={formId} onSubmit={handleSubmit(onSubmitForm)} className={styles.form} noValidate>
+      <div className={styles.limitCard}>
+        <span className={styles.limitLabel}>Активні класи:</span>
+        <span
+          className={`${styles.limitValue} ${
+            isLimitReached ? styles.limitValueReached : styles.limitValueOk
+          }`}
+        >
+          {currentActiveClasses} / {maxClasses}
+        </span>
+      </div>
+
+      {isLimitReached && (
+        <div className={styles.errorBanner} role="alert">
+          Досягнуто ліміту в {maxClasses} активних класів. Архівуйте або видаліть
+          непотрібний клас, щоб створити новий.
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className={styles.errorBanner} role="alert">
+          {errorMessage}
+        </div>
+      )}
+
+      <div className={styles.formGroup}>
+        <label className={styles.formLabel} htmlFor={inputId}>
+          Назва класу / групи *
+        </label>
+        <input
+          id={inputId}
+          type="text"
+          disabled={isLimitReached || isLoading}
+          placeholder="наприклад, 9-А або Фізика-101"
+          className={`${styles.formInput} ${errors.name ? styles.inputError : ''}`}
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby={errors.name ? errorId : undefined}
+          autoFocus={!isLimitReached}
+          {...register('name')}
+        />
+        {errors.name && (
+          <p id={errorId} className={styles.fieldError} role="alert">
+            {errors.name.message}
+          </p>
+        )}
+      </div>
+    </form>
+  );
+}
+
+export function CreateClassModal({
+  isOpen,
+  onClose,
+  currentActiveClasses,
+  maxClasses,
+}: CreateClassModalProps) {
+  const [createClassroom, { isLoading, error, reset: resetMutation }] =
+    useCreateClassroomMutation();
+  const formId = useId();
 
   const isLimitReached = currentActiveClasses >= maxClasses;
-  const watchedName = watch('name');
 
-  const handleClose = () => {
-    reset();
-    onClose();
-  };
-
-  const onSubmit = async (data: CreateClassFormData) => {
+  const handleSubmitForm = async (data: CreateClassFormData) => {
     if (isLimitReached) return;
 
     try {
@@ -47,89 +105,56 @@ export function CreateClassModal({
         name: data.name.trim(),
       }).unwrap();
 
-      reset();
       onClose();
     } catch {
-      // Handled by RTK Query error
+      // Handled by RTK Query error state
     }
   };
 
   const errorMessage =
-    error && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data
+    error &&
+    'data' in error &&
+    error.data &&
+    typeof error.data === 'object' &&
+    'message' in error.data
       ? String(error.data.message)
       : error
-      ? 'Не вдалося створити клас'
-      : null;
+        ? 'Не вдалося створити клас'
+        : null;
 
   return (
-    <div className={styles['modal-backdrop']} onClick={handleClose}>
-      <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
-        <div className={styles['modal-header']}>
-          <h2 className={styles['modal-title']}>Створити новий клас</h2>
-          <button
-            type="button"
-            className={styles['modal-close-btn']}
-            onClick={handleClose}
-            aria-label="Закрити"
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onAfterClose={resetMutation}
+      size="md"
+      title="Створити новий клас"
+      isBusy={isLoading}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+            Скасувати
+          </Button>
+          <Button
+            type="submit"
+            form={formId}
+            variant="primary"
+            disabled={isLoading || isLimitReached}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles['modal-body']}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#1a1a26', padding: '10px 14px', borderRadius: '10px', border: '1px solid #2a2a3a' }}>
-              <span style={{ fontSize: '0.85rem', color: '#9090a8' }}>Активні класи:</span>
-              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: isLimitReached ? '#ef4444' : '#22c55e' }}>
-                {currentActiveClasses} / {maxClasses}
-              </span>
-            </div>
-
-            {isLimitReached && (
-              <div className={styles['error-banner']}>
-                Досягнуто ліміту в {maxClasses} активних класів. Архівуйте або видаліть непотрібний клас, щоб створити новий.
-              </div>
-            )}
-
-            {errorMessage && <div className={styles['error-banner']}>{errorMessage}</div>}
-
-            <div className={styles['form-group']}>
-              <label className={styles['form-label']} htmlFor="class-name">
-                Назва класу / групи *
-              </label>
-              <input
-                id="class-name"
-                type="text"
-                disabled={isLimitReached}
-                placeholder="наприклад, 9-А або Фізика-101"
-                className={`${styles['form-input']} ${errors.name ? styles['input--error'] : ''}`}
-                {...register('name')}
-              />
-              {errors.name && (
-                <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
-                  {errors.name.message}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div className={styles['modal-footer']}>
-            <button type="button" className={styles['btn-secondary']} onClick={handleClose}>
-              Скасувати
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading || isLimitReached || !watchedName?.trim()}
-              className={styles['btn-primary']}
-            >
-              {isLoading ? 'Створення...' : 'Створити клас'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            {isLoading ? 'Створення...' : 'Створити клас'}
+          </Button>
+        </>
+      }
+    >
+      <CreateClassForm
+        formId={formId}
+        currentActiveClasses={currentActiveClasses}
+        maxClasses={maxClasses}
+        isLimitReached={isLimitReached}
+        isLoading={isLoading}
+        errorMessage={errorMessage}
+        onSubmitForm={handleSubmitForm}
+      />
+    </Modal>
   );
 }

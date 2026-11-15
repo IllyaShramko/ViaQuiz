@@ -120,7 +120,6 @@ export function SecuritySettingsSection({ login, userEmail }: SecuritySettingsSe
       }).unwrap();
 
       setIsModalOpen(false);
-      setPendingPayload(null);
       resetCooldown();
       reset();
       setShowCurrent(false);
@@ -138,6 +137,10 @@ export function SecuritySettingsSection({ login, userEmail }: SecuritySettingsSe
   const handleCloseModal = () => {
     if (isChangingPassword) return;
     setIsModalOpen(false);
+  };
+
+  const handleAfterCloseModal = () => {
+    setPendingPayload(null);
     setCodeError(null);
   };
 
@@ -275,6 +278,7 @@ export function SecuritySettingsSection({ login, userEmail }: SecuritySettingsSe
         onConfirm={handleConfirmCode}
         onResend={handleResendCode}
         onClose={handleCloseModal}
+        onAfterClose={handleAfterCloseModal}
       />
     </>
   );

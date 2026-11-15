@@ -9,6 +9,11 @@ export {
 } from './PublishModal';
 
 export {
+  QuizCoverField,
+  type QuizCoverFieldProps,
+} from './QuizCoverField';
+
+export {
   EditorHeader,
   type EditorHeaderProps,
 } from './EditorHeader';

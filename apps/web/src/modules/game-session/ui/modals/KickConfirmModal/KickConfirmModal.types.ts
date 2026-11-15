@@ -3,4 +3,5 @@ export interface KickConfirmModalProps {
   participantName: string;
   onConfirm: () => void;
   onCancel: () => void;
+  onAfterClose?: () => void;
 }

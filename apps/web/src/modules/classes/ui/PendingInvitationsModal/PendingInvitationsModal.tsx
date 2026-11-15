@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Modal } from '../../../../shared';
 import {
   useAcceptInvitationMutation,
   useGetMyPendingInvitationsQuery,
@@ -21,8 +22,6 @@ export function PendingInvitationsModal({
   const [acceptInvitation, { isLoading: isAccepting }] = useAcceptInvitationMutation();
   const [rejectInvitation, { isLoading: isRejecting }] = useRejectInvitationMutation();
   const [processingToken, setProcessingToken] = useState<string | null>(null);
-
-  if (!isOpen) return null;
 
   const handleAccept = async (token: string) => {
     setProcessingToken(token);
@@ -54,72 +53,63 @@ export function PendingInvitationsModal({
   };
 
   return (
-    <div className={styles.backdrop} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Вхідні запрошення на курси</h2>
-          <button type="button" className={styles.closeButton} onClick={onClose}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="lg"
+      title="Вхідні запрошення на курси"
+      isBusy={processingToken !== null}
+      bodyClassName={styles.list}
+    >
+      {isLoading ? (
+        <div className={styles.emptyState}>Завантаження запрошень...</div>
+      ) : invitations.length === 0 ? (
+        <div className={styles.emptyState}>У вас немає активних запрошень</div>
+      ) : (
+        invitations.map((inv) => {
+          const inviterName =
+            inv.sender?.firstName && inv.sender?.lastName
+              ? `${inv.sender.firstName} ${inv.sender.lastName}`
+              : `@${inv.sender?.login || 'куратор'}`;
 
-        <div className={styles.body}>
-          {isLoading ? (
-            <div className={styles.emptyState}>Завантаження запрошень...</div>
-          ) : invitations.length === 0 ? (
-            <div className={styles.emptyState}>У вас немає активних запрошень</div>
-          ) : (
-            invitations.map((inv) => {
-              const inviterName =
-                inv.sender?.firstName && inv.sender?.lastName
-                  ? `${inv.sender.firstName} ${inv.sender.lastName}`
-                  : `@${inv.sender?.login || 'куратор'}`;
+          const isBusy =
+            (isAccepting || isRejecting) && processingToken === inv.token;
 
-              const isBusy =
-                (isAccepting || isRejecting) && processingToken === inv.token;
-
-              return (
-                <div key={inv.uuid} className={styles.inviteCard}>
-                  <div className={styles.inviteHeader}>
-                    <div>
-                      <h3 className={styles.courseName}>{inv.course?.name || 'Курс'}</h3>
-                      <div className={styles.classInfo}>
-                        Клас: {inv.course?.classroom?.name || 'Без класу'}
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className={styles.inviterInfo}>
-                    Куратор <strong>{inviterName}</strong> запрошує вас очолити цей курс.
-                  </p>
-
-                  <div className={styles.actions}>
-                    <button
-                      type="button"
-                      className={styles.rejectBtn}
-                      disabled={isBusy}
-                      onClick={() => handleReject(inv.token)}
-                    >
-                      Відхилити
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.acceptBtn}
-                      disabled={isBusy}
-                      onClick={() => handleAccept(inv.token)}
-                    >
-                      {isBusy ? 'Обробка...' : 'Прийняти керівництво'}
-                    </button>
-                  </div>
+          return (
+            <div key={inv.uuid} className={styles.inviteCard}>
+              <div className={styles.inviteHeader}>
+                <h3 className={styles.courseName}>{inv.course?.name || 'Курс'}</h3>
+                <div className={styles.classInfo}>
+                  Клас: {inv.course?.classroom?.name || 'Без класу'}
                 </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-    </div>
+              </div>
+
+              <p className={styles.inviterInfo}>
+                Куратор <strong>{inviterName}</strong> запрошує вас очолити цей курс.
+              </p>
+
+              <div className={styles.actions}>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={isBusy}
+                  onClick={() => void handleReject(inv.token)}
+                >
+                  Відхилити
+                </Button>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  disabled={isBusy}
+                  onClick={() => void handleAccept(inv.token)}
+                >
+                  {isBusy ? 'Обробка...' : 'Прийняти керівництво'}
+                </Button>
+              </div>
+            </div>
+          );
+        })
+      )}
+    </Modal>
   );
 }

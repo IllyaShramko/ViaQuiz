@@ -24,6 +24,13 @@ export function ReviewStudentView({
 
 	const [isMinimized, setIsMinimized] = useState(false);
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+	const handleOpenLightbox = (url?: string | null) => {
+		if (!url) return;
+		setLightboxImage(url);
+		setIsLightboxOpen(true);
+	};
 
 	useEffect(() => {
 		// Wait 3.5 seconds (1-2s for entry animation + some reading time) then minimize
@@ -133,7 +140,7 @@ export function ReviewStudentView({
 							src={question.media}
 							alt="Question media"
 							className={styles.questionMediaImg}
-							onClick={() => setLightboxImage(question.media || null)}
+							onClick={() => handleOpenLightbox(question.media)}
 						/>
 					)}
 				</div>
@@ -207,9 +214,10 @@ export function ReviewStudentView({
 			</div>
 
 			<ImageLightboxModal
-				isOpen={!!lightboxImage}
+				isOpen={isLightboxOpen}
 				imageUrl={lightboxImage}
-				onClose={() => setLightboxImage(null)}
+				onClose={() => setIsLightboxOpen(false)}
+				onAfterClose={() => setLightboxImage(null)}
 			/>
 		</div>
 	);

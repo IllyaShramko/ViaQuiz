@@ -106,7 +106,6 @@ export function AccountEmailSection({ user }: AccountEmailSectionProps) {
       // Update both JWT token and user state atomically after email change
       updateSession(result.token, result.user);
       setIsModalOpen(false);
-      setPendingEmail(null);
       resetCooldown();
       resetEmailForm({ email: '' });
       setFeedback({
@@ -121,6 +120,10 @@ export function AccountEmailSection({ user }: AccountEmailSectionProps) {
   const handleCloseModal = () => {
     if (isChangingEmail) return;
     setIsModalOpen(false);
+  };
+
+  const handleAfterCloseModal = () => {
+    setPendingEmail(null);
     setCodeError(null);
   };
 
@@ -194,6 +197,7 @@ export function AccountEmailSection({ user }: AccountEmailSectionProps) {
         onConfirm={handleConfirmCode}
         onResend={handleResendCode}
         onClose={handleCloseModal}
+        onAfterClose={handleAfterCloseModal}
       />
     </>
   );

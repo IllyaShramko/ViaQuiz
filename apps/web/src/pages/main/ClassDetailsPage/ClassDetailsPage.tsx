@@ -26,6 +26,7 @@ export function ClassDetailsPage() {
   const [isAddStudentOpen, setIsAddStudentOpen] = useState(false);
   const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false);
   const [resetTarget, setResetTarget] = useState<{ uuid: string; name: string } | null>(null);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
   const { data: classroom, isLoading, error } = useGetClassroomQuery(uuid || '', {
     skip: !uuid,
@@ -105,7 +106,10 @@ export function ClassDetailsPage() {
           students={students}
           maxStudents={MAX_STUDENTS_PER_CLASS}
           onOpenAddStudent={() => setIsAddStudentOpen(true)}
-          onResetPassword={setResetTarget}
+          onResetPassword={(target) => {
+            setResetTarget(target);
+            setIsResetModalOpen(true);
+          }}
           onDeleteStudent={handleDeleteStudent}
         />
       )}
@@ -145,15 +149,14 @@ export function ClassDetailsPage() {
         maxClassCourses={MAX_COURSES_PER_CLASS}
       />
 
-      {resetTarget && (
-        <ResetPasswordModal
-          classUuid={classroom.uuid}
-          studentUuid={resetTarget.uuid}
-          studentName={resetTarget.name}
-          isOpen={Boolean(resetTarget)}
-          onClose={() => setResetTarget(null)}
-        />
-      )}
+      <ResetPasswordModal
+        classUuid={classroom.uuid}
+        studentUuid={resetTarget?.uuid ?? ''}
+        studentName={resetTarget?.name ?? ''}
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onAfterClose={() => setResetTarget(null)}
+      />
     </div>
   );
 }

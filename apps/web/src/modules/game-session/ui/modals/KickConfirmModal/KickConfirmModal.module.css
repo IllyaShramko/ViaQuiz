@@ -1,0 +1,11 @@
+.message {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.message strong {
+  color: var(--color-text-primary, #f0f0f5);
+  font-weight: 600;
+}

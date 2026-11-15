@@ -1,0 +1,175 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.limitCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+}
+
+.limitLabel {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.limitValue {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.limitValueOk {
+  color: #4ade80;
+}
+
+.limitValueReached {
+  color: #f87171;
+}
+
+.errorBanner {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #fca5a5;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.formLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #9090a8);
+}
+
+.selectAllBtn {
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: var(--color-accent-hover, #9b5cff);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.selectAllBtn:hover {
+  text-decoration: underline;
+}
+
+.searchInput {
+  width: 100%;
+  box-sizing: border-box;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border, #2a2a3a);
+  background: var(--color-bg-surface, #1a1a26);
+  color: var(--color-text-primary, #f0f0f5);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  transition: border-color var(--transition-fast, 150ms ease);
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted, #606078);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-border-focus, #863bff);
+}
+
+.studentList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+}
+
+.emptyList {
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #606078);
+}
+
+.studentRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-text-primary, #f0f0f5);
+  transition: background-color var(--transition-fast, 150ms ease);
+}
+
+.studentRow:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.studentRowSelected {
+  background: rgba(134, 59, 255, 0.14);
+}
+
+.studentRowSelected:hover {
+  background: rgba(134, 59, 255, 0.18);
+}
+
+.studentRowDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.studentCheckbox {
+  accent-color: var(--color-accent, #863bff);
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.studentMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.studentName {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.studentLogin {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #9090a8);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

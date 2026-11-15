@@ -7,3 +7,11 @@ export interface InviteTeacherModalProps {
   courseUuid: string;
   courseName: string;
 }
+
+export interface InviteTeacherFormProps {
+  formId: string;
+  courseName: string;
+  isLoading: boolean;
+  errorMessage: string | null;
+  onSubmitForm: (data: import('../../models/validators').InviteTeacherFormData) => Promise<void>;
+}

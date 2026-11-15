@@ -19,7 +19,14 @@ export function QuestionHostView({
 	onKickParticipant: _onKickParticipant,
 }: QuestionHostViewProps) {
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 	const [isAnswerRevealed, setIsAnswerRevealed] = useState<boolean>(false);
+
+	const handleOpenLightbox = (url?: string | null) => {
+		if (!url) return;
+		setLightboxImage(url);
+		setIsLightboxOpen(true);
+	};
 
 	// Reset revealed state on question change
 	useEffect(() => {
@@ -59,7 +66,7 @@ export function QuestionHostView({
 							src={question.media}
 							alt="Question media"
 							className={styles.questionMediaImg}
-							onClick={() => setLightboxImage(question.media || null)}
+							onClick={() => handleOpenLightbox(question.media)}
 						/>
 					)}
 				</div>
@@ -178,9 +185,10 @@ export function QuestionHostView({
 			</div>
 
 			<ImageLightboxModal
-				isOpen={!!lightboxImage}
+				isOpen={isLightboxOpen}
 				imageUrl={lightboxImage}
-				onClose={() => setLightboxImage(null)}
+				onClose={() => setIsLightboxOpen(false)}
+				onAfterClose={() => setLightboxImage(null)}
 			/>
 		</div>
 	);

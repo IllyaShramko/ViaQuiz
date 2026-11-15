@@ -28,7 +28,14 @@ export function ReviewHostView({
 			: false);
 	const [activeTab, setActiveTab] = useState<'overview' | 'answers'>('overview');
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 	const renderedCardsRef = useRef<Set<string | number>>(new Set());
+
+	const handleOpenLightbox = (url?: string | null) => {
+		if (!url) return;
+		setLightboxImage(url);
+		setIsLightboxOpen(true);
+	};
 
 	useEffect(() => {
 		renderedCardsRef.current.clear();
@@ -189,7 +196,7 @@ export function ReviewHostView({
 										src={question.media}
 										alt="Question media"
 										className={styles['question-media-img']}
-										onClick={() => setLightboxImage(question.media || null)}
+										onClick={() => handleOpenLightbox(question.media)}
 										style={{ maxHeight: '180px', width: 'auto', alignSelf: 'center', margin: '0.5rem auto' }}
 									/>
 								)}
@@ -468,9 +475,10 @@ export function ReviewHostView({
 				</div>
 
 				<ImageLightboxModal
-					isOpen={!!lightboxImage}
+					isOpen={isLightboxOpen}
 					imageUrl={lightboxImage}
-					onClose={() => setLightboxImage(null)}
+					onClose={() => setIsLightboxOpen(false)}
+					onAfterClose={() => setLightboxImage(null)}
 				/>
 			</div>
 		);

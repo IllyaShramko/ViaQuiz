@@ -9,3 +9,14 @@ export interface CreateCourseModalProps {
   currentClassCourses: number;
   maxClassCourses: number;
 }
+
+export interface CreateCourseFormProps {
+  formId: string;
+  students: StudentDto[];
+  currentClassCourses: number;
+  maxClassCourses: number;
+  isCourseLimitReached: boolean;
+  isLoading: boolean;
+  errorMessage: string | null;
+  onSubmitForm: (data: import('../../models/validators').CreateCourseFormData) => Promise<void>;
+}

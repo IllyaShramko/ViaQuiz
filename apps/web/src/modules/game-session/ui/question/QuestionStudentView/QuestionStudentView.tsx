@@ -14,6 +14,13 @@ export function QuestionStudentView({
 	const [selectedVariantIds, setSelectedVariantIds] = useState<number[]>([]);
 	const [typedInput, setTypedInput] = useState<string>('');
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+	const handleOpenLightbox = (url?: string | null) => {
+		if (!url) return;
+		setLightboxImage(url);
+		setIsLightboxOpen(true);
+	};
 
 	const questionKey =
 		(question as { questionId?: number; id?: number }).questionId ??
@@ -150,7 +157,7 @@ export function QuestionStudentView({
 							src={question.media}
 							alt="Question media"
 							className={styles.questionMediaImg}
-							onClick={() => setLightboxImage(question.media || null)}
+							onClick={() => handleOpenLightbox(question.media)}
 						/>
 					)}
 
@@ -292,9 +299,10 @@ export function QuestionStudentView({
 			</div>
 
 			<ImageLightboxModal
-				isOpen={!!lightboxImage}
+				isOpen={isLightboxOpen}
 				imageUrl={lightboxImage}
-				onClose={() => setLightboxImage(null)}
+				onClose={() => setIsLightboxOpen(false)}
+				onAfterClose={() => setLightboxImage(null)}
 			/>
 		</div>
 	);

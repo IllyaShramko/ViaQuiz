@@ -12,4 +12,5 @@ export interface VerificationCodeModalProps {
   onConfirm: (code: string) => void | Promise<void>;
   onResend: () => void | Promise<void>;
   onClose: () => void;
+  onAfterClose?: () => void;
 }

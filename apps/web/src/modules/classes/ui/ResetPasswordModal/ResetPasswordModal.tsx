@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Button, CheckIcon, CopyIcon, Modal, copyToClipboard } from '../../../../shared';
 import { useResetStudentPasswordMutation } from '../../api/classesApi';
-import { copyToClipboard } from '../../../../shared';
 import type { ResetPasswordModalProps } from './ResetPasswordModal.types';
-import styles from '../AddStudentModal/AddStudentModal.module.css';
+import styles from './ResetPasswordModal.module.css';
 
 export function ResetPasswordModal({
   classUuid,
@@ -10,6 +10,7 @@ export function ResetPasswordModal({
   studentName,
   isOpen,
   onClose,
+  onAfterClose,
 }: ResetPasswordModalProps) {
   const [newCredentials, setNewCredentials] = useState<{
     login: string;
@@ -18,16 +19,25 @@ export function ResetPasswordModal({
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const [resetPassword, { isLoading, error }] = useResetStudentPasswordMutation();
+  const copyTimerRef = useRef<number | null>(null);
 
-  if (!isOpen) return null;
+  const [resetPassword, { isLoading, error, reset: resetMutation }] =
+    useResetStudentPasswordMutation();
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current !== null) {
+        window.clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleReset = async () => {
     try {
       const res = await resetPassword({ classUuid, studentUuid }).unwrap();
       setNewCredentials(res);
     } catch {
-      // Handled by RTK Query error
+      // Handled by RTK Query error state
     }
   };
 
@@ -37,110 +47,115 @@ export function ResetPasswordModal({
     const success = await copyToClipboard(text);
     if (success) {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      if (copyTimerRef.current !== null) {
+        window.clearTimeout(copyTimerRef.current);
+      }
+      copyTimerRef.current = window.setTimeout(() => {
+        setCopied(false);
+        copyTimerRef.current = null;
+      }, 2500);
     }
   };
 
-  const handleClose = () => {
+  const handleAfterClose = () => {
+    if (copyTimerRef.current !== null) {
+      window.clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = null;
+    }
     setNewCredentials(null);
     setCopied(false);
-    onClose();
+    resetMutation();
+    onAfterClose?.();
   };
 
   const errorMessage =
-    error && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data
+    error &&
+    'data' in error &&
+    error.data &&
+    typeof error.data === 'object' &&
+    'message' in error.data
       ? String(error.data.message)
       : error
-      ? 'Не вдалося скинути пароль'
-      : null;
+        ? 'Не вдалося скинути пароль'
+        : null;
 
   return (
-    <div className={styles['modal-backdrop']} onClick={handleClose}>
-      <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
-        <div className={styles['modal-header']}>
-          <h2 className={styles['modal-title']}>Скидання пароля учня</h2>
-          <button
-            type="button"
-            className={styles['modal-close-btn']}
-            onClick={handleClose}
-            aria-label="Закрити"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        <div className={styles['modal-body']}>
-          {errorMessage && <div className={styles['error-banner']}>{errorMessage}</div>}
-
-          {newCredentials ? (
-            <div className={styles['success-box']}>
-              <h4 className={styles['success-title']}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                Пароль успішно оновлено!
-              </h4>
-
-              <div className={styles['credentials-card']}>
-                <div className={styles['credential-item']}>
-                  <span className={styles['credential-label']}>Учень:</span>
-                  <span className={styles['credential-val']}>{newCredentials.studentName}</span>
-                </div>
-                <div className={styles['credential-item']}>
-                  <span className={styles['credential-label']}>Логін:</span>
-                  <span className={styles['credential-val']}>{newCredentials.login}</span>
-                </div>
-                <div className={styles['credential-item']}>
-                  <span className={styles['credential-label']}>Новий пароль:</span>
-                  <span className={styles['credential-val']} style={{ color: '#22c55e' }}>
-                    {newCredentials.newPassword}
-                  </span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className={styles['copy-all-btn']}
-                onClick={handleCopy}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                </svg>
-                {copied ? 'Скопійовано в буфер!' : 'Скопіювати новий пароль'}
-              </button>
-            </div>
-          ) : (
-            <div>
-              <p style={{ color: '#f0f0f5', margin: '0 0 12px 0', fontSize: '0.95rem' }}>
-                Ви впевнені, що хочете згенерувати новий пароль для учня <strong>{studentName}</strong>?
-              </p>
-              <p style={{ color: '#9090a8', margin: 0, fontSize: '0.85rem' }}>
-                Попередній пароль перестане діяти, і вам буде надано новий код доступу для передачі учневі.
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className={styles['modal-footer']}>
-          <button type="button" className={styles['btn-secondary']} onClick={handleClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onAfterClose={handleAfterClose}
+      size="sm"
+      title="Скидання пароля учня"
+      isBusy={isLoading}
+      bodyClassName={styles.body}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             {newCredentials ? 'Закрити' : 'Скасувати'}
-          </button>
+          </Button>
           {!newCredentials && (
-            <button
-              type="button"
-              className={styles['btn-primary']}
-              onClick={handleReset}
+            <Button
+              variant="primary"
+              onClick={() => void handleReset()}
               disabled={isLoading}
             >
               {isLoading ? 'Генерація...' : 'Згенерувати новий пароль'}
-            </button>
+            </Button>
           )}
+        </>
+      }
+    >
+      {errorMessage && (
+        <div className={styles.errorBanner} role="alert">
+          {errorMessage}
         </div>
-      </div>
-    </div>
+      )}
+
+      {newCredentials ? (
+        <div className={styles.successBox}>
+          <h4 className={styles.successTitle}>
+            <CheckIcon size={18} aria-hidden="true" />
+            Пароль успішно оновлено!
+          </h4>
+
+          <div className={styles.credentialsCard}>
+            <div className={styles.credentialItem}>
+              <span className={styles.credentialLabel}>Учень:</span>
+              <span className={styles.credentialVal}>{newCredentials.studentName}</span>
+            </div>
+            <div className={styles.credentialItem}>
+              <span className={styles.credentialLabel}>Логін:</span>
+              <span className={styles.credentialVal}>{newCredentials.login}</span>
+            </div>
+            <div className={styles.credentialItem}>
+              <span className={styles.credentialLabel}>Новий пароль:</span>
+              <span className={`${styles.credentialVal} ${styles.passwordVal}`}>
+                {newCredentials.newPassword}
+              </span>
+            </div>
+          </div>
+
+          <Button variant="secondary" fullWidth onClick={() => void handleCopy()}>
+            {copied ? (
+              <CheckIcon size={16} aria-hidden="true" />
+            ) : (
+              <CopyIcon size={16} aria-hidden="true" />
+            )}
+            {copied ? 'Скопійовано в буфер!' : 'Скопіювати новий пароль'}
+          </Button>
+        </div>
+      ) : (
+        <div className={styles.promptBlock}>
+          <p className={styles.promptTitle}>
+            Ви впевнені, що хочете згенерувати новий пароль для учня{' '}
+            <strong>{studentName}</strong>?
+          </p>
+          <p className={styles.promptHint}>
+            Попередній пароль перестане діяти, і вам буде надано новий код доступу для
+            передачі учневі.
+          </p>
+        </div>
+      )}
+    </Modal>
   );
-};
+}

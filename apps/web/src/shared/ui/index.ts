@@ -23,6 +23,8 @@ export { DateFilterBar } from './DateFilterBar';
 export type { DateFilterBarProps } from './DateFilterBar';
 export * from './icons';
 export { SearchInput, type SearchInputProps } from './SearchInput';
+export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from './Button';
+export { Modal, type ModalProps, type ModalSize } from './Modal';
 
 
 

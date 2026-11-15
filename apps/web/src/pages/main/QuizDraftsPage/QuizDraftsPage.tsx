@@ -36,10 +36,12 @@ export function QuizDraftsPage() {
 
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [draftToDelete, setDraftToDelete] = useState<EditorQuiz | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [publishingId, setPublishingId] = useState<number | null>(null);
   const [quizToPublish, setQuizToPublish] = useState<EditorQuiz | null>(null);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const drafts = data?.quizzes || [];
@@ -65,6 +67,7 @@ export function QuizDraftsPage() {
   const handleRequestDelete = (draft: EditorQuiz) => {
     setDeleteError(null);
     setDraftToDelete(draft);
+    setIsDeleteModalOpen(true);
   };
 
   const handleConfirmDelete = async (draft: EditorQuiz) => {
@@ -72,7 +75,7 @@ export function QuizDraftsPage() {
     try {
       setDeletingId(draft.id);
       await deleteQuiz(draft.id).unwrap();
-      setDraftToDelete(null);
+      setIsDeleteModalOpen(false);
     } catch (err: unknown) {
       console.error('Failed to delete draft:', err);
       const apiErr = err as { data?: { message?: string } };
@@ -88,6 +91,7 @@ export function QuizDraftsPage() {
       setPublishingId(draft.id);
       const fullQuiz = await triggerGetQuiz(draft.uuid).unwrap();
       setQuizToPublish(fullQuiz);
+      setIsPublishModalOpen(true);
     } catch (err) {
       console.error('Failed to load draft for publishing:', err);
       setActionError('Не вдалося завантажити чернетку для публікації.');
@@ -175,23 +179,28 @@ export function QuizDraftsPage() {
 
       <DeleteDraftModal
         draft={draftToDelete}
+        isOpen={isDeleteModalOpen}
         isDeleting={isDeleting}
         errorMessage={deleteError}
         onClose={() => {
           if (!isDeleting) {
-            setDraftToDelete(null);
-            setDeleteError(null);
+            setIsDeleteModalOpen(false);
           }
+        }}
+        onAfterClose={() => {
+          setDraftToDelete(null);
+          setDeleteError(null);
         }}
         onConfirm={handleConfirmDelete}
       />
 
       {quizToPublish && (
         <PublishModal
-          isOpen={true}
+          isOpen={isPublishModalOpen}
           quiz={quizToPublish}
-          onClose={() => setQuizToPublish(null)}
-          onPublishSuccess={() => setQuizToPublish(null)}
+          onClose={() => setIsPublishModalOpen(false)}
+          onPublishSuccess={() => setIsPublishModalOpen(false)}
+          onAfterClose={() => setQuizToPublish(null)}
         />
       )}
     </div>

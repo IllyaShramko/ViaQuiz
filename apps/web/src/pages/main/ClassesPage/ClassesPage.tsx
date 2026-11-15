@@ -226,6 +226,12 @@ export function ClassesPage() {
       <LeaveCourseModal
         isOpen={leaveModalState.isOpen}
         onClose={() =>
+          setLeaveModalState((prev) => ({
+            ...prev,
+            isOpen: false,
+          }))
+        }
+        onAfterClose={() =>
           setLeaveModalState({
             isOpen: false,
             classUuid: '',

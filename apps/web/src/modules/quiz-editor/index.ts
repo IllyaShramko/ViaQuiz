@@ -36,6 +36,7 @@ export { useAutoSave } from './hooks/useAutoSave';
 export {
   QuizEditorLayout,
   PublishModal,
+  QuizCoverField,
   EditorHeader,
   QuestionEditor,
   QuestionList,
@@ -52,6 +53,7 @@ export {
   DeleteDraftModal,
   type QuizEditorLayoutProps,
   type PublishModalProps,
+  type QuizCoverFieldProps,
   type EditorHeaderProps,
   type QuestionEditorProps,
   type QuestionListProps,

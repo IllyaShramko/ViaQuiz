@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useId, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, Modal } from '../../../../shared';
 import { useEnrollStudentsToCourseMutation } from '../../api/classesApi';
 import {
   enrollCourseStudentsSchema,
   type EnrollCourseStudentsFormData,
   type EnrollCourseStudentsModalProps,
 } from './EnrollCourseStudentsModal.types';
-import styles from '../AddStudentModal/AddStudentModal.module.css';
+import styles from './EnrollCourseStudentsModal.module.css';
 
 export function EnrollCourseStudentsModal({
   classUuid,
@@ -19,10 +20,12 @@ export function EnrollCourseStudentsModal({
   maxCourseStudents = 50,
 }: EnrollCourseStudentsModalProps) {
   const [search, setSearch] = useState('');
+  const formId = useId();
 
-  const [enrollStudents, { isLoading, error }] = useEnrollStudentsToCourseMutation();
+  const [enrollStudents, { isLoading, error, reset: resetMutation }] =
+    useEnrollStudentsToCourseMutation();
 
-  const { handleSubmit, reset, watch, setValue } =
+  const { handleSubmit, reset, control, setValue } =
     useForm<EnrollCourseStudentsFormData>({
       resolver: zodResolver(enrollCourseStudentsSchema),
       defaultValues: {
@@ -30,9 +33,11 @@ export function EnrollCourseStudentsModal({
       },
     });
 
-  if (!isOpen) return null;
-
-  const selectedUuids = watch('studentUuids') || [];
+  const selectedUuids = useWatch({
+    control,
+    name: 'studentUuids',
+    defaultValue: [],
+  });
   const currentEnrolledCount = alreadyEnrolledUuids.length;
   const availableSlots = Math.max(0, maxCourseStudents - currentEnrolledCount);
 
@@ -73,10 +78,10 @@ export function EnrollCourseStudentsModal({
     }
   };
 
-  const handleClose = () => {
+  const handleAfterClose = () => {
     reset();
     setSearch('');
-    onClose();
+    resetMutation();
   };
 
   const onSubmit = async (data: EnrollCourseStudentsFormData) => {
@@ -87,225 +92,145 @@ export function EnrollCourseStudentsModal({
         studentUuids: data.studentUuids,
       }).unwrap();
 
-      reset();
-      setSearch('');
       onClose();
     } catch {
-      // Handled by RTK Query error
+      // Handled by RTK Query error state
     }
   };
 
   const errorMessage =
-    error && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data
+    error &&
+    'data' in error &&
+    error.data &&
+    typeof error.data === 'object' &&
+    'message' in error.data
       ? String(error.data.message)
       : error
-      ? 'Не вдалося зарахувати учнів до курсу'
-      : null;
+        ? 'Не вдалося зарахувати учнів до курсу'
+        : null;
 
   return (
-    <div className={styles['modal-backdrop']} onClick={handleClose}>
-      <div
-        className={styles['modal-content']}
-        style={{ maxWidth: 560 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className={styles['modal-header']}>
-          <h2 className={styles['modal-title']}>Зарахувати учнів до курсу</h2>
-          <button
-            type="button"
-            className={styles['modal-close-btn']}
-            onClick={handleClose}
-            aria-label="Закрити"
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onAfterClose={handleAfterClose}
+      size="lg"
+      title="Зарахувати учнів до курсу"
+      isBusy={isLoading}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+            Скасувати
+          </Button>
+          <Button
+            type="submit"
+            form={formId}
+            variant="primary"
+            disabled={isLoading || availableSlots <= 0 || selectedUuids.length === 0}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
+            {isLoading
+              ? 'Зарахування...'
+              : `Зарахувати до курсу${selectedUuids.length > 0 ? ` (${selectedUuids.length})` : ''}`}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+        <div className={styles.limitCard}>
+          <span className={styles.limitLabel}>Зараховано / Ліміт курсу:</span>
+          <span
+            className={`${styles.limitValue} ${
+              availableSlots <= 0 ? styles.limitValueReached : styles.limitValueOk
+            }`}
+          >
+            {currentEnrolledCount} / {maxCourseStudents}
+          </span>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles['modal-body']}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                background: '#1a1a26',
-                padding: '10px 14px',
-                borderRadius: '10px',
-                border: '1px solid #2a2a3a',
-              }}
-            >
-              <span style={{ fontSize: '0.85rem', color: '#9090a8' }}>
-                Зараховано / Ліміт курсу:
-              </span>
-              <span
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  color: availableSlots <= 0 ? '#ef4444' : '#22c55e',
-                }}
-              >
-                {currentEnrolledCount} / {maxCourseStudents}
-              </span>
-            </div>
+        {availableSlots <= 0 && (
+          <div className={styles.errorBanner} role="alert">
+            У курсі досягнуто максимального ліміту в {maxCourseStudents} учнів.
+          </div>
+        )}
 
-            {availableSlots <= 0 && (
-              <div className={styles['error-banner']}>
-                У курсі досягнуто максимального ліміту в {maxCourseStudents} учнів.
-              </div>
+        {errorMessage && (
+          <div className={styles.errorBanner} role="alert">
+            {errorMessage}
+          </div>
+        )}
+
+        <div className={styles.formGroup}>
+          <div className={styles.labelRow}>
+            <span className={styles.formLabel}>
+              Учні класу, доступні для зарахування ({selectedUuids.length} обрано)
+            </span>
+            {filteredStudents.length > 0 && availableSlots > 0 && (
+              <button
+                type="button"
+                className={styles.selectAllBtn}
+                onClick={handleSelectAll}
+                disabled={isLoading}
+              >
+                {selectedUuids.length === filteredStudents.length
+                  ? 'Зняти виділення'
+                  : 'Вибрати всіх'}
+              </button>
             )}
-
-            {errorMessage && <div className={styles['error-banner']}>{errorMessage}</div>}
-
-            <div className={styles['form-group']}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: 6,
-                }}
-              >
-                <label className={styles['form-label']} style={{ margin: 0 }}>
-                  Учні класу, доступні для зарахування ({selectedUuids.length} обрано)
-                </label>
-                {filteredStudents.length > 0 && availableSlots > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleSelectAll}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#863bff',
-                      fontSize: '0.82rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {selectedUuids.length === filteredStudents.length
-                      ? 'Зняти виділення'
-                      : 'Вибрати всіх'}
-                  </button>
-                )}
-              </div>
-
-              {availableStudents.length > 5 && (
-                <input
-                  type="text"
-                  placeholder="Пошук учня за ім'ям або логіном..."
-                  className={styles['form-input']}
-                  style={{ marginBottom: 8, padding: '6px 12px', fontSize: '0.88rem' }}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              )}
-
-              <div
-                style={{
-                  maxHeight: '220px',
-                  overflowY: 'auto',
-                  background: '#1a1a26',
-                  border: '1px solid #2a2a3a',
-                  borderRadius: '10px',
-                  padding: '8px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '4px',
-                }}
-              >
-                {classroomStudents.length === 0 ? (
-                  <div
-                    style={{
-                      padding: '20px',
-                      textAlign: 'center',
-                      color: '#606078',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    У класі ще немає зареєстрованих учнів
-                  </div>
-                ) : availableStudents.length === 0 ? (
-                  <div
-                    style={{
-                      padding: '20px',
-                      textAlign: 'center',
-                      color: '#606078',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    Всі учні цього класу вже зараховані до цього курсу
-                  </div>
-                ) : filteredStudents.length === 0 ? (
-                  <div
-                    style={{
-                      padding: '20px',
-                      textAlign: 'center',
-                      color: '#606078',
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    Учнів не знайдено за пошуком
-                  </div>
-                ) : (
-                  filteredStudents.map((s) => {
-                    const isChecked = selectedUuids.includes(s.uuid);
-                    return (
-                      <label
-                        key={s.uuid}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          padding: '8px 12px',
-                          borderRadius: '6px',
-                          background: isChecked ? 'rgba(134, 59, 255, 0.12)' : 'transparent',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                          color: '#f0f0f5',
-                          transition: 'background 0.15s',
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => handleToggleStudent(s.uuid)}
-                          disabled={!isChecked && selectedUuids.length >= availableSlots}
-                          style={{ accentColor: '#863bff', width: '16px', height: '16px' }}
-                        />
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontWeight: 600 }}>
-                            {s.lastName} {s.firstName}
-                          </span>
-                          <span style={{ color: '#9090a8', fontSize: '0.8rem', fontFamily: 'monospace' }}>
-                            {s.login}
-                          </span>
-                        </div>
-                      </label>
-                    );
-                  })
-                )}
-              </div>
-            </div>
           </div>
 
-          <div className={styles['modal-footer']}>
-            <button type="button" className={styles['btn-secondary']} onClick={handleClose}>
-              Скасувати
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading || availableSlots <= 0 || selectedUuids.length === 0}
-              className={styles['btn-primary']}
-            >
-              {isLoading
-                ? 'Зарахування...'
-                : `Зарахувати до курсу ${selectedUuids.length > 0 ? `(${selectedUuids.length})` : ''}`}
-            </button>
+          {availableStudents.length > 5 && (
+            <input
+              type="text"
+              placeholder="Пошук учня за ім'ям або логіном..."
+              aria-label="Пошук учня за ім'ям або логіном"
+              className={styles.searchInput}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              disabled={isLoading}
+            />
+          )}
+
+          <div className={styles.studentList}>
+            {classroomStudents.length === 0 ? (
+              <div className={styles.emptyList}>У класі ще немає зареєстрованих учнів</div>
+            ) : availableStudents.length === 0 ? (
+              <div className={styles.emptyList}>
+                Всі учні цього класу вже зараховані до цього курсу
+              </div>
+            ) : filteredStudents.length === 0 ? (
+              <div className={styles.emptyList}>Учнів не знайдено за пошуком</div>
+            ) : (
+              filteredStudents.map((s) => {
+                const isChecked = selectedUuids.includes(s.uuid);
+                const isSelectionDisabled =
+                  isLoading || (!isChecked && selectedUuids.length >= availableSlots);
+                return (
+                  <label
+                    key={s.uuid}
+                    className={`${styles.studentRow} ${
+                      isChecked ? styles.studentRowSelected : ''
+                    } ${isSelectionDisabled ? styles.studentRowDisabled : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className={styles.studentCheckbox}
+                      checked={isChecked}
+                      onChange={() => handleToggleStudent(s.uuid)}
+                      disabled={isSelectionDisabled}
+                    />
+                    <div className={styles.studentMeta}>
+                      <span className={styles.studentName}>
+                        {s.lastName} {s.firstName}
+                      </span>
+                      <span className={styles.studentLogin}>{s.login}</span>
+                    </div>
+                  </label>
+                );
+              })
+            )}
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </form>
+    </Modal>
   );
 }

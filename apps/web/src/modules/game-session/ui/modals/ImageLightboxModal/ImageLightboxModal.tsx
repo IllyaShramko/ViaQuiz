@@ -1,47 +1,34 @@
+import { CloseIcon, Modal } from '../../../../../shared';
 import type { ImageLightboxModalProps } from './ImageLightboxModal.types';
-import { CloseIcon } from '../../../../../shared/ui/icons';
-import styles from '../../GameSession.module.css';
+import styles from './ImageLightboxModal.module.css';
 
 export function ImageLightboxModal({
-	isOpen,
-	imageUrl,
-	onClose,
+  isOpen,
+  imageUrl,
+  onClose,
+  onAfterClose,
 }: ImageLightboxModalProps) {
-	if (!isOpen || !imageUrl) return null;
-
-	return (
-		<div className={styles['modal-backdrop']} onClick={onClose}>
-			<div
-				style={{
-					position: 'relative',
-					maxWidth: '90vw',
-					maxHeight: '90vh',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-				onClick={(e) => e.stopPropagation()}
-			>
-				<button
-					type="button"
-					className={styles['modal-close-btn']}
-					onClick={onClose}
-					style={{ top: '-2.5rem', right: '0', color: '#fff' }}
-				>
-					<CloseIcon size={22} />
-				</button>
-				<img
-					src={imageUrl}
-					alt="Enlarged media"
-					style={{
-						maxWidth: '100%',
-						maxHeight: '85vh',
-						objectFit: 'contain',
-						borderRadius: '0.75rem',
-						boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
-					}}
-				/>
-			</div>
-		</div>
-	);
+  return (
+    <Modal
+      isOpen={isOpen && Boolean(imageUrl)}
+      onClose={onClose}
+      onAfterClose={onAfterClose}
+      size="unstyled"
+      ariaLabel="Перегляд зображення"
+    >
+      {imageUrl && (
+        <div className={styles.container}>
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label="Закрити зображення"
+          >
+            <CloseIcon size={18} aria-hidden="true" />
+          </button>
+          <img src={imageUrl} alt="Збільшене зображення" className={styles.image} />
+        </div>
+      )}
+    </Modal>
+  );
 }

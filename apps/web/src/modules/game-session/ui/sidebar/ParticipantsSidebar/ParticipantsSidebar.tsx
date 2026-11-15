@@ -28,7 +28,13 @@ export function ParticipantsSidebar({
 	onKickParticipant,
 }: ParticipantsSidebarProps) {
 	const [kickTarget, setKickTarget] = useState<ParticipantDto | null>(null);
+	const [isKickModalOpen, setIsKickModalOpen] = useState(false);
 	const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+	const handleRequestKick = (participant: ParticipantDto) => {
+		setKickTarget(participant);
+		setIsKickModalOpen(true);
+	};
 
 	// Sort participants by score when game has started; preserve join order when scores are tied
 	const displayParticipants = useMemo(() => {
@@ -112,14 +118,15 @@ export function ParticipantsSidebar({
 							key={p.participantId}
 							data-flip-key={p.participantId}
 							className={`${styles['participant-item']} ${styles['participant-item-clickable']}`}
-							onClick={() => setKickTarget(p)}
+							onClick={() => handleRequestKick(p)}
 							onMouseEnter={() => setHoveredId(p.participantId)}
 							onMouseLeave={() => setHoveredId(null)}
 							role="button"
 							tabIndex={0}
 							onKeyDown={(e) => {
 								if (e.key === 'Enter' || e.key === ' ') {
-									setKickTarget(p);
+									e.preventDefault();
+									handleRequestKick(p);
 								}
 							}}
 							title={`${p.nickname} — ${p.score} б`}
@@ -142,15 +149,16 @@ export function ParticipantsSidebar({
 			</aside>
 
 			<KickConfirmModal
-				isOpen={!!kickTarget}
+				isOpen={isKickModalOpen}
 				participantName={kickTarget?.nickname || ''}
 				onConfirm={() => {
 					if (kickTarget) {
 						onKickParticipant?.(kickTarget.participantId);
-						setKickTarget(null);
+						setIsKickModalOpen(false);
 					}
 				}}
-				onCancel={() => setKickTarget(null)}
+				onCancel={() => setIsKickModalOpen(false)}
+				onAfterClose={() => setKickTarget(null)}
 			/>
 		</>
 	);

@@ -1,14 +1,82 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, MailIcon, Modal } from '../../../../shared';
 import { useInviteTeacherMutation } from '../../api/classesApi';
 import {
   inviteTeacherSchema,
   type InviteTeacherFormData,
+  type InviteTeacherFormProps,
   type InviteTeacherModalProps,
 } from './InviteTeacherModal.types';
-import { MailIcon } from '../../../../shared';
 import styles from './InviteTeacherModal.module.css';
+
+function InviteTeacherForm({
+  formId,
+  courseName,
+  isLoading,
+  errorMessage,
+  onSubmitForm,
+}: InviteTeacherFormProps) {
+  const inputId = useId();
+  const errorId = useId();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<InviteTeacherFormData>({
+    resolver: zodResolver(inviteTeacherSchema),
+    defaultValues: {
+      search: '',
+    },
+  });
+
+  return (
+    <form id={formId} onSubmit={handleSubmit(onSubmitForm)} className={styles.form} noValidate>
+      <p className={styles.description}>
+        Запросіть викладача керувати курсом <strong>«{courseName}»</strong>. Він зможе
+        проводити тестування, керувати учнями та переглядати результати.
+      </p>
+
+      <div className={styles.infoBox}>
+        <MailIcon size={16} className={styles.infoIcon} aria-hidden="true" />
+        <span>
+          Запрошення буде надіслано на email або надійде у кабінет викладача. Якщо користувач
+          ще не зареєстрований, він отримає посилання для реєстрації.
+        </span>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.label} htmlFor={inputId}>
+          Логін або Email викладача
+        </label>
+        <input
+          id={inputId}
+          type="text"
+          className={`${styles.input} ${errors.search ? styles.inputError : ''}`}
+          placeholder="Наприклад: teacher_oleg або oleg@school.ua"
+          disabled={isLoading}
+          aria-invalid={Boolean(errors.search)}
+          aria-describedby={errors.search ? errorId : undefined}
+          autoFocus
+          {...register('search')}
+        />
+        {errors.search && (
+          <p id={errorId} className={styles.error} role="alert">
+            {errors.search.message}
+          </p>
+        )}
+      </div>
+
+      {errorMessage && (
+        <p className={styles.error} role="alert">
+          {errorMessage}
+        </p>
+      )}
+    </form>
+  );
+}
 
 export function InviteTeacherModal({
   isOpen,
@@ -18,33 +86,10 @@ export function InviteTeacherModal({
   courseName,
 }: InviteTeacherModalProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
   const [inviteTeacher, { isLoading }] = useInviteTeacherMutation();
+  const formId = useId();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    formState: { errors },
-  } = useForm<InviteTeacherFormData>({
-    resolver: zodResolver(inviteTeacherSchema),
-    defaultValues: {
-      search: '',
-    },
-  });
-
-  if (!isOpen) return null;
-
-  const watchedSearch = watch('search');
-
-  const handleClose = () => {
-    reset();
-    setErrorMessage(null);
-    onClose();
-  };
-
-  const onSubmit = async (data: InviteTeacherFormData) => {
+  const handleSubmitForm = async (data: InviteTeacherFormData) => {
     setErrorMessage(null);
     try {
       await inviteTeacher({
@@ -53,71 +98,39 @@ export function InviteTeacherModal({
         search: data.search.trim(),
       }).unwrap();
 
-      reset();
       onClose();
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } };
-      setErrorMessage(e.data?.message || 'Не вдалося надіслати запрошення');
+      const apiErr = err as { data?: { message?: string } };
+      setErrorMessage(apiErr.data?.message || 'Не вдалося надіслати запрошення');
     }
   };
 
   return (
-    <div className={styles.backdrop} onClick={handleClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h2 className={styles.title}>Призначити викладача</h2>
-          <button type="button" className={styles.closeButton} onClick={handleClose}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          <p className={styles.description}>
-            Запросіть викладача керувати курсом <strong>«{courseName}»</strong>. Він зможе проводити тестування, керувати учнями та переглядати результати.
-          </p>
-
-          <div className={styles.infoBox}>
-            <MailIcon size={18} />
-            <span>
-              Запрошення буде надіслано на email або надійде у кабінет викладача. Якщо користувач ще не зареєстрований, він отримає посилання для реєстрації.
-            </span>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label className={styles.label} htmlFor="teacherSearch">
-              Логін або Email викладача
-            </label>
-            <input
-              id="teacherSearch"
-              type="text"
-              className={styles.input}
-              placeholder="Наприклад: teacher_oleg або oleg@school.ua"
-              disabled={isLoading}
-              autoFocus
-              {...register('search')}
-            />
-            {errors.search && <p className={styles.error}>{errors.search.message}</p>}
-          </div>
-
-          {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-
-          <div className={styles.footer}>
-            <button type="button" className={styles.cancelBtn} onClick={handleClose} disabled={isLoading}>
-              Скасувати
-            </button>
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={isLoading || !watchedSearch?.trim()}
-            >
-              {isLoading ? 'Надсилання...' : 'Надіслати запрошення'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onAfterClose={() => setErrorMessage(null)}
+      size="md"
+      title="Призначити викладача"
+      isBusy={isLoading}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+            Скасувати
+          </Button>
+          <Button type="submit" form={formId} variant="primary" disabled={isLoading}>
+            {isLoading ? 'Надсилання...' : 'Надіслати запрошення'}
+          </Button>
+        </>
+      }
+    >
+      <InviteTeacherForm
+        formId={formId}
+        courseName={courseName}
+        isLoading={isLoading}
+        errorMessage={errorMessage}
+        onSubmitForm={handleSubmitForm}
+      />
+    </Modal>
   );
 }

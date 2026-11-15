@@ -192,15 +192,13 @@ export function StudentDetailsPage() {
       </div>
 
       {/* Reset Password Modal */}
-      {isResetModalOpen && (
-        <ResetPasswordModal
-          classUuid={classUuid!}
-          studentUuid={student.uuid}
-          studentName={`${student.lastName} ${student.firstName}`}
-          isOpen={isResetModalOpen}
-          onClose={() => setIsResetModalOpen(false)}
-        />
-      )}
+      <ResetPasswordModal
+        classUuid={classUuid!}
+        studentUuid={student.uuid}
+        studentName={`${student.lastName} ${student.firstName}`}
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+      />
     </div>
   );
 };

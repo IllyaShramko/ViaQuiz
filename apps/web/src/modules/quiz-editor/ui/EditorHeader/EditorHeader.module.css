@@ -86,23 +86,36 @@
 }
 
 .editor-publish-btn {
-  background-color: var(--color-success);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 0.5rem 1rem;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: var(--color-accent, #863bff);
+  color: #ffffff;
   font-family: var(--font-family);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: opacity var(--transition-fast);
+  gap: 7px;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .editor-publish-btn:hover:not(:disabled) {
-  opacity: 0.9;
+  background-color: var(--color-accent-hover, #9b5cff);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.editor-publish-btn:focus {
+  outline: none;
+}
+
+.editor-publish-btn:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: 2px;
 }
 
 .editor-publish-btn:disabled {

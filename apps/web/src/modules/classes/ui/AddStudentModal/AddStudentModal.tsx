@@ -1,36 +1,87 @@
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useId, useRef, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Button,
+  CheckIcon,
+  CopyIcon,
+  Modal,
+  copyToClipboard,
+  generateSimplePassword,
+  generateStudentLogin,
+} from '../../../../shared';
 import { useAddStudentMutation } from '../../api/classesApi';
-import { generateStudentLogin, generateSimplePassword, copyToClipboard } from '../../../../shared';
 import {
   addStudentSchema,
   type AddStudentFormData,
+  type AddStudentFormProps,
   type AddStudentModalProps,
+  type AddStudentSuccessProps,
+  type CreatedStudentCredentials,
 } from './AddStudentModal.types';
 import styles from './AddStudentModal.module.css';
 
-export function AddStudentModal({
-  classUuid,
-  isOpen,
-  onClose,
-}: AddStudentModalProps) {
-  const [isCustomLogin, setIsCustomLogin] = useState(false);
-  const [createdCredentials, setCreatedCredentials] = useState<{
-    login: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-  } | null>(null);
-  const [copied, setCopied] = useState(false);
+function AddStudentSuccess({ credentials, copied, onCopy }: AddStudentSuccessProps) {
+  return (
+    <div className={styles.successBox}>
+      <h4 className={styles.successTitle}>
+        <CheckIcon size={18} aria-hidden="true" />
+        Обліковий запис створено!
+      </h4>
+      <p className={styles.successSubtitle}>
+        Передайте ці облікові дані учню для входу в систему:
+      </p>
 
-  const [addStudent, { isLoading, error }] = useAddStudentMutation();
+      <div className={styles.credentialsCard}>
+        <div className={styles.credentialItem}>
+          <span className={styles.credentialLabel}>Учень:</span>
+          <span className={styles.credentialVal}>
+            {credentials.firstName} {credentials.lastName}
+          </span>
+        </div>
+        <div className={styles.credentialItem}>
+          <span className={styles.credentialLabel}>Логін:</span>
+          <span className={styles.credentialVal}>{credentials.login}</span>
+        </div>
+        <div className={styles.credentialItem}>
+          <span className={styles.credentialLabel}>Пароль:</span>
+          <span className={styles.credentialVal}>{credentials.password}</span>
+        </div>
+      </div>
+
+      <Button variant="secondary" fullWidth onClick={() => void onCopy()}>
+        {copied ? (
+          <CheckIcon size={16} aria-hidden="true" />
+        ) : (
+          <CopyIcon size={16} aria-hidden="true" />
+        )}
+        {copied ? 'Скопійовано в буфер!' : 'Скопіювати дані для входу'}
+      </Button>
+    </div>
+  );
+}
+
+function AddStudentForm({
+  formId,
+  isLoading,
+  errorMessage,
+  onSubmitForm,
+}: AddStudentFormProps) {
+  const [isCustomLogin, setIsCustomLogin] = useState(false);
+
+  const lastNameId = useId();
+  const lastNameErrorId = useId();
+  const firstNameId = useId();
+  const firstNameErrorId = useId();
+  const loginId = useId();
+  const loginErrorId = useId();
+  const passwordId = useId();
+  const passwordErrorId = useId();
 
   const {
     register,
     handleSubmit,
-    reset,
-    watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<AddStudentFormData>({
@@ -43,8 +94,10 @@ export function AddStudentModal({
     },
   });
 
-  const firstName = watch('firstName');
-  const lastName = watch('lastName');
+  const [firstName, lastName] = useWatch({
+    control,
+    name: ['firstName', 'lastName'],
+  });
 
   // Auto-generate login based on first & last name unless customized by teacher
   useEffect(() => {
@@ -54,13 +107,160 @@ export function AddStudentModal({
     }
   }, [firstName, lastName, isCustomLogin, setValue]);
 
-  if (!isOpen) return null;
-
   const handleRegeneratePassword = () => {
     setValue('password', generateSimplePassword(8), { shouldValidate: true });
   };
 
-  const onSubmit = async (data: AddStudentFormData) => {
+  return (
+    <form id={formId} onSubmit={handleSubmit(onSubmitForm)} className={styles.form} noValidate>
+      {errorMessage && (
+        <div className={styles.errorBanner} role="alert">
+          {errorMessage}
+        </div>
+      )}
+
+      <div className={styles.formRow}>
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel} htmlFor={lastNameId}>
+            Прізвище *
+          </label>
+          <input
+            id={lastNameId}
+            type="text"
+            placeholder="Введіть прізвище"
+            disabled={isLoading}
+            className={`${styles.formInput} ${errors.lastName ? styles.inputError : ''}`}
+            aria-invalid={Boolean(errors.lastName)}
+            aria-describedby={errors.lastName ? lastNameErrorId : undefined}
+            autoFocus
+            {...register('lastName')}
+          />
+          {errors.lastName && (
+            <p id={lastNameErrorId} className={styles.fieldError} role="alert">
+              {errors.lastName.message}
+            </p>
+          )}
+        </div>
+
+        <div className={styles.formGroup}>
+          <label className={styles.formLabel} htmlFor={firstNameId}>
+            Ім&apos;я *
+          </label>
+          <input
+            id={firstNameId}
+            type="text"
+            placeholder="Введіть ім'я"
+            disabled={isLoading}
+            className={`${styles.formInput} ${errors.firstName ? styles.inputError : ''}`}
+            aria-invalid={Boolean(errors.firstName)}
+            aria-describedby={errors.firstName ? firstNameErrorId : undefined}
+            {...register('firstName')}
+          />
+          {errors.firstName && (
+            <p id={firstNameErrorId} className={styles.fieldError} role="alert">
+              {errors.firstName.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.formLabel} htmlFor={loginId}>
+          Логін (автоматично транслітерується)
+        </label>
+        <div className={styles.inputWrapper}>
+          <input
+            id={loginId}
+            type="text"
+            placeholder="Генерується автоматично"
+            disabled={isLoading}
+            className={`${styles.formInput} ${errors.login ? styles.inputError : ''}`}
+            aria-invalid={Boolean(errors.login)}
+            aria-describedby={errors.login ? loginErrorId : undefined}
+            {...register('login', {
+              onChange: () => setIsCustomLogin(true),
+            })}
+          />
+        </div>
+        {errors.login && (
+          <p id={loginErrorId} className={styles.fieldError} role="alert">
+            {errors.login.message}
+          </p>
+        )}
+        <span className={styles.hintText}>
+          Можна змінити вручну (на кінець додадуться 3 цифри для унікальності)
+        </span>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.formLabel} htmlFor={passwordId}>
+          Пароль (авто-генерація)
+        </label>
+        <div className={styles.inputWrapper}>
+          <input
+            id={passwordId}
+            type="text"
+            disabled={isLoading}
+            className={`${styles.formInput} ${styles.formInputWithAction} ${
+              errors.password ? styles.inputError : ''
+            }`}
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby={errors.password ? passwordErrorId : undefined}
+            {...register('password')}
+          />
+          <button
+            type="button"
+            className={styles.inputActionBtn}
+            onClick={handleRegeneratePassword}
+            disabled={isLoading}
+            title="Згенерувати інший пароль"
+            aria-label="Згенерувати інший пароль"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+            </svg>
+          </button>
+        </div>
+        {errors.password && (
+          <p id={passwordErrorId} className={styles.fieldError} role="alert">
+            {errors.password.message}
+          </p>
+        )}
+        <span className={styles.hintText}>
+          Простий надійний код для швидкого входу учня
+        </span>
+      </div>
+    </form>
+  );
+}
+
+export function AddStudentModal({ classUuid, isOpen, onClose }: AddStudentModalProps) {
+  const [createdCredentials, setCreatedCredentials] =
+    useState<CreatedStudentCredentials | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyTimerRef = useRef<number | null>(null);
+  const formId = useId();
+
+  const [addStudent, { isLoading, error, reset: resetMutation }] = useAddStudentMutation();
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current !== null) {
+        window.clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleSubmitForm = async (data: AddStudentFormData) => {
     try {
       const res = await addStudent({
         classUuid,
@@ -74,7 +274,7 @@ export function AddStudentModal({
 
       setCreatedCredentials(res.credentials);
     } catch {
-      // Error handled by RTK Query error state
+      // Handled by RTK Query error state
     }
   };
 
@@ -84,242 +284,91 @@ export function AddStudentModal({
     const success = await copyToClipboard(text);
     if (success) {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      if (copyTimerRef.current !== null) {
+        window.clearTimeout(copyTimerRef.current);
+      }
+      copyTimerRef.current = window.setTimeout(() => {
+        setCopied(false);
+        copyTimerRef.current = null;
+      }, 2500);
     }
   };
 
-  const handleResetAndClose = () => {
-    reset({
-      firstName: '',
-      lastName: '',
-      login: '',
-      password: generateSimplePassword(8),
-    });
-    setIsCustomLogin(false);
+  const handleAddAnother = () => {
+    if (copyTimerRef.current !== null) {
+      window.clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = null;
+    }
     setCreatedCredentials(null);
     setCopied(false);
-    onClose();
+    resetMutation();
+  };
+
+  const handleAfterClose = () => {
+    if (copyTimerRef.current !== null) {
+      window.clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = null;
+    }
+    setCreatedCredentials(null);
+    setCopied(false);
+    resetMutation();
   };
 
   const errorMessage =
-    error && 'data' in error && error.data && typeof error.data === 'object' && 'message' in error.data
+    error &&
+    'data' in error &&
+    error.data &&
+    typeof error.data === 'object' &&
+    'message' in error.data
       ? String(error.data.message)
       : error
-      ? 'Не вдалося додати учня'
-      : null;
+        ? 'Не вдалося додати учня'
+        : null;
 
   return (
-    <div className={styles['modal-backdrop']} onClick={handleResetAndClose}>
-      <div className={styles['modal-content']} onClick={(e) => e.stopPropagation()}>
-        <div className={styles['modal-header']}>
-          <h2 className={styles['modal-title']}>
-            {createdCredentials ? 'Учня успішно додано' : 'Додати нового учня'}
-          </h2>
-          <button
-            type="button"
-            className={styles['modal-close-btn']}
-            onClick={handleResetAndClose}
-            aria-label="Закрити"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        {createdCredentials ? (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onAfterClose={handleAfterClose}
+      size="md"
+      title={createdCredentials ? 'Учня успішно додано' : 'Додати нового учня'}
+      isBusy={isLoading}
+      footer={
+        createdCredentials ? (
           <>
-            <div className={styles['modal-body']}>
-              <div className={styles['success-box']}>
-                <h4 className={styles['success-title']}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  Обліковий запис створено!
-                </h4>
-                <p style={{ margin: 0, fontSize: '0.88rem', color: '#9090a8' }}>
-                  Передайте ці облікові дані учню для входу в систему:
-                </p>
-
-                <div className={styles['credentials-card']}>
-                  <div className={styles['credential-item']}>
-                    <span className={styles['credential-label']}>Учень:</span>
-                    <span className={styles['credential-val']}>
-                      {createdCredentials.firstName} {createdCredentials.lastName}
-                    </span>
-                  </div>
-                  <div className={styles['credential-item']}>
-                    <span className={styles['credential-label']}>Логін:</span>
-                    <span className={styles['credential-val']}>{createdCredentials.login}</span>
-                  </div>
-                  <div className={styles['credential-item']}>
-                    <span className={styles['credential-label']}>Пароль:</span>
-                    <span className={styles['credential-val']}>{createdCredentials.password}</span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  className={styles['copy-all-btn']}
-                  onClick={handleCopyCredentials}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                  </svg>
-                  {copied ? 'Скопійовано в буфер!' : 'Скопіювати дані для входу'}
-                </button>
-              </div>
-            </div>
-
-            <div className={styles['modal-footer']}>
-              <button
-                type="button"
-                className={styles['btn-secondary']}
-                onClick={() => {
-                  setCreatedCredentials(null);
-                  setCreatedCredentials(null);
-                  reset({
-                    firstName: '',
-                    lastName: '',
-                    login: '',
-                    password: generateSimplePassword(8),
-                  });
-                  setIsCustomLogin(false);
-                }}
-              >
-                + Додати ще одного
-              </button>
-              <button
-                type="button"
-                className={styles['btn-primary']}
-                onClick={handleResetAndClose}
-              >
-                Готово
-              </button>
-            </div>
+            <Button variant="secondary" onClick={handleAddAnother}>
+              + Додати ще одного
+            </Button>
+            <Button variant="primary" onClick={onClose}>
+              Готово
+            </Button>
           </>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className={styles['modal-body']}>
-              {errorMessage && <div className={styles['error-banner']}>{errorMessage}</div>}
-
-              <div className={styles['form-row']}>
-                <div className={styles['form-group']}>
-                  <label className={styles['form-label']} htmlFor="student-lastName">
-                    Прізвище *
-                  </label>
-                  <input
-                    id="student-lastName"
-                    type="text"
-                    placeholder="Введіть прізвище"
-                    className={`${styles['form-input']} ${errors.lastName ? styles['input--error'] : ''}`}
-                    {...register('lastName')}
-                  />
-                  {errors.lastName && (
-                    <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
-                      {errors.lastName.message}
-                    </span>
-                  )}
-                </div>
-
-                <div className={styles['form-group']}>
-                  <label className={styles['form-label']} htmlFor="student-firstName">
-                    Ім'я *
-                  </label>
-                  <input
-                    id="student-firstName"
-                    type="text"
-                    placeholder="Введіть ім'я"
-                    className={`${styles['form-input']} ${errors.firstName ? styles['input--error'] : ''}`}
-                    {...register('firstName')}
-                  />
-                  {errors.firstName && (
-                    <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
-                      {errors.firstName.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className={styles['form-group']}>
-                <label className={styles['form-label']} htmlFor="student-login">
-                  Логін (автоматично транслітерується)
-                </label>
-                <div className={styles['input-wrapper']}>
-                  <input
-                    id="student-login"
-                    type="text"
-                    placeholder="Генерується автоматично"
-                    className={`${styles['form-input']} ${errors.login ? styles['input--error'] : ''}`}
-                    {...register('login', {
-                      onChange: () => setIsCustomLogin(true),
-                    })}
-                  />
-                </div>
-                {errors.login && (
-                  <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
-                    {errors.login.message}
-                  </span>
-                )}
-                <span className={styles['hint-text']}>
-                  Можна змінити вручну (на кінець додадуться 3 цифри для унікальності)
-                </span>
-              </div>
-
-              <div className={styles['form-group']}>
-                <label className={styles['form-label']} htmlFor="student-password">
-                  Пароль (авто-генерація)
-                </label>
-                <div className={styles['input-wrapper']}>
-                  <input
-                    id="student-password"
-                    type="text"
-                    className={`${styles['form-input']} ${errors.password ? styles['input--error'] : ''}`}
-                    {...register('password')}
-                  />
-                  <button
-                    type="button"
-                    className={styles['input-action-btn']}
-                    onClick={handleRegeneratePassword}
-                    title="Згенерувати інший пароль"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-                    </svg>
-                  </button>
-                </div>
-                {errors.password && (
-                  <span style={{ fontSize: '0.8rem', color: '#ef4444', marginTop: '4px', display: 'block' }}>
-                    {errors.password.message}
-                  </span>
-                )}
-                <span className={styles['hint-text']}>
-                  Простий надійний код для швидкого входу учня
-                </span>
-              </div>
-            </div>
-
-            <div className={styles['modal-footer']}>
-              <button
-                type="button"
-                className={styles['btn-secondary']}
-                onClick={handleResetAndClose}
-              >
-                Скасувати
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading || !firstName?.trim() || !lastName?.trim()}
-                className={styles['btn-primary']}
-              >
-                {isLoading ? 'Створення...' : 'Створити учня'}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
+          <>
+            <Button variant="secondary" onClick={onClose} disabled={isLoading}>
+              Скасувати
+            </Button>
+            <Button type="submit" form={formId} variant="primary" disabled={isLoading}>
+              {isLoading ? 'Створення...' : 'Створити учня'}
+            </Button>
+          </>
+        )
+      }
+    >
+      {createdCredentials ? (
+        <AddStudentSuccess
+          credentials={createdCredentials}
+          copied={copied}
+          onCopy={handleCopyCredentials}
+        />
+      ) : (
+        <AddStudentForm
+          formId={formId}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
+          onSubmitForm={handleSubmitForm}
+        />
+      )}
+    </Modal>
   );
 }
