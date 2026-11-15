@@ -1,6 +1,7 @@
 export {
   ProfileHeaderCard,
   type ProfileHeaderCardProps,
+  type ProfileHeaderCardUser,
 } from './ProfileHeaderCard';
 
 export {
@@ -17,3 +18,8 @@ export {
   ProfileAccountInfo,
   type ProfileAccountInfoProps,
 } from './ProfileAccountInfo';
+
+export {
+  ProfileQuizzesSection,
+  type ProfileQuizzesSectionProps,
+} from './ProfileQuizzesSection';

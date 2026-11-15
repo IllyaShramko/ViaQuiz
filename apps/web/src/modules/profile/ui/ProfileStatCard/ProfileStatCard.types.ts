@@ -4,4 +4,6 @@ export interface ProfileStatCardProps {
   icon: ReactNode;
   value: number | string;
   label: string;
+  to?: string;
+  isLoading?: boolean;
 }

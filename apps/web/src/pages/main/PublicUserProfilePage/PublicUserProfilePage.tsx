@@ -60,7 +60,6 @@ export function PublicUserProfilePage({ className }: PublicUserProfilePageProps)
       {/* Stats Grid */}
       <ProfileStatsGrid
         totalQuizzes={data.stats.totalQuizzes}
-        activeClassesCount={0}
         gamesCount={data.stats.gamesCount}
         isLoading={false}
       />

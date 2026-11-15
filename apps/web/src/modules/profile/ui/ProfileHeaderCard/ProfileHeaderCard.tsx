@@ -1,16 +1,17 @@
+import { CheckIcon, CopyIcon, getUserDisplayName, getUserInitials } from '../../../../shared';
+import { useCopyState } from '../../models';
 import type { ProfileHeaderCardProps } from './ProfileHeaderCard.types';
-import styles from '../Profile.module.css';
+import styles from './ProfileHeaderCard.module.css';
 
 export function ProfileHeaderCard({
   user,
   roleLabel = 'Викладач',
+  actions,
 }: ProfileHeaderCardProps) {
-  const fullName =
-    user?.firstName && user?.lastName
-      ? `${user.firstName} ${user.lastName}`
-      : user?.firstName || user?.login || 'Користувач';
-
-  const username = user?.login || 'username';
+  const { copiedKey, copy } = useCopyState();
+  const displayName = getUserDisplayName(user);
+  const initials = getUserInitials(user);
+  const login = user?.login?.trim();
 
   const formattedDate = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString('uk-UA', {
@@ -20,31 +21,56 @@ export function ProfileHeaderCard({
       })
     : null;
 
+  const isLoginCopied = copiedKey === 'headerLogin';
+
   return (
-    <div className={styles['profile-header-card']}>
-      <div className={styles['profile-avatar-wrapper']}>
-        <div className={styles['profile-avatar']}>
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-          </svg>
-        </div>
-      </div>
-
-      <div className={styles['profile-info']}>
-        <div className={styles['profile-info__main']}>
-          <h2 className={styles['profile-name']}>{fullName}</h2>
-          <span className={styles['profile-username']}>@{username}</span>
+    <section className={styles.card}>
+      <div className={styles.identity}>
+        <div className={styles.avatarChip} aria-hidden="true">
+          {initials}
         </div>
 
-        <div className={styles['profile-badge']}>
-          <span className={styles['badge-role']}>{roleLabel}</span>
-          {formattedDate && (
-            <span className={styles['profile-created-date']}>
-              На платформі з {formattedDate}
-            </span>
+        <div className={styles.meta}>
+          <div className={styles.titleRow}>
+            <h2 className={styles.name}>{displayName}</h2>
+            <span className={styles.roleBadge}>{roleLabel}</span>
+          </div>
+
+          {(login || formattedDate) && (
+            <div className={styles.subRow}>
+              {login && (
+                <button
+                  type="button"
+                  className={`${styles.handleBtn} ${isLoginCopied ? styles.handleBtnCopied : ''}`}
+                  onClick={() => void copy(login, 'headerLogin')}
+                  title={isLoginCopied ? 'Логін скопійовано' : 'Скопіювати логін'}
+                >
+                  <span>@{login}</span>
+                  {isLoginCopied ? (
+                    <CheckIcon size={12} aria-hidden="true" />
+                  ) : (
+                    <CopyIcon size={12} aria-hidden="true" />
+                  )}
+                </button>
+              )}
+
+              {login && formattedDate && (
+                <span className={styles.dot} aria-hidden="true">
+                  ·
+                </span>
+              )}
+
+              {formattedDate && (
+                <span className={styles.joinedDate}>
+                  На платформі з {formattedDate}
+                </span>
+              )}
+            </div>
           )}
         </div>
       </div>
-    </div>
+
+      {actions && <div className={styles.actions}>{actions}</div>}
+    </section>
   );
 }

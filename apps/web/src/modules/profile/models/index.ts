@@ -6,3 +6,4 @@ export type {
 
 export type { TeacherProfileStatsDto, PublicUserProfileDto } from '@viaquiz/shared-types';
 
+export { useCopyState } from './useCopyState';
