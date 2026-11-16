@@ -1,0 +1,387 @@
+/* Bottom Section: Variants & Actions */
+.variantsSectionBottom {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Multi-Choice Submit Button */
+.multiSubmitBtn {
+  order: 2;
+  width: 100%;
+  max-width: 360px;
+  height: 44px;
+  font-size: 0.95rem;
+}
+
+/* Horizontal Variants Grid (Desktop) */
+.variantsGrid {
+  order: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+/* Student Solid Option Button */
+.studentVariantBtn {
+  --variant-bg: #2b69dc;
+  --variant-bg-hover: #3876eb;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: clamp(1.17rem, 1.35vw, 1.25rem);
+  line-height: 1.35;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: clamp(160px, 22vh, 220px);
+  aspect-ratio: 1 / 1;
+  max-width: none;
+  border-radius: var(--radius-lg, 0.5rem);
+  border: 2px solid transparent;
+  background: var(--variant-bg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 2.25rem 0.875rem 1.25rem;
+  text-align: center;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.studentVariantBtn:hover:not(:disabled) {
+  background: var(--variant-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.34);
+}
+
+.studentVariantBtn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.studentVariantBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.studentVariantBtn.isSelected {
+  background: var(--variant-bg-hover);
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.24), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* 2 variants desktop: wide cards matching 4-variant height */
+.variantsGridCount2 .studentVariantBtn {
+  aspect-ratio: 2 / 1;
+  max-width: none;
+}
+
+/* 3 variants desktop: expand across container matching 4-variant height */
+.variantsGridCount3 .studentVariantBtn {
+  aspect-ratio: 4 / 3;
+  max-width: none;
+}
+
+.studentVariantBtn span {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.variantBadgeCorner {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 26px;
+  height: 26px;
+  background: rgba(0, 0, 0, 0.28);
+  border: none;
+  border-radius: var(--radius-md, 0.375rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+}
+
+/* Multi-select Variant Checkbox (Top-right corner) */
+.variantCheckboxCorner {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md, 0.375rem);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  box-sizing: border-box;
+  pointer-events: none;
+  transition: background-color var(--transition-fast, 150ms ease),
+              border-color var(--transition-fast, 150ms ease),
+              box-shadow var(--transition-fast, 150ms ease);
+}
+
+.studentVariantBtn:hover:not(:disabled) .variantCheckboxCorner:not(.variantCheckboxSelected) {
+  border-color: #ffffff;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.variantCheckboxSelected {
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.variantCheckboxCheck {
+  color: #0f172a;
+  animation: checkPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Slightly lighter opaque option shades; all variants brighten uniformly on hover */
+.variantColor0 { --variant-bg: #2b69dc; --variant-bg-hover: #3876eb; }
+.variantColor1 { --variant-bg: #c66d0d; --variant-bg-hover: #d47a17; }
+.variantColor2 { --variant-bg: #21964b; --variant-bg-hover: #29a857; }
+.variantColor3 { --variant-bg: #d02866; --variant-bg-hover: #de3775; }
+.variantColor4 { --variant-bg: #7e3de0; --variant-bg-hover: #8d4eed; }
+.variantColor5 { --variant-bg: #148ba6; --variant-bg-hover: #1b9cb8; }
+
+@media (max-width: 768px) {
+  .variantsSectionBottom {
+    margin-top: auto;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    max-height: 65vh;
+  }
+
+  .multiSubmitBtn {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0.35rem;
+    margin-bottom: 0;
+    height: 44px;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .variantsGrid {
+    order: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .studentVariantBtn {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    min-height: clamp(114px, 16.5vh, 158px);
+    max-height: clamp(148px, 23vh, 200px);
+    padding: 1.5rem 0.75rem 0.75rem;
+    border-radius: 10px;
+    font-size: clamp(1.17rem, 4vw, 1.3rem);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .studentVariantBtn .variantBadgeCorner {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-md, 0.375rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .studentVariantBtn .variantCheckboxCorner {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-md, 0.375rem);
+  }
+
+  .studentVariantBtn span {
+    text-align: center;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+  }
+
+  .variantsGrid.variantsGridCount2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .variantsGridCount2 .studentVariantBtn {
+    aspect-ratio: 1 / 1;
+    min-height: clamp(114px, 16.5vh, 158px);
+    max-height: clamp(148px, 23vh, 200px);
+    padding: 1.5rem 0.75rem 0.75rem;
+    border-radius: 10px;
+    font-size: clamp(1.17rem, 4vw, 1.3rem);
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .variantsGrid.variantsGridCount3 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    gap: clamp(0.55rem, 1.4vh, 0.75rem);
+    box-sizing: border-box;
+  }
+
+  .variantsGridCount3 .studentVariantBtn {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    min-height: clamp(66px, 9.5vh, 84px);
+    max-height: none;
+    padding: 0.8rem 3.25rem 0.8rem 3.75rem;
+    border-radius: 10px;
+    font-size: clamp(1.17rem, 4vw, 1.25rem);
+    font-weight: 700;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  .variantsGridCount3 .studentVariantBtn .variantBadgeCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+
+  .variantsGridCount3 .studentVariantBtn .variantCheckboxCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 12px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .variantsGridCount3 .studentVariantBtn span {
+    text-align: left;
+    -webkit-line-clamp: 2;
+  }
+
+  .variantsGrid.variantsGridColumnMobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    box-sizing: border-box;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: auto;
+    min-height: clamp(52px, 7.5vh, 64px);
+    max-height: none;
+    padding: 0.65rem 3.25rem 0.65rem 3.5rem;
+    border-radius: 10px;
+    font-size: clamp(1.17rem, 3.8vw, 1.25rem);
+    font-weight: 700;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn .variantBadgeCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+    width: 26px;
+    height: 26px;
+    font-size: 0.875rem;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn .variantCheckboxCorner {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 12px;
+    width: 26px;
+    height: 26px;
+  }
+
+  .variantsGridColumnMobile .studentVariantBtn span {
+    text-align: left;
+    -webkit-line-clamp: 2;
+  }
+}

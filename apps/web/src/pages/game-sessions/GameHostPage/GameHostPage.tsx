@@ -1,17 +1,20 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../modules/auth';
+import { useAuth } from '../../../modules/auth';
 import {
 	useGetRoomByUuidQuery,
 	useGameSession,
 	HostLobby,
+	HostControlsBar,
 	QuestionHostView,
 	ReviewHostView,
 	FinalResultsHost,
 	ParticipantsSidebar,
-} from '../../modules/game-session';
-import { getAuthToken } from '../../shared/api/headers';
-import styles from '../../modules/game-session/ui/GameSession.module.css';
+} from '../../../modules/game-session';
+import { Button } from '../../../shared/ui';
+import { getAuthToken } from '../../../shared/api/headers';
+import sessionStyles from '../../../modules/game-session/ui/GameSession.module.css';
+import styles from './GameHostPage.module.css';
 
 export function GameHostPage() {
 	const { roomUuid } = useParams<{ roomUuid: string }>();
@@ -80,24 +83,25 @@ export function GameHostPage() {
 	const currentRoomId = roomId || room?.id || 0;
 	const joinCode = room?.joinCode || '000000';
 	const quizName = room?.quiz?.name || 'Вікторина';
+	const resolvedTotalQuestions = room?.quiz?._count?.questions || totalQuestions || 0;
+	const isLastQuestion =
+		resolvedTotalQuestions > 0 && currentQuestionIndex >= resolvedTotalQuestions - 1;
 
 	if (kickedReason) {
 		return (
-			<div className={styles['game-root']}>
-				<div className={styles['game-main-content']}>
-					<div className={styles['lobby-host-card']} style={{ textAlign: 'center' }}>
-						<h2 style={{ color: 'var(--color-error, #ef4444)' }}>Сесію закрито</h2>
-						<p style={{ color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
-							{kickedReason}
-						</p>
-						<button
+			<div className={sessionStyles.gameRoot}>
+				<div className={sessionStyles.gameMainContent}>
+					<div className={sessionStyles.statusCard}>
+						<h2 className={sessionStyles.statusCardErrorTitle}>Сесію закрито</h2>
+						<p className={sessionStyles.statusCardText}>{kickedReason}</p>
+						<Button
 							type="button"
-							className={styles['lobby-start-btn']}
-							style={{ marginTop: '1.5rem' }}
+							variant="primary"
+							size="md"
 							onClick={() => navigate('/dashboard')}
 						>
 							Повернутися до панелі
-						</button>
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -106,8 +110,8 @@ export function GameHostPage() {
 
 	if (isRoomLoading || isAuthLoading) {
 		return (
-			<div className={styles['game-root']}>
-				<div className={styles['game-main-content']}>
+			<div className={sessionStyles.gameRoot}>
+				<div className={sessionStyles.gameMainContent}>
 					<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження сесії...</div>
 				</div>
 			</div>
@@ -119,7 +123,7 @@ export function GameHostPage() {
 	}
 
 	return (
-		<div className={styles['game-root']}>
+		<div className={sessionStyles.gameRoot}>
 			{/* Final results screen (full podium view without sidebar) */}
 			{status === 'FINISHED' ? (
 				<FinalResultsHost
@@ -129,11 +133,13 @@ export function GameHostPage() {
 					roomUuid={roomUuid}
 				/>
 			) : (
-				<div className={styles['game-layout-body']}>
+				<div className={styles.gameLayoutBody}>
 					{/* Main interactive area switching between lobby, question, and review */}
 					{status === 'AWAITING' && (
 						<HostLobby
 							joinCode={joinCode}
+							quizName={quizName}
+							totalQuestions={resolvedTotalQuestions}
 							roomUuid={roomUuid || ''}
 							onStartGame={() => startGame(currentRoomId)}
 						/>
@@ -145,14 +151,9 @@ export function GameHostPage() {
 								question={currentQuestion}
 								questionIndex={currentQuestionIndex}
 								totalQuestions={totalQuestions}
-								participants={participants}
-								answeredCount={answeredCount}
-								remainingSeconds={remainingSeconds}
-								onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
-								onSkipQuestion={() => endQuestion(currentRoomId)}
 							/>
 						) : (
-							<div className={styles['game-main-content']}>
+							<div className={sessionStyles.gameMainContent}>
 								<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження запитання...</div>
 							</div>
 						)
@@ -164,14 +165,12 @@ export function GameHostPage() {
 								question={currentQuestion}
 								questionIndex={currentQuestionIndex}
 								totalQuestions={totalQuestions}
+								isLastQuestion={isLastQuestion}
 								reviewData={reviewData}
 								participants={participants}
-								remainingSeconds={remainingSeconds}
-								onExtendTime={(secs?: number) => extendTime(currentRoomId, secs)}
-								onNextQuestion={() => nextQuestion(currentRoomId)}
 							/>
 						) : (
-							<div className={styles['game-main-content']}>
+							<div className={sessionStyles.gameMainContent}>
 								<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження огляду результатів...</div>
 							</div>
 						)
@@ -184,6 +183,27 @@ export function GameHostPage() {
 						answeredParticipantIds={answeredParticipantIds}
 						reviewData={reviewData}
 						onKickParticipant={(pId) => kickParticipant(currentRoomId, pId)}
+						footer={
+							status === 'PROGRESS' && currentQuestion ? (
+								<HostControlsBar
+									status="PROGRESS"
+									remainingSeconds={remainingSeconds}
+									answeredCount={answeredCount}
+									totalParticipants={participants.length}
+									onExtendTime={(secs) => extendTime(currentRoomId, secs)}
+									onPrimaryAction={() => endQuestion(currentRoomId)}
+								/>
+							) : status === 'REVIEWING' && currentQuestion && reviewData ? (
+								<HostControlsBar
+									status="REVIEWING"
+									remainingSeconds={remainingSeconds}
+									answeredCount={reviewData.totalAnswered ?? answeredCount}
+									totalParticipants={participants.length}
+									isLastQuestion={isLastQuestion}
+									onPrimaryAction={() => nextQuestion(currentRoomId)}
+								/>
+							) : undefined
+						}
 					/>
 				</div>
 			)}

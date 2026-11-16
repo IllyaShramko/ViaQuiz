@@ -4,7 +4,8 @@ import {
 	NeutralCheckIcon,
 	CorrectCheckIcon,
 	IncorrectCrossIcon,
-	SettingsIcon,
+	CloseIcon,
+	ChevronDownIcon,
 } from '../../../../../shared/ui/icons';
 import { useFlipAnimation } from '../../../../../shared/hooks';
 import type { ParticipantDto } from '@viaquiz/shared-types';
@@ -12,13 +13,7 @@ import type { ParticipantsSidebarProps } from './ParticipantsSidebar.types';
 import styles from './ParticipantsSidebar.module.css';
 
 /**
- * Unified sidebar for all game phases (lobby, question, review).
- *
- * - During PROGRESS: shows neutral checkmark when student has answered.
- * - During REVIEWING: shows green checkmark / red cross based on correctness.
- * - On hover: reveals the participant's score instead of the icon.
- * - On click: opens kick confirmation modal.
- * - Animates participant reordering and additions smoothly using useFlipAnimation.
+ * Unified participant roster sidebar across AWAITING, PROGRESS, and REVIEWING phases.
  */
 export function ParticipantsSidebar({
 	participants,
@@ -26,17 +21,18 @@ export function ParticipantsSidebar({
 	answeredParticipantIds,
 	reviewData,
 	onKickParticipant,
+	footer,
 }: ParticipantsSidebarProps) {
 	const [kickTarget, setKickTarget] = useState<ParticipantDto | null>(null);
 	const [isKickModalOpen, setIsKickModalOpen] = useState(false);
-	const [hoveredId, setHoveredId] = useState<number | null>(null);
+	const [isMobileListOpen, setIsMobileListOpen] = useState(false);
 
 	const handleRequestKick = (participant: ParticipantDto) => {
+		if (!onKickParticipant) return;
 		setKickTarget(participant);
 		setIsKickModalOpen(true);
 	};
 
-	// Sort participants by score when game has started; preserve join order when scores are tied
 	const displayParticipants = useMemo(() => {
 		if (status === 'AWAITING') {
 			return participants;
@@ -44,62 +40,50 @@ export function ParticipantsSidebar({
 		return [...participants].sort((a, b) => b.score - a.score);
 	}, [participants, status]);
 
-	// FLIP animation for smooth list reordering and additions (only triggered when participant list/order changes)
+	// Only re-run FLIP measurements when participant membership or rank ordering changes
+	const orderKey = useMemo(
+		() => displayParticipants.map((p) => p.participantId).join(','),
+		[displayParticipants],
+	);
+
 	const listRef = useFlipAnimation<HTMLDivElement>({
-		duration: 350,
-		deps: [displayParticipants],
+		duration: 320,
+		deps: [orderKey],
 	});
 
-	/**
-	 * Determine what to render in the right-hand side of each participant row.
-	 */
-	const renderStatus = (p: ParticipantDto) => {
-		const isHovered = hoveredId === p.participantId;
-
-		// On hover — always show score
-		if (isHovered) {
-			return (
-				<span className={styles['participant-score-text']}>
-					{p.score} б
-				</span>
-			);
-		}
-
-		// During active question — show neutral checkmark if answered
+	const renderStatusBadge = (participantId: number) => {
 		if (status === 'PROGRESS') {
-			if (answeredParticipantIds?.has(p.participantId)) {
+			if (answeredParticipantIds?.has(participantId)) {
 				return (
-					<span className={styles['participant-status-icon']} key={`answered-${p.participantId}`}>
-						<NeutralCheckIcon size={18} />
+					<span
+						className={styles.statusIcon}
+						title="Відповідь надіслано"
+					>
+						<NeutralCheckIcon size={16} />
 					</span>
 				);
 			}
-			return null; // Not answered yet — show nothing
+			return null;
 		}
 
-		// During review — show correct/incorrect icon
 		if (status === 'REVIEWING' && reviewData?.participantAnswers) {
-			const pa = reviewData.participantAnswers.find(
-				(item) => item.participantId === p.participantId,
+			const answer = reviewData.participantAnswers.find(
+				(item) => item.participantId === participantId,
 			);
-
-			if (pa && pa.isAnswered) {
+			if (answer?.isAnswered) {
 				return (
-					<span className={styles['participant-status-icon']} key={`review-${p.participantId}-${pa.isCorrect}`}>
-						{pa.isCorrect ? (
-							<CorrectCheckIcon size={18} />
+					<span
+						className={styles.statusIcon}
+						title={answer.isCorrect ? 'Правильна відповідь' : 'Неправильна відповідь'}
+					>
+						{answer.isCorrect ? (
+							<CorrectCheckIcon size={16} />
 						) : (
-							<IncorrectCrossIcon size={16} />
+							<IncorrectCrossIcon size={14} />
 						)}
 					</span>
 				);
 			}
-			return null; // Didn't answer — show nothing
-		}
-
-		// Lobby / finished — show nothing (or score)
-		if (status === 'AWAITING' || status === 'FINISHED') {
-			return null;
 		}
 
 		return null;
@@ -107,45 +91,75 @@ export function ParticipantsSidebar({
 
 	return (
 		<>
-			<aside className={styles['game-sidebar']}>
-				<div className={styles['game-sidebar-header']}>
-					<span>Учасники: ({participants.length})</span>
-					<SettingsIcon size={18} className={styles['game-sidebar-settings-icon']} />
+			<aside className={styles.sidebar}>
+				<button
+					type="button"
+					className={styles.mobileHeaderBtn}
+					onClick={() => setIsMobileListOpen((prev) => !prev)}
+					aria-expanded={isMobileListOpen}
+				>
+					<span className={styles.headerTitle}>
+						Учасники
+						<span className={styles.countBadge}>{participants.length}</span>
+					</span>
+					<ChevronDownIcon
+						size={16}
+						className={`${styles.mobileChevron} ${isMobileListOpen ? styles.isOpen : ''}`}
+					/>
+				</button>
+
+				<div className={styles.desktopHeader}>
+					<span className={styles.headerTitle}>
+						Учасники
+						<span className={styles.countBadge}>{participants.length}</span>
+					</span>
 				</div>
-				<div ref={listRef} className={styles['game-sidebar-list']}>
-					{displayParticipants.map((p, idx) => (
+
+				<div
+					ref={listRef}
+					className={`${styles.list} ${isMobileListOpen ? styles.isMobileOpen : ''}`}
+				>
+					{displayParticipants.map((participant, index) => (
 						<div
-							key={p.participantId}
-							data-flip-key={p.participantId}
-							className={`${styles['participant-item']} ${styles['participant-item-clickable']}`}
-							onClick={() => handleRequestKick(p)}
-							onMouseEnter={() => setHoveredId(p.participantId)}
-							onMouseLeave={() => setHoveredId(null)}
-							role="button"
-							tabIndex={0}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									e.preventDefault();
-									handleRequestKick(p);
-								}
-							}}
-							title={`${p.nickname} — ${p.score} б`}
+							key={participant.participantId}
+							data-flip-key={participant.participantId}
+							className={styles.item}
 						>
-							<div className={styles['participant-item-left']}>
-								<span className={styles['participant-badge']}>{idx + 1}</span>
-								<span className={styles['participant-name']}>{p.nickname}</span>
+							<div className={styles.itemLeft}>
+								<span className={styles.rankBadge}>{index + 1}</span>
+								<span className={styles.name}>{participant.nickname}</span>
 							</div>
-							<div className={styles['participant-item-right']}>
-								{renderStatus(p)}
+
+							<div className={styles.itemRight}>
+								{renderStatusBadge(participant.participantId)}
+
+								{status !== 'AWAITING' && (
+									<span className={styles.score}>{participant.score} б</span>
+								)}
+
+								{onKickParticipant && (
+									<button
+										type="button"
+										className={styles.kickBtn}
+										onClick={() => handleRequestKick(participant)}
+										aria-label={`Вилучити учасника ${participant.nickname}`}
+										title={`Вилучити ${participant.nickname}`}
+									>
+										<CloseIcon size={13} />
+									</button>
+								)}
 							</div>
 						</div>
 					))}
+
 					{participants.length === 0 && (
-						<div className={styles['game-sidebar-empty']}>
+						<div className={styles.emptyState}>
 							Очікуємо підключення учнів...
 						</div>
 					)}
 				</div>
+
+				{footer && <div className={styles.footerSlot}>{footer}</div>}
 			</aside>
 
 			<KickConfirmModal

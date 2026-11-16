@@ -36,7 +36,9 @@ export {
 } from './review';
 
 export {
+  HostControlsBar,
   ParticipantsSidebar,
+  type HostControlsBarProps,
   type ParticipantsSidebarProps,
 } from './sidebar';
 

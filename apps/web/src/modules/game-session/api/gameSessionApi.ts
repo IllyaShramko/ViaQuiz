@@ -20,7 +20,15 @@ export interface RoomResponse {
 		name: string;
 		description?: string | null;
 		coverImg?: string | null;
+		_count?: {
+			questions: number;
+		};
 	};
+	host?: {
+		id: number;
+		firstName?: string | null;
+		lastName?: string | null;
+	} | null;
 	course?: {
 		id: number;
 		name: string;

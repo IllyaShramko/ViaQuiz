@@ -1,0 +1,90 @@
+/* Top Navigation Bar */
+.gameTopbar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: rgba(18, 18, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border, #2a2a3a);
+  min-height: 65px;
+}
+
+.gameLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  text-decoration: none;
+  z-index: 2;
+}
+
+.gameLogoText {
+  display: inline-block;
+}
+
+.gameLogoIcon {
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.gameTopbarCenter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary, #f0f0f5);
+  background: var(--color-bg-surface, #1a1a26);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-md, 0.375rem);
+  border: 1px solid var(--color-border, #2a2a3a);
+  pointer-events: auto;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.gameTopbarRight {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary, #9090a8);
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .gameTopbar {
+    padding: 0.5rem 0.75rem;
+    min-height: 48px;
+    flex-shrink: 0;
+  }
+
+  .gameTopbarCenter {
+    font-size: 0.95rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .gameTopbarRight {
+    font-size: 0.95rem;
+  }
+
+  .gameLogo span,
+  .gameLogoText {
+    display: none;
+  }
+}

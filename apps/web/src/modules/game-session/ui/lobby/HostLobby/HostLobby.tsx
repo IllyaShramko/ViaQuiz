@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Link } from 'react-router-dom';
 import { QrCodeModal } from '../../modals';
+import { Button } from '../../../../../shared/ui';
 import { CopyIcon, CheckIcon, PlayIcon } from '../../../../../shared/ui/icons';
 import { copyToClipboard } from '../../../../../shared/tools';
 import { getShareableOrigin } from '../../../../../shared/constants';
@@ -10,10 +11,9 @@ import styles from './HostLobby.module.css';
 
 export function HostLobby({
 	joinCode,
-	roomUuid: _roomUuid,
-	participants: _participants,
+	quizName,
+	totalQuestions,
 	onStartGame,
-	onKickParticipant: _onKickParticipant,
 }: HostLobbyProps) {
 	const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 	const [isUrlCopied, setIsUrlCopied] = useState(false);
@@ -22,8 +22,8 @@ export function HostLobby({
 	const codeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const joinUrl = `${getShareableOrigin()}/join?code=${joinCode}`;
+	const digits = joinCode.split('');
 
-	// Cleanup copy timeouts on unmount
 	useEffect(() => {
 		return () => {
 			if (urlTimeoutRef.current) {
@@ -61,99 +61,110 @@ export function HostLobby({
 	};
 
 	return (
-		<div className={styles['game-main-content']}>
-			<div className={styles['lobby-host-card']}>
-					{/* Step 1: Join via link */}
-					<div className={styles['lobby-step-section']}>
-						<div className={styles['lobby-step-header']}>
-							<div className={styles['lobby-step-header-left']}>
-								<span className={styles['lobby-step-badge']}>1</span>
-								<span className={styles['lobby-step-title']}>Приєднайтеся за посиланням</span>
-							</div>
-							<button
-								type="button"
-								className={`${styles['lobby-copy-icon-btn']} ${isUrlCopied ? styles['is-copied'] : ''}`}
-								onClick={() => handleCopy(joinUrl, 'url')}
-								title={isUrlCopied ? 'Скопійовано!' : 'Скопіювати посилання'}
-							>
-								{isUrlCopied ? (
-									<CheckIcon size={16} />
-								) : (
-									<CopyIcon size={16} />
-								)}
-							</button>
-						</div>
-						<div className={styles['lobby-url-row']}>
-							<Link to={joinUrl} target="_blank" className={styles['lobby-url-text']}>
-								joinviaquiz.com
-							</Link>
-							<button
-								type="button"
-								className={styles['lobby-qr-preview-btn']}
-								onClick={() => setIsQrModalOpen(true)}
-								title="Натисніть, щоб відкрити QR-код"
-								aria-label="Збільшити QR-код"
-							>
-								<div className={styles['lobby-qr-preview-thumb']}>
-									<QRCodeSVG value={joinUrl} size={44} level="Q" />
-								</div>
-							</button>
-						</div>
+		<div className={styles.stage}>
+			<div className={styles.card}>
+				<div className={styles.cardHeader}>
+					<div className={styles.quizMeta}>
+						<span className={styles.eyebrow}>Кімната очікування</span>
+						<h1 className={styles.quizTitle}>{quizName || 'Вікторина'}</h1>
 					</div>
-
-					{/* Step 2: Join via PIN code */}
-					<div className={styles['lobby-step-section']}>
-						<div className={styles['lobby-step-header']}>
-							<div className={styles['lobby-step-header-left']}>
-								<span className={styles['lobby-step-badge']}>2</span>
-								<span className={styles['lobby-step-title']}>Приєднайтеся за кодом</span>
-							</div>
-							<button
-								type="button"
-								className={`${styles['lobby-copy-icon-btn']} ${isCodeCopied ? styles['is-copied'] : ''}`}
-								onClick={() => handleCopy(joinCode, 'code')}
-								title={isCodeCopied ? 'Скопійовано!' : 'Скопіювати код'}
-							>
-								{isCodeCopied ? (
-									<CheckIcon size={16} />
-								) : (
-									<CopyIcon size={16} />
-								)}
-							</button>
-						</div>
-						<div
-							className={styles['lobby-pin-display']}
-							onClick={() => handleCopy(joinCode, 'code')}
-							title={isCodeCopied ? 'Скопійовано!' : 'Натисніть, щоб скопіювати код'}
-							role="button"
-							tabIndex={0}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
-									handleCopy(joinCode, 'code');
-								}
-							}}
-						>
-							{joinCode.split('').join(' ')}
-						</div>
-					</div>
-
-					{/* Start Game Button */}
-					<button
-						type="button"
-						className={styles['lobby-start-btn']}
-						onClick={onStartGame}
-					>
-						<PlayIcon size={16} />
-						<span>Почати вікторину</span>
-					</button>
+					{typeof totalQuestions === 'number' && totalQuestions > 0 && (
+						<span className={styles.questionsBadge}>{totalQuestions} запитань</span>
+					)}
 				</div>
 
-				{/* QR Code Modal */}
-				<QrCodeModal
-					isOpen={isQrModalOpen}
-					onClose={() => setIsQrModalOpen(false)}
-					joinUrl={joinUrl}
-				/>
+				<div className={styles.grid}>
+					<div className={styles.leftColumn}>
+						<div className={styles.fieldGroup}>
+							<span className={styles.fieldLabel}>1. Відкрийте посилання</span>
+							<div className={styles.fieldSurface}>
+								<Link to={joinUrl} target="_blank" className={styles.urlLink}>
+									joinviaquiz.com
+								</Link>
+								<button
+									type="button"
+									className={`${styles.copyBtn} ${isUrlCopied ? styles.isCopied : ''}`}
+									onClick={() => handleCopy(joinUrl, 'url')}
+									title={isUrlCopied ? 'Скопійовано!' : 'Скопіювати посилання'}
+									aria-label="Скопіювати посилання"
+								>
+									{isUrlCopied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
+								</button>
+							</div>
+						</div>
+
+						<div className={styles.fieldGroup}>
+							<span className={styles.fieldLabel}>2. Або введіть код кімнати</span>
+							<div
+								className={styles.pinSurface}
+								onClick={() => handleCopy(joinCode, 'code')}
+								role="button"
+								tabIndex={0}
+								title={isCodeCopied ? 'Скопійовано!' : 'Натисніть, щоб скопіювати код'}
+								aria-label={`Код підключення ${joinCode}. Натисніть, щоб скопіювати`}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										handleCopy(joinCode, 'code');
+									}
+								}}
+							>
+								<div className={styles.pinDigits}>
+									{digits.map((digit, index) => (
+										<span key={index} className={styles.pinDigit}>
+											{digit}
+										</span>
+									))}
+								</div>
+								<span className={`${styles.copyBtn} ${isCodeCopied ? styles.isCopied : ''}`}>
+									{isCodeCopied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
+								</span>
+							</div>
+						</div>
+
+						<div className={styles.actions}>
+							<Button
+								type="button"
+								variant="primary"
+								size="md"
+								fullWidth
+								onClick={onStartGame}
+								className={styles.startButton}
+							>
+								<PlayIcon size={18} />
+								<span>Почати вікторину</span>
+							</Button>
+						</div>
+					</div>
+
+					<div className={styles.rightColumn}>
+						<button
+							type="button"
+							className={styles.qrCardButton}
+							onClick={() => setIsQrModalOpen(true)}
+							title="Натисніть, щоб збільшити QR-код"
+							aria-label="Збільшити QR-код"
+						>
+							<div className={styles.qrFrame}>
+								<QRCodeSVG
+									value={joinUrl}
+									size={172}
+									level="Q"
+									className={styles.qrSvg}
+								/>
+							</div>
+							<span className={styles.qrHint}>Збільшити QR-код</span>
+						</button>
+					</div>
+				</div>
 			</div>
-		);
-	}
+
+			<QrCodeModal
+				isOpen={isQrModalOpen}
+				onClose={() => setIsQrModalOpen(false)}
+				joinUrl={joinUrl}
+				joinCode={joinCode}
+			/>
+		</div>
+	);
+}

@@ -1,9 +1,8 @@
-import React from 'react';
 import { useTeacherHeader } from '../../../../shared';
 import { SessionsHistoryTable } from '../SessionsHistoryTable';
 import styles from '../Reports.module.css';
 
-export const ReportsListPage: React.FC = () => {
+export function ReportsListPage() {
   useTeacherHeader({ title: 'Звіти' });
 
   return (
@@ -11,5 +10,5 @@ export const ReportsListPage: React.FC = () => {
       <SessionsHistoryTable searchPlaceholder="Пошук звітів..." />
     </div>
   );
-};
+}
 

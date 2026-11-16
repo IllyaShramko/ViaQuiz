@@ -14,7 +14,6 @@ import type {
 	CreateRoomDto,
 	JoinByCodeDto,
 	GameJwtPayload,
-	SubmitAnswerDto,
 	RoomStatus,
 	StudentResultReportDto,
 } from "./game-sessions.types";

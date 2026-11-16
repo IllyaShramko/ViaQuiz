@@ -1,4 +1,4 @@
-import { ForbiddenError, NotFoundError } from "../../errors/customErrors";
+import { ForbiddenError } from "../../errors/customErrors";
 import { QuizRepository } from "../quizzes/quiz.repository";
 import { QuestionRepository } from "./question.repository";
 import type { QuestionServiceContract } from "./types/questions.contracts";

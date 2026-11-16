@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type {
   ParticipantDto,
   GameReviewDataDto,
@@ -10,4 +11,5 @@ export interface ParticipantsSidebarProps {
   answeredParticipantIds?: Set<number>;
   reviewData?: GameReviewDataDto | null;
   onKickParticipant?: (participantId: number) => void;
+  footer?: ReactNode;
 }

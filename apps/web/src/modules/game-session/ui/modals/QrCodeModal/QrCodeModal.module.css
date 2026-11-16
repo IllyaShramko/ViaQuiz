@@ -1,39 +1,85 @@
-.container {
+.card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 6px;
-}
-
-.card {
+  gap: 1rem;
   background: var(--color-bg-elevated, #12121a);
   border: 1px solid var(--color-border, #2a2a3a);
-  border-radius: 16px;
-  padding: 14px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.65);
+  border-radius: var(--radius-xl, 0.75rem);
+  padding: 1.25rem;
+  max-width: min(92vw, 420px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f4f4f8);
+}
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md, 0.375rem);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted, #6a6a82);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.closeBtn:hover {
+  background: var(--color-bg-hover, #22222e);
+  border-color: var(--color-border, #2a2a3a);
+  color: var(--color-text-primary, #f4f4f8);
 }
 
 .whiteBox {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px;
-  border-radius: 10px;
+  padding: 1rem;
+  border-radius: var(--radius-lg, 0.5rem);
   background: #ffffff;
 }
 
 .svg {
   display: block;
-  width: min(72vw, 380px);
+  width: min(72vw, 340px);
   height: auto;
-  max-height: min(65dvh, 380px);
+  max-height: min(60dvh, 340px);
 }
 
-.hintText {
-  margin: 0;
-  font-size: 0.8125rem;
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
   color: var(--color-text-secondary, #9090a8);
-  text-align: center;
-  user-select: none;
+}
+
+.domain {
+  font-weight: 500;
+  color: var(--color-text-primary, #f4f4f8);
+}
+
+.dot {
+  color: var(--color-text-muted, #6a6a82);
+}
+
+.code {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-primary, #f4f4f8);
 }

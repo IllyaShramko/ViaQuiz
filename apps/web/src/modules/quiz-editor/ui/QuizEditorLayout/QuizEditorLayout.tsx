@@ -19,7 +19,7 @@ import type { EditorQuiz, EditorQuestion, QuestionType, SaveStatus } from '../..
 import type { QuizEditorLayoutProps } from './QuizEditorLayout.types';
 import styles from './QuizEditorLayout.module.css';
 
-export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
+export function QuizEditorLayout({ quiz }: QuizEditorLayoutProps) {
   const [localQuiz, setLocalQuiz] = useState<EditorQuiz>(quiz);
   const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
@@ -315,4 +315,4 @@ export const QuizEditorLayout: React.FC<QuizEditorLayoutProps> = ({ quiz }) => {
       />
     </div>
   );
-};
+}

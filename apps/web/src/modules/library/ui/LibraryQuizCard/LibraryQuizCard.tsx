@@ -1,4 +1,4 @@
-import React from 'react';
+import type { KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { OneAnswerIcon, ViewEyeIcon, HeartIcon } from '../../../../shared';
 import type { LibraryQuizCardProps } from './LibraryQuizCard.types';
@@ -34,7 +34,7 @@ export function LibraryQuizCard({
       ? `${author.firstName} ${author.lastName}`
       : author?.firstName || author?.login || null;
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onClick(quiz.uuid);

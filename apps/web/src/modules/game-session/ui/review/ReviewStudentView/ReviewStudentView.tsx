@@ -41,14 +41,15 @@ export function ReviewStudentView({
 		return () => clearTimeout(timer);
 	}, []);
 
-	const isTypeV1 = question.type === 'TYPE_ANSWER_V1';
-	const isTypeV2 = question.type === 'TYPE_ANSWER_V2';
-	const isTyped = isTypeV1 || isTypeV2;
-	const studentTypedAnswer = res?.typedAnswer ?? reviewData.myAnswer?.typedAnswer;
-	const correctAnswersText =
-		reviewData.correctTextAnswers?.join(' / ') ||
-		question.variants.map((v) => v.text).filter(Boolean).join(' / ') ||
-		'—';
+	const isTyped =
+		question.type === 'TYPE_ANSWER_V1' || question.type === 'TYPE_ANSWER_V2';
+	const typedStatusClass = isTyped
+		? !isAnswered
+			? styles.isTypedSkipped
+			: isCorrect
+				? styles.isTypedCorrect
+				: styles.isTypedWrong
+		: '';
 
 	const variantCount = question.variants?.length || 0;
 	const gridVariantClass =
@@ -62,9 +63,9 @@ export function ReviewStudentView({
 
 	return (
 		<div className={styles.gameMainContent}>
-			{/* Overlay to add blur and backdrop */}
+			{/* Overlay to add blur, backdrop, and red/green status highlight for typed answers */}
 			<div
-				className={`${styles.reviewStudentOverlay} ${styles.isActive}`}
+				className={`${styles.reviewStudentOverlay} ${styles.isActive} ${typedStatusClass}`}
 			/>
 
 			{/* Status Banner Container */}
@@ -132,7 +133,7 @@ export function ReviewStudentView({
 				className={`${styles.questionContainer} ${styles.isBlurred}`}
 			>
 				{/* Top Section: Question Card (pinned to top on mobile) */}
-				<div className={styles.questionHeaderCard}>
+				<div className={`${styles.questionHeaderCard} ${typedStatusClass}`}>
 					<h2 className={styles.questionText}>{question.text}</h2>
 
 					{question.media && (
@@ -145,36 +146,8 @@ export function ReviewStudentView({
 					)}
 				</div>
 
-				{/* Bottom Section: Highlighted Variants Grid OR Typed Review Card (pinned to bottom on mobile) */}
-				{isTyped ? (
-					<div className={styles.typedReviewCard}>
-						<div className={styles.typedReviewRow}>
-							<span className={styles.typedReviewLabel}>Ваша відповідь</span>
-							<div
-								className={`${styles.typedReviewValue} ${
-									!isAnswered
-										? styles.isSkipped
-										: isCorrect
-											? styles.isCorrect
-											: styles.isWrong
-								}`}
-							>
-								{isAnswered ? studentTypedAnswer || '—' : 'Пропущено (без відповіді)'}
-							</div>
-						</div>
-
-						<div className={styles.typedReviewRow}>
-							<span className={styles.typedReviewLabel}>
-								Правильна відповідь
-							</span>
-							<div
-								className={`${styles.typedReviewValue} ${styles.isCorrect}`}
-							>
-								{correctAnswersText}
-							</div>
-						</div>
-					</div>
-				) : (
+				{/* For choice questions, keep highlighted variant tiles behind blur; typed answers use clean green/red highlight */}
+				{!isTyped && (
 					<div className={styles.variantsSectionBottom}>
 						<div
 							className={`${styles.variantsGrid} ${gridVariantClass}`}
@@ -184,14 +157,11 @@ export function ReviewStudentView({
 								const isThisCorrect = correctIds.includes(v.id);
 								const isThisSelected = selectedIds.includes(v.id);
 
-								let reviewClass = '';
-								if (isThisCorrect) {
-									reviewClass = styles.reviewVariantCorrect;
-								} else if (isThisSelected && !isThisCorrect) {
-									reviewClass = styles.reviewVariantWrong;
-								} else {
-									reviewClass = styles.reviewVariantDimmed;
-								}
+								const reviewClass = isThisCorrect
+									? styles.reviewVariantCorrect
+									: isThisSelected
+										? styles.reviewVariantWrong
+										: styles.reviewVariantDimmed;
 
 								const colorClass =
 									styles[

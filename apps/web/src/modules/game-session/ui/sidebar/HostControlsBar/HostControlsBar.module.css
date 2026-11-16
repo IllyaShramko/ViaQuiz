@@ -1,0 +1,97 @@
+.bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--color-bg-elevated, #12121a);
+  border-top: 1px solid var(--color-border, #2a2a3a);
+}
+
+.metricsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.timerPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-md, 0.375rem);
+  color: var(--color-text-primary, #f4f4f8);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.timerPill.isWarning {
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #fbbf24;
+}
+
+.timerValue {
+  font-variant-numeric: tabular-nums;
+}
+
+.progressText {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #9090a8);
+  white-space: nowrap;
+}
+
+.progressCount {
+  color: var(--color-text-primary, #f4f4f8);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.actionsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.extendBtn {
+  flex: 1 1 0;
+  height: 36px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nextBtn {
+  flex: 1 1 0;
+  height: 36px;
+}
+
+@media (max-width: 900px) {
+  .bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .metricsRow {
+    gap: 0.75rem;
+  }
+
+  .actionsRow {
+    flex-shrink: 0;
+  }
+
+  .extendBtn,
+  .nextBtn {
+    flex: 0 0 auto;
+    min-width: 84px;
+  }
+}
+
+@media (max-width: 520px) {
+  .progressText {
+    display: none;
+  }
+}

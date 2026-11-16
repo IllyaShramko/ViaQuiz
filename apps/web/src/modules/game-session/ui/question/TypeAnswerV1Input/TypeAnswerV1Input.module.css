@@ -1,0 +1,90 @@
+/* Typed Answer Form (V1 auto-grow textarea) */
+.wrapper {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.inputBox {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  gap: 0.65rem;
+}
+
+.textInput {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-block-size: 3rem;
+  max-block-size: 11rem;
+  field-sizing: content;
+  resize: none;
+  overflow-y: auto;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-lg, 0.5rem);
+  padding: 0.72rem 1rem;
+  font-family: inherit;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--color-text-primary, #f4f4f8);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.textInput:focus {
+  border-color: var(--color-accent, #863bff);
+  box-shadow: 0 0 0 2px rgba(134, 59, 255, 0.22);
+}
+
+.submitBtn {
+  height: 3rem;
+  padding: 0 1.35rem;
+  flex-shrink: 0;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.charCounter {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted, #6a6a82);
+}
+
+.charCounter.isNearLimit {
+  color: #fbbf24;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    margin-top: auto;
+    width: 100%;
+    max-width: 100%;
+    flex-shrink: 0;
+  }
+
+  .inputBox {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .textInput {
+    font-size: 1rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .submitBtn {
+    width: 100%;
+    height: 42px;
+  }
+}

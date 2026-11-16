@@ -1,0 +1,1 @@
+export { GamePlayPage } from './GamePlayPage';

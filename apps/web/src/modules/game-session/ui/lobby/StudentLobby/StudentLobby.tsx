@@ -1,51 +1,81 @@
+import { ChevronDownIcon } from '../../../../../shared/ui/icons';
 import type { StudentLobbyProps } from './StudentLobby.types';
 import styles from './StudentLobby.module.css';
 
 export function StudentLobby({
 	quizName = 'Вікторина',
-	teacherName = 'Вчитель',
+	teacherName,
 	totalQuestions,
 	participants,
+	currentParticipantId,
+	currentParticipantNickname,
 }: StudentLobbyProps) {
 	return (
 		<div className={styles.container}>
 			<div className={styles.card}>
-				<h2 className={styles.title}>{quizName}</h2>
-
-				<div className={styles.meta}>
-					<div>
-						<span style={{ color: 'var(--color-text-muted)' }}>Ім'я вчителя: </span>
-						<strong style={{ color: '#fff' }}>{teacherName}</strong>
-					</div>
-					<div>
-						<span style={{ color: 'var(--color-text-muted)' }}>Кількість запитань: </span>
-						<strong style={{ color: '#fff' }}>{totalQuestions}</strong>
-					</div>
+				<div className={styles.statusRow}>
+					<span className={styles.statusDot} aria-hidden="true" />
+					<span className={styles.statusText}>Очікуємо запуску тесту організатором</span>
 				</div>
 
-				<hr className={styles.divider} />
+				<h1 className={styles.title}>{quizName}</h1>
 
-				<div>
-					<div
-						className={styles['participants-title']}
-						style={{ marginBottom: '0.75rem' }}
-					>
-						Під'єднані користувачі ({participants.length}):
+				{currentParticipantNickname && (
+					<div className={styles.identityBanner}>
+						<span className={styles.identityLabel}>Ви приєдналися як</span>
+						<strong className={styles.identityName}>{currentParticipantNickname}</strong>
 					</div>
+				)}
 
-					<div className={styles['participants-tags']}>
-						{participants.map((p, idx) => (
-							<span key={p.participantId || idx} className={styles.tag}>
-								{p.nickname}
-							</span>
-						))}
-						{participants.length === 0 && (
-							<span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-								Очікування інших учнів...
-							</span>
+				{(teacherName || (typeof totalQuestions === 'number' && totalQuestions > 0)) && (
+					<div className={styles.metaList}>
+						{teacherName && (
+							<div className={styles.metaItem}>
+								<span className={styles.metaLabel}>Організатор</span>
+								<strong className={styles.metaValue}>{teacherName}</strong>
+							</div>
+						)}
+						{typeof totalQuestions === 'number' && totalQuestions > 0 && (
+							<div className={styles.metaItem}>
+								<span className={styles.metaLabel}>Запитань</span>
+								<strong className={styles.metaValue}>{totalQuestions}</strong>
+							</div>
 						)}
 					</div>
-				</div>
+				)}
+
+				<details className={styles.accordion}>
+					<summary className={styles.accordionSummary}>
+						<span className={styles.accordionLabel}>
+							Учасники в кімнаті
+							<span className={styles.countBadge}>{participants.length}</span>
+						</span>
+						<ChevronDownIcon size={16} className={styles.accordionIcon} />
+					</summary>
+
+					<div className={styles.accordionBody}>
+						{participants.length > 0 ? (
+							<div className={styles.participantsTags}>
+								{participants.map((participant) => {
+									const isMe =
+										currentParticipantId != null &&
+										participant.participantId === currentParticipantId;
+									return (
+										<span
+											key={participant.participantId}
+											className={`${styles.tag} ${isMe ? styles.isMe : ''}`}
+										>
+											{participant.nickname}
+											{isMe ? ' (ви)' : ''}
+										</span>
+									);
+								})}
+							</div>
+						) : (
+							<p className={styles.emptyText}>Поки що немає підключених учасників</p>
+						)}
+					</div>
+				</details>
 			</div>
 		</div>
 	);

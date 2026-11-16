@@ -36,7 +36,7 @@ const types: {
   },
 ];
 
-export const QuestionTypeSelector: React.FC<QuestionTypeSelectorProps> = ({ onSelect }) => {
+export function QuestionTypeSelector({ onSelect }: QuestionTypeSelectorProps) {
   return (
     <div className={styles['question-type-selector-container']}>
       <h2 className={styles['question-type-selector-title']}>Виберіть тип питання</h2>
@@ -56,4 +56,4 @@ export const QuestionTypeSelector: React.FC<QuestionTypeSelectorProps> = ({ onSe
       </div>
     </div>
   );
-};
+}

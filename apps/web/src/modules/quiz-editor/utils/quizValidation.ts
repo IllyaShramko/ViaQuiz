@@ -1,4 +1,5 @@
-import { MAX_QUESTION_VARIANTS, MIN_QUESTION_VARIANTS } from '@viaquiz/shared-types';
+import { MAX_QUESTION_VARIANTS, MIN_QUESTION_VARIANTS, QUESTION_LIMITS } from '@viaquiz/shared-types';
+import { hasTypeAnswerV2InputChars, normalizeTypedAnswerWhitespace } from '@viaquiz/utils';
 import type { EditorQuestion, EditorQuiz } from '../models/types';
 
 export function validateQuestion(q: EditorQuestion, index: number): string[] {
@@ -35,9 +36,32 @@ export function validateQuestion(q: EditorQuestion, index: number): string[] {
       errors.push(`Питання #${qIndex}: позначте хоча б один правильний варіант відповіді`);
     }
   }
- else if (q.type === 'TYPE_ANSWER_V1' || q.type === 'TYPE_ANSWER_V2') {
+  else if (q.type === 'TYPE_ANSWER_V1') {
     if (correctVariants.length === 0 && filledVariants.length === 0) {
       errors.push(`Питання #${qIndex}: вкажіть правильну відповідь`);
+    } else if (
+      filledVariants.some(
+        (v) => (v.text || '').length > QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH
+      )
+    ) {
+      errors.push(
+        `Питання #${qIndex}: відповідь не може перевищувати ${QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH} символів`
+      );
+    }
+  } else if (q.type === 'TYPE_ANSWER_V2') {
+    if (correctVariants.length === 0 && filledVariants.length === 0) {
+      errors.push(`Питання #${qIndex}: вкажіть правильну відповідь`);
+    } else {
+      const normalized = normalizeTypedAnswerWhitespace(filledVariants[0]?.text || '');
+      if (normalized.length > QUESTION_LIMITS.MAX_TYPE_ANSWER_V2_LENGTH) {
+        errors.push(
+          `Питання #${qIndex}: відповідь для вводу по літерах не може перевищувати ${QUESTION_LIMITS.MAX_TYPE_ANSWER_V2_LENGTH} символів`
+        );
+      } else if (!hasTypeAnswerV2InputChars(normalized)) {
+        errors.push(
+          `Питання #${qIndex}: відповідь має містити хоча б один символ окрім пробілів і дужок`
+        );
+      }
     }
   }
 

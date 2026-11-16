@@ -1,4 +1,4 @@
-import type { Classroom, Course, Student, CourseInvitation, CourseInvitationStatus, Prisma } from "../../../generated/prisma";
+import type { Prisma } from "../../../generated/prisma";
 import type { z } from "zod";
 import type {
 	createClassroomSchema,

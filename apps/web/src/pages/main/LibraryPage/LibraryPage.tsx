@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   useGetMyLibraryQuizzesQuery,
@@ -111,7 +111,7 @@ export function LibraryPage() {
     navigate(`/quiz/${uuid}/edit`);
   };
 
-  const handleDelete = async (e: React.MouseEvent, id: number) => {
+  const handleDelete = async (e: MouseEvent, id: number) => {
     e.stopPropagation();
     if (!window.confirm('Ви впевнені, що хочете видалити цю вікторину?')) return;
 
@@ -122,7 +122,7 @@ export function LibraryPage() {
     }
   };
 
-  const handleUnlike = async (e: React.MouseEvent, uuid: string) => {
+  const handleUnlike = async (e: MouseEvent, uuid: string) => {
     e.stopPropagation();
     try {
       await toggleLike(uuid).unwrap();

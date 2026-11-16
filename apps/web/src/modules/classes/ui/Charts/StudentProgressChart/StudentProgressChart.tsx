@@ -3,12 +3,12 @@ import type { ApexOptions } from 'apexcharts';
 import type { StudentProgressChartProps } from './StudentProgressChart.types';
 import styles from './StudentProgressChart.module.css';
 
-export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
+export function StudentProgressChart({
   categories,
   grades,
   quizTitles = [],
   title = 'Прогрес успішності',
-}) => {
+}: StudentProgressChartProps) {
   if (!categories || categories.length === 0 || !grades || grades.length === 0) {
     return (
       <div className={styles['chart-card']}>
@@ -174,4 +174,4 @@ export const StudentProgressChart: React.FC<StudentProgressChartProps> = ({
       </div>
     </div>
   );
-};
+}

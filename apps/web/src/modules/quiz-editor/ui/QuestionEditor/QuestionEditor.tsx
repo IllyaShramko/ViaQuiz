@@ -6,7 +6,7 @@ import type { QuestionEditorProps } from './QuestionEditor.types';
 import { UploadIcon, BinIcon } from '../../../../shared';
 import styles from './QuestionEditor.module.css';
 
-export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpdate }) => {
+export function QuestionEditor({ question, onUpdate }: QuestionEditorProps) {
   const [uploadImage, { isLoading: isUploading }] = useUploadImageMutation();
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -153,4 +153,4 @@ export const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, onUpda
       </div>
     </div>
   );
-};
+}

@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import type { StudentDetailDrawerProps } from './StudentDetailDrawer.types';
 import { useGetParticipantReportQuery } from '../../api';
 import styles from '../Reports.module.css';
 
-export const StudentDetailDrawer: React.FC<StudentDetailDrawerProps> = ({
+export function StudentDetailDrawer({
 	isOpen,
 	onClose,
 	roomUuid,
 	participantId,
-}) => {
+}: StudentDetailDrawerProps) {
 	const { data: report, isLoading, isError } = useGetParticipantReportQuery(
 		{ roomUuid, participantId: participantId as number },
 		{ skip: !isOpen || !participantId }
@@ -136,4 +136,4 @@ export const StudentDetailDrawer: React.FC<StudentDetailDrawerProps> = ({
 			</div>
 		</>
 	);
-};
+}

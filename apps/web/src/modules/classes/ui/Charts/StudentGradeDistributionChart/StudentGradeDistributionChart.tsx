@@ -3,11 +3,11 @@ import type { ApexOptions } from 'apexcharts';
 import type { StudentGradeDistributionChartProps } from './StudentGradeDistributionChart.types';
 import styles from './StudentGradeDistributionChart.module.css';
 
-export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionChartProps> = ({
+export function StudentGradeDistributionChart({
   labels,
   series,
   title = 'Розподіл оцінок',
-}) => {
+}: StudentGradeDistributionChartProps) {
   if (!labels || labels.length === 0 || !series || series.length === 0 || series.every((s) => s === 0)) {
     return (
       <div className={styles['chart-card']}>
@@ -168,4 +168,4 @@ export const StudentGradeDistributionChart: React.FC<StudentGradeDistributionCha
       </div>
     </div>
   );
-};
+}

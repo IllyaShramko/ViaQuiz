@@ -2,7 +2,7 @@ import type { EditorHeaderProps } from './EditorHeader.types';
 import { ArrowIcon, PublicIcon, CheckIcon } from '../../../../shared';
 import styles from './EditorHeader.module.css';
 
-export const EditorHeader: React.FC<EditorHeaderProps> = ({
+export function EditorHeader({
   quizName,
   saveStatus,
   onNameChange,
@@ -11,7 +11,7 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
   isPublishing,
   isDraft,
   hasQuestions,
-}) => {
+}: EditorHeaderProps) {
   const renderSaveStatus = () => {
     switch (saveStatus) {
       case 'saving':
@@ -69,4 +69,4 @@ export const EditorHeader: React.FC<EditorHeaderProps> = ({
       </div>
     </header>
   );
-};
+}

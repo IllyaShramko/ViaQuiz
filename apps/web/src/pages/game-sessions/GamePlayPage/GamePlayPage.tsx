@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../../modules/auth';
+import { useAuth } from '../../../modules/auth';
 import {
 	useGetRoomByUuidQuery,
 	useGameSession,
@@ -11,10 +11,12 @@ import {
 	formatTimer,
 	getGameSessionToken,
 	removeGameSessionToken,
-} from '../../modules/game-session';
-import { getAuthToken } from '../../shared/api/headers';
-import { LogoIcon, TimerIcon } from '../../shared/ui/icons';
-import styles from '../../modules/game-session/ui/GameSession.module.css';
+} from '../../../modules/game-session';
+import { getAuthToken } from '../../../shared/api/headers';
+import { Button } from '../../../shared/ui';
+import { LogoIcon, TimerIcon } from '../../../shared/ui/icons';
+import sessionStyles from '../../../modules/game-session/ui/GameSession.module.css';
+import styles from './GamePlayPage.module.css';
 
 export function GamePlayPage() {
 	const { roomUuid } = useParams<{ roomUuid: string }>();
@@ -62,6 +64,7 @@ export function GamePlayPage() {
 		currentQuestionIndex,
 		totalQuestions,
 		participants,
+		currentParticipantId,
 		currentQuestion,
 		alreadyAnswered,
 		reviewData,
@@ -76,6 +79,13 @@ export function GamePlayPage() {
 
 	const currentRoomId = roomId || room?.id || 0;
 	const quizName = room?.quiz?.name || 'Вікторина';
+	const teacherName = room?.host
+		? `${room.host.lastName || ''} ${room.host.firstName || ''}`.trim() || undefined
+		: undefined;
+	const resolvedTotalQuestions = totalQuestions || room?.quiz?._count?.questions || 0;
+	const currentParticipant = participants.find(
+		(participant) => participant.participantId === currentParticipantId,
+	);
 
 	const questionKey = currentQuestion
 		? `${currentQuestionIndex}-${(currentQuestion as { questionId?: number; id?: number }).questionId ?? (currentQuestion as { questionId?: number; id?: number }).id ?? currentQuestion.text ?? ''}`
@@ -122,19 +132,19 @@ export function GamePlayPage() {
 
 	if (kickedReason) {
 		return (
-			<div className={styles['game-root']}>
-				<div className={styles['game-main-content']}>
-					<div className={styles['student-lobby-card']} style={{ textAlign: 'center' }}>
-						<h2 style={{ color: 'var(--color-error, #ef4444)' }}>Доступ обмежено</h2>
-						<p style={{ color: 'var(--color-text-secondary)' }}>{kickedReason}</p>
-						<button
+			<div className={sessionStyles.gameRoot}>
+				<div className={sessionStyles.gameMainContent}>
+					<div className={sessionStyles.statusCard}>
+						<h2 className={sessionStyles.statusCardErrorTitle}>Доступ обмежено</h2>
+						<p className={sessionStyles.statusCardText}>{kickedReason}</p>
+						<Button
 							type="button"
-							className={styles['lobby-start-btn']}
-							style={{ marginTop: '1.5rem' }}
+							variant="primary"
+							size="md"
 							onClick={() => navigate('/')}
 						>
 							На головну
-						</button>
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -143,8 +153,8 @@ export function GamePlayPage() {
 
 	if (isRoomLoading || isAuthLoading) {
 		return (
-			<div className={styles['game-root']}>
-				<div className={styles['game-main-content']}>
+			<div className={sessionStyles.gameRoot}>
+				<div className={sessionStyles.gameMainContent}>
 					<div style={{ color: 'var(--color-text-secondary)' }}>Підключення до сесії...</div>
 				</div>
 			</div>
@@ -156,24 +166,24 @@ export function GamePlayPage() {
 	}
 
 	return (
-		<div className={styles['game-root']}>
+		<div className={sessionStyles.gameRoot}>
 			{/* Top Bar for Student */}
-			<header className={styles['game-topbar']}>
-				<div className={styles['game-logo']}>
-					<LogoIcon size={24} className={styles['game-logo-icon']} />
-					<span className={styles['game-logo-text']}>ViaQuiz</span>
+			<header className={styles.gameTopbar}>
+				<div className={styles.gameLogo}>
+					<LogoIcon size={24} className={styles.gameLogoIcon} />
+					<span className={styles.gameLogoText}>ViaQuiz</span>
 				</div>
 
-				<div className={styles['game-topbar-center']}>
+				<div className={styles.gameTopbarCenter}>
 					<TimerIcon size={18} />
 					<span>{status === 'PROGRESS' ? formatTimer(remainingSeconds) : '00:00'}</span>
 				</div>
 
-				<div className={styles['game-topbar-right']}>
+				<div className={styles.gameTopbarRight}>
 					<span>
 						{status === 'PROGRESS' || status === 'REVIEWING'
-							? `${currentQuestionIndex + 1} / ${totalQuestions || 1}`
-							: `0 / ${totalQuestions || 1}`}
+							? `${currentQuestionIndex + 1} / ${resolvedTotalQuestions || 1}`
+							: `0 / ${resolvedTotalQuestions}`}
 					</span>
 				</div>
 			</header>
@@ -182,9 +192,11 @@ export function GamePlayPage() {
 			{status === 'AWAITING' && (
 				<StudentLobby
 					quizName={quizName}
-					teacherName="Вчитель"
-					totalQuestions={totalQuestions || room?.quiz?.id || 1}
+					teacherName={teacherName}
+					totalQuestions={resolvedTotalQuestions}
 					participants={participants}
+					currentParticipantId={currentParticipantId}
+					currentParticipantNickname={currentParticipant?.nickname}
 				/>
 			)}
 
@@ -198,7 +210,7 @@ export function GamePlayPage() {
 						}
 					/>
 				) : (
-					<div className={styles['game-main-content']}>
+					<div className={sessionStyles.gameMainContent}>
 						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження запитання...</div>
 					</div>
 				)
@@ -211,32 +223,20 @@ export function GamePlayPage() {
 						reviewData={reviewData}
 					/>
 				) : (
-					<div className={styles['game-main-content']}>
+					<div className={sessionStyles.gameMainContent}>
 						<div style={{ color: 'var(--color-text-secondary)' }}>Завантаження результатів...</div>
 					</div>
 				)
 			)}
 
 			{status === 'FINISHED' && (
-				<div className={styles['game-main-content']}>
-					<div className={styles['student-lobby-card']} style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-						<h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', marginBottom: '0.75rem' }}>
-							Тест завершено!
-						</h2>
-						<p style={{ color: 'var(--color-text-secondary, #9090a8)', marginBottom: '1.5rem' }}>
+				<div className={sessionStyles.gameMainContent}>
+					<div className={sessionStyles.statusCard} style={{ padding: '2.5rem 2rem' }}>
+						<h2 className={sessionStyles.statusCardTitle}>Тест завершено!</h2>
+						<p className={sessionStyles.statusCardText}>
 							Формуємо ваш звіт результатів тестування...
 						</p>
-						<div
-							style={{
-								width: '40px',
-								height: '40px',
-								border: '3px solid rgba(134, 59, 255, 0.2)',
-								borderTopColor: 'var(--color-accent, #863bff)',
-								borderRadius: '50%',
-								animation: 'spin 0.8s linear infinite',
-								margin: '0 auto',
-							}}
-						/>
+						<div className={sessionStyles.statusSpinner} />
 					</div>
 				</div>
 			)}

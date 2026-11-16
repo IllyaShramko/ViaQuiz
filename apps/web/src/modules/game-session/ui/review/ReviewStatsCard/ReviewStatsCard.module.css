@@ -1,0 +1,47 @@
+.card {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  border-right: 3px solid #202020;
+  padding-right: 2rem;
+}
+
+.donutWrapper {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 0 auto;
+}
+
+.donutPercentage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  pointer-events: none;
+}
+
+.statsList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.statIcon {
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+}

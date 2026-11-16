@@ -11,8 +11,4 @@ export interface ReviewHostViewProps {
   isLastQuestion?: boolean;
   reviewData: GameReviewDataDto;
   participants: ParticipantDto[];
-  remainingSeconds: number;
-  onExtendTime?: (secs?: number) => void;
-  onNextQuestion: () => void;
-  onKickParticipant?: (participantId: number) => void;
 }

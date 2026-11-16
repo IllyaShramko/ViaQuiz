@@ -1,0 +1,15 @@
+/* Layout Split (Main Content + Sidebar) */
+.gameLayoutBody {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .gameLayoutBody {
+    flex-direction: column;
+  }
+}

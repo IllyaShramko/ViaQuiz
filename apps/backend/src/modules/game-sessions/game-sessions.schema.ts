@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MAX_QUESTION_VARIANTS } from "@viaquiz/shared-types";
+import { MAX_QUESTION_VARIANTS, QUESTION_LIMITS } from "@viaquiz/shared-types";
 
 export const createRoomSchema = z.object({
 	quizId: z.number().int().positive("Quiz ID is required"),
@@ -41,7 +41,14 @@ export const submitAnswerSchema = z
 				`Cannot submit more than ${MAX_QUESTION_VARIANTS} variants`,
 			)
 			.optional(),
-		typedAnswer: z.string().trim().optional(),
+		typedAnswer: z
+			.string()
+			.trim()
+			.max(
+				QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH,
+				`Typed answer cannot exceed ${QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH} characters`,
+			)
+			.optional(),
 	})
 	.refine(
 		(data) =>

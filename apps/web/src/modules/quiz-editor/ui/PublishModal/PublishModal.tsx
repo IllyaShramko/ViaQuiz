@@ -318,13 +318,13 @@ function PublishModalForm({
   );
 }
 
-export const PublishModal: React.FC<PublishModalProps> = ({
+export function PublishModal({
   isOpen,
   onClose,
   quiz,
   onPublishSuccess,
   onAfterClose,
-}) => {
+}: PublishModalProps) {
   const formId = useId();
 
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
@@ -404,4 +404,4 @@ export const PublishModal: React.FC<PublishModalProps> = ({
       />
     </Modal>
   );
-};
+}

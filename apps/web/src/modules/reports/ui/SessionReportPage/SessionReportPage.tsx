@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Chart from 'react-apexcharts';
 import type { SessionReportTab, ReportSortBy, OverviewTabProps } from './SessionReportPage.types';
@@ -8,7 +8,7 @@ import { pluralize, pluralizeAnswers, useTeacherHeader } from '../../../../share
 import styles from '../Reports.module.css';
 import type { SessionQuestionStatsDto, SortOrder } from '@viaquiz/shared-types';
 
-export const SessionReportPage: React.FC = () => {
+export function SessionReportPage() {
 	const navigate = useNavigate();
 	const { roomUuid } = useParams<{ roomUuid: string }>();
 	const { data: report, isLoading, isError } = useGetSessionReportQuery(roomUuid as string, {
@@ -138,7 +138,7 @@ export const SessionReportPage: React.FC = () => {
 			)}
 		</div>
 	);
-};
+}
 
 const SORT_LABELS: Record<ReportSortBy, string> = {
 	percentage: 'Точністю',
@@ -146,7 +146,7 @@ const SORT_LABELS: Record<ReportSortBy, string> = {
 	name: "Ім'ям",
 };
 
-const OverviewTab: React.FC<OverviewTabProps> = ({ participants, onRowClick }) => {
+function OverviewTab({ participants, onRowClick }: OverviewTabProps) {
 	const [sortBy, setSortBy] = useState<ReportSortBy>('percentage');
 	const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 	const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
@@ -431,9 +431,9 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ participants, onRowClick }) =
 			</div>
 		</div>
 	);
-};
+}
 
-const QuestionsTab: React.FC<{ questions: SessionQuestionStatsDto[] }> = ({ questions }) => {
+function QuestionsTab({ questions }: { questions: SessionQuestionStatsDto[] }) {
 	return (
 		<div className={styles['questions-list']}>
 			{questions.map(q => (
@@ -465,9 +465,9 @@ const QuestionsTab: React.FC<{ questions: SessionQuestionStatsDto[] }> = ({ ques
 			))}
 		</div>
 	);
-};
+}
 
-const ChartTab: React.FC<{ questions: SessionQuestionStatsDto[] }> = ({ questions }) => {
+function ChartTab({ questions }: { questions: SessionQuestionStatsDto[] }) {
 	const [chartType, setChartType] = useState<'success' | 'time'>('success');
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [containerWidth, setContainerWidth] = useState<number>(0);
@@ -728,4 +728,4 @@ const ChartTab: React.FC<{ questions: SessionQuestionStatsDto[] }> = ({ question
 			</div>
 		</div>
 	);
-};
+}

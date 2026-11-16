@@ -7,13 +7,27 @@ import { gameRedisService, type RedisQuestionData } from "./game-redis.service";
 import { GameSessionsRepository } from "./game-sessions.repository";
 import { PRISMA_CLIENT } from "../../config/database";
 import { logger } from "../../tools/logger";
-import type {
-	ParticipantRoundAnswerDto,
-	GameQuestionDto,
-	GameReviewDataDto,
-	GameFinishedDto,
-	ParticipantRoundResultDto,
+import {
+	QUESTION_LIMITS,
+	type ParticipantRoundAnswerDto,
+	type GameQuestionDto,
+	type GameReviewDataDto,
+	type GameFinishedDto,
+	type ParticipantRoundResultDto,
 } from "@viaquiz/shared-types";
+import { buildTypeAnswerV2Mask, normalizeTypedAnswerWhitespace } from "@viaquiz/utils";
+
+function getStudentAnswerMask(
+	type: string,
+	variants: ReadonlyArray<{ text?: string | null | undefined }>,
+	isTeacher: boolean,
+): string | undefined {
+	if (isTeacher || type !== "TYPE_ANSWER_V2") {
+		return undefined;
+	}
+	const primaryText = variants.find((v) => v.text && v.text.trim().length > 0)?.text;
+	return primaryText ? buildTypeAnswerV2Mask(primaryText) : undefined;
+}
 
 // Store question timers in server memory by roomId
 const activeRoomTimers = new Map<number, NodeJS.Timeout>();
@@ -156,6 +170,11 @@ export const gameSessionsSocketController: SocketController = {
 						const isTyped =
 							cachedQ.type === "TYPE_ANSWER_V1" ||
 							cachedQ.type === "TYPE_ANSWER_V2";
+						const answerMask = getStudentAnswerMask(
+							cachedQ.type,
+							cachedQ.variants,
+							isTeacher,
+						);
 
 						currentQuestionSanitized = {
 							questionId: cachedQ.questionId,
@@ -167,6 +186,7 @@ export const gameSessionsSocketController: SocketController = {
 							points: cachedQ.points,
 							timeLimit: cachedQ.timeLimit,
 							startedAt: roomState.questionStartedAt || Date.now(),
+							...(answerMask ? { answerMask } : {}),
 							variants: cachedQ.variants.map((v) => ({
 								id: v.id,
 								text: !isTeacher && isTyped ? "" : v.text,
@@ -393,6 +413,7 @@ export const gameSessionsSocketController: SocketController = {
 				});
 
 				// Send question to students (sanitized for text answers)
+				const answerMask0 = getStudentAnswerMask(q0.type, q0.variants, false);
 				ioServer
 					.to(`room:${roomId}`)
 					.except(`room:host:${roomId}`)
@@ -405,6 +426,7 @@ export const gameSessionsSocketController: SocketController = {
 						points: q0.points,
 						timeLimit: timeLimitMs,
 						startedAt: now,
+						...(answerMask0 ? { answerMask: answerMask0 } : {}),
 						variants: q0.variants.map((v) => ({
 							id: v.id,
 							text: isTyped0 ? "" : v.text,
@@ -494,6 +516,11 @@ export const gameSessionsSocketController: SocketController = {
 				});
 
 				// Send question to students (sanitized for text answers)
+				const nextAnswerMask = getStudentAnswerMask(
+					nextQ.type,
+					nextQ.variants,
+					false,
+				);
 				ioServer
 					.to(`room:${roomId}`)
 					.except(`room:host:${roomId}`)
@@ -506,6 +533,7 @@ export const gameSessionsSocketController: SocketController = {
 						points: nextQ.points,
 						timeLimit: timeLimitMs,
 						startedAt: now,
+						...(nextAnswerMask ? { answerMask: nextAnswerMask } : {}),
 						variants: nextQ.variants.map((v) => ({
 							id: v.id,
 							text: isNextTyped ? "" : v.text,
@@ -636,21 +664,25 @@ export const gameSessionsSocketController: SocketController = {
 					cachedQ.type === "TYPE_ANSWER_V1" ||
 					cachedQ.type === "TYPE_ANSWER_V2"
 				) {
-					if (typeof typedAnswer === "string" && typedAnswer.trim().length > 0) {
-						const normalizedInput = typedAnswer
-							.trim()
-							.toLowerCase()
-							.replace(/\s+/g, " ");
-						const acceptableVariants = cachedQ.variants.filter(
-							(v) => v.text && v.text.trim().length > 0,
-						);
-						isCorrect = acceptableVariants.some((v) => {
-							const normalizedVariant = (v.text || "")
-								.trim()
-								.toLowerCase()
-								.replace(/\s+/g, " ");
-							return normalizedInput === normalizedVariant;
-						});
+					const maxLen =
+						cachedQ.type === "TYPE_ANSWER_V2"
+							? QUESTION_LIMITS.MAX_TYPE_ANSWER_V2_LENGTH
+							: QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH;
+					if (typeof typedAnswer === "string") {
+						const normalizedInput = normalizeTypedAnswerWhitespace(typedAnswer)
+							.slice(0, maxLen)
+							.toLowerCase();
+						if (normalizedInput.length > 0) {
+							const acceptableVariants = cachedQ.variants.filter(
+								(v) => v.text && v.text.trim().length > 0,
+							);
+							isCorrect = acceptableVariants.some((v) => {
+								const normalizedVariant = normalizeTypedAnswerWhitespace(
+									v.text || "",
+								).toLowerCase();
+								return normalizedInput === normalizedVariant;
+							});
+						}
 					}
 				} else {
 					const ids = variantIds || [];

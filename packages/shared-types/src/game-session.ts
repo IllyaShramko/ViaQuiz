@@ -59,6 +59,7 @@ export interface GameQuestionDto {
 	points: number;
 	timeLimit: number;
 	startedAt: number;
+	answerMask?: string | undefined;
 	variants: QuestionVariantDto[];
 }
 

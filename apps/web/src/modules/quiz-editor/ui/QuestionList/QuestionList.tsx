@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   DndContext,
   closestCenter,
@@ -26,14 +25,14 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => {
   };
 };
 
-const SortableQuestionItem: React.FC<SortableItemProps> = ({
+function SortableQuestionItem({
   question,
   index,
   isSelected,
   onSelect,
   onDelete,
   onDuplicate
-}) => {
+}: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -113,9 +112,9 @@ const SortableQuestionItem: React.FC<SortableItemProps> = ({
       </div>
     </div>
   );
-};
+}
 
-export const QuestionList: React.FC<QuestionListProps> = ({
+export function QuestionList({
   questions,
   selectedId,
   onSelect,
@@ -123,7 +122,7 @@ export const QuestionList: React.FC<QuestionListProps> = ({
   onDelete,
   onDuplicate,
   onReorder
-}) => {
+}: QuestionListProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
@@ -179,4 +178,4 @@ export const QuestionList: React.FC<QuestionListProps> = ({
       </div>
     </aside>
   );
-};
+}

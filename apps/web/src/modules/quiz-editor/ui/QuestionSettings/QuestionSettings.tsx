@@ -2,7 +2,7 @@ import type { QuestionType } from '../../models';
 import type { QuestionSettingsProps } from './QuestionSettings.types';
 import styles from './QuestionSettings.module.css';
 
-export const QuestionSettings: React.FC<QuestionSettingsProps> = ({ question, onUpdate, onSave }) => {
+export function QuestionSettings({ question, onUpdate, onSave }: QuestionSettingsProps) {
   return (
     <aside className={styles['question-settings']}>
       <div className={styles['settings-group']}>
@@ -70,4 +70,4 @@ export const QuestionSettings: React.FC<QuestionSettingsProps> = ({ question, on
       )}
     </aside>
   );
-};
+}

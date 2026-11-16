@@ -1,222 +1,279 @@
-/* ==========================================================================
-   HostLobby Scoped Styles
-   ========================================================================== */
-
-.game-layout-body {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  position: relative;
-}
-
-.game-main-content {
+.stage {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1.5rem;
-  min-height: 0;
+  padding: 2rem;
+  position: relative;
+  min-width: 0;
   overflow-y: auto;
-  position: relative;
 }
 
-.lobby-host-card {
-  background: var(--color-bg-elevated, #16161e);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  padding: 1.5rem 1.75rem;
+.card {
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+  max-width: 700px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-xl, 0.75rem);
+  padding: 1.75rem 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
-.lobby-step-section {
+.cardHeader {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.lobby-step-header {
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.15rem;
+  border-bottom: 1px solid var(--color-border, #2a2a3a);
 }
 
-.lobby-step-header-left {
+.quizMeta {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
 }
 
-.lobby-step-badge {
-  background: var(--color-accent, #863bff);
-  color: #fff;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--radius-full, 9999px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-muted, #6a6a82);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.quizTitle {
+  margin: 0;
   font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #f4f4f8);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.questionsBadge {
   flex-shrink: 0;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-md, 0.375rem);
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
-.lobby-step-title {
-  color: var(--color-text-secondary, #b0b0c4);
-  font-size: 1rem;
-  font-weight: 700;
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) auto;
+  gap: 1.75rem;
+  align-items: stretch;
 }
 
-.lobby-copy-icon-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: var(--color-text-muted, #707088);
+.leftColumn {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--radius-sm, 0.25rem);
-  transition: all var(--transition-fast, 0.2s ease);
+  flex-direction: column;
+  gap: 1.15rem;
+  min-width: 0;
 }
 
-.lobby-copy-icon-btn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
-.lobby-copy-icon-btn:focus-visible {
-  outline: 2px solid var(--color-accent, #863bff);
-  outline-offset: 2px;
+.fieldLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #9090a8);
 }
 
-.lobby-copy-icon-btn.is-copied {
-  color: var(--color-success, #22c55e);
-  background: rgba(34, 197, 94, 0.15);
-}
-
-.lobby-url-row {
+.fieldSurface {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.15rem 0;
+  padding: 0.7rem 0.9rem;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-lg, 0.5rem);
 }
 
-.lobby-url-text {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #ffffff;
-  word-break: break-all;
-  letter-spacing: -0.02em;
-  user-select: all;
-  transition: color var(--transition-fast, 0.2s ease);
+.urlLink {
+  color: var(--color-text-primary, #f4f4f8);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.lobby-url-text:hover {
-  color: #ffffff;
-  text-decoration: underline;
+.urlLink:hover {
+  color: var(--color-accent-hover, #a855f7);
 }
 
-.lobby-qr-preview-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+.pinSurface {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-lg, 0.5rem);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.pinSurface:hover {
+  background: var(--color-bg-hover, #22222e);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.pinSurface:focus-visible {
+  outline: 2px solid var(--color-accent, #863bff);
+  outline-offset: 2px;
+}
+
+.pinDigits {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pinDigit {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  width: 2.15rem;
+  height: 2.5rem;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-md, 0.375rem);
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary, #f4f4f8);
+}
+
+.copyBtn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md, 0.375rem);
+  color: var(--color-text-muted, #6a6a82);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.copyBtn:hover {
+  background: var(--color-bg-hover, #22222e);
+  color: var(--color-text-primary, #f4f4f8);
+}
+
+.copyBtn.isCopied {
+  color: var(--color-success, #22c55e);
+}
+
+.actions {
+  margin-top: auto;
+  padding-top: 0.25rem;
+}
+
+.startButton {
+  height: 44px;
+  font-size: 0.9375rem;
+}
+
+.startButton svg {
   flex-shrink: 0;
 }
 
-.lobby-qr-preview-thumb {
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.qrCardButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 1rem;
+  background: var(--color-bg-surface, #1a1a26);
+  border: 1px solid var(--color-border, #2a2a3a);
+  border-radius: var(--radius-lg, 0.5rem);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.qrCardButton:hover {
+  background: var(--color-bg-hover, #22222e);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.qrCardButton:focus-visible {
+  outline: 2px solid var(--color-accent, #863bff);
+  outline-offset: 2px;
+}
+
+.qrFrame {
+  padding: 0.75rem;
   background: #ffffff;
-  padding: 3px;
-  border-radius: 6px;
+  border-radius: var(--radius-md, 0.375rem);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--transition-fast, 0.2s ease), box-shadow var(--transition-fast, 0.2s ease);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-.lobby-qr-preview-thumb:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 14px rgba(134, 59, 255, 0.5);
+.qrSvg {
+  display: block;
+  width: 172px;
+  height: 172px;
 }
 
-.lobby-pin-display {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.28em;
-  text-align: center;
-  margin: 0.25rem 0;
-  user-select: all;
-  cursor: pointer;
-  transition: transform var(--transition-fast, 0.2s ease), color var(--transition-fast, 0.2s ease);
-  padding-left: 0.28em;
+.qrHint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #6a6a82);
 }
 
-.lobby-pin-display:hover {
-  color: #ffffff;
-  transform: scale(1.03);
-}
-
-.lobby-start-btn {
-  width: 100%;
-  padding: 0.95rem 1.5rem;
-  background: var(--color-accent, #863bff);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md, 0.5rem);
-  font-size: 1.05rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1)), 0 0 20px rgba(134, 59, 255, 0.35);
-  transition: all var(--transition-fast, 0.2s ease);
-  margin-top: 0.25rem;
-}
-
-.lobby-start-btn:hover {
-  background: var(--color-accent-hover, #7328ee);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1)), 0 0 28px rgba(134, 59, 255, 0.5);
-}
-
-.lobby-start-btn:active {
-  transform: translateY(0);
-}
-
-@media (max-width: 768px) {
-  .game-main-content {
-    padding: 0.5rem 0.75rem 0.75rem 0.75rem;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
+@media (max-width: 680px) {
+  .stage {
+    padding: 1rem;
   }
 
-  .lobby-host-card {
-    padding: 1.25rem 1rem;
-    gap: 1rem;
+  .card {
+    padding: 1.25rem;
   }
 
-  .lobby-url-text {
-    font-size: 1.5rem;
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
-  .lobby-pin-display {
-    font-size: 1.75rem;
+  .pinDigit {
+    width: 1.9rem;
+    height: 2.25rem;
+    font-size: 1.15rem;
+  }
+
+  .qrSvg {
+    width: 150px;
+    height: 150px;
   }
 }

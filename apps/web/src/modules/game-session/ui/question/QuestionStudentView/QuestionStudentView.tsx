@@ -1,18 +1,36 @@
-import { useState, useEffect } from 'react';
-import { MAX_QUESTION_VARIANTS } from '@viaquiz/shared-types';
-import { CheckIcon } from '../../../../../shared';
+import { useState } from 'react';
 import { AntiCheatOverlay } from '../AntiCheatOverlay';
 import { ImageLightboxModal } from '../../modals';
+import { TypeAnswerV1Input } from '../TypeAnswerV1Input';
+import { TypeAnswerV2Input } from '../TypeAnswerV2Input';
+import { StudentVariantsGrid } from '../StudentVariantsGrid';
 import type { QuestionStudentViewProps } from './QuestionStudentView.types';
 import styles from './QuestionStudentView.module.css';
 
-export function QuestionStudentView({
+const QUESTION_HINT_BY_TYPE: Record<string, string> = {
+	MANY_ANSWERS: 'Оберіть декілька правильних варіантів',
+	TYPE_ANSWER_V1: 'Введіть вашу відповідь у поле нижче',
+	TYPE_ANSWER_V2: 'Введіть відповідь по буквах (дужки вже підставлені)',
+};
+
+export function QuestionStudentView(props: QuestionStudentViewProps) {
+	const { question } = props;
+	const questionKey = String(
+		(question as { questionId?: number; id?: number }).questionId ??
+			(question as { questionId?: number; id?: number }).id ??
+			question.text ??
+			question.questionIndex ??
+			'',
+	);
+
+	return <QuestionStudentViewInner key={questionKey} {...props} />;
+}
+
+function QuestionStudentViewInner({
 	question,
 	alreadyAnswered,
 	onSubmitAnswer,
 }: QuestionStudentViewProps) {
-	const [selectedVariantIds, setSelectedVariantIds] = useState<number[]>([]);
-	const [typedInput, setTypedInput] = useState<string>('');
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 	const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
@@ -22,279 +40,53 @@ export function QuestionStudentView({
 		setIsLightboxOpen(true);
 	};
 
-	const questionKey =
-		(question as { questionId?: number; id?: number }).questionId ??
-		(question as { questionId?: number; id?: number }).id ??
-		question.text ??
-		'';
-
-	// Reset state whenever a new question starts
-	useEffect(() => {
-		setSelectedVariantIds([]);
-		setTypedInput('');
-	}, [questionKey]);
-
 	const isMulti = question.type === 'MANY_ANSWERS';
-	const isTypeV1 = question.type === 'TYPE_ANSWER_V1';
 	const isTypeV2 = question.type === 'TYPE_ANSWER_V2';
-	const isTyped = isTypeV1 || isTypeV2;
-
-	const handleVariantClick = (variantId: number) => {
-		if (alreadyAnswered) return;
-
-		if (isMulti) {
-			setSelectedVariantIds((prev) =>
-				prev.includes(variantId)
-					? prev.filter((id) => id !== variantId)
-					: [...prev, variantId],
-			);
-		} else {
-			onSubmitAnswer([variantId]);
-		}
-	};
-
-	const handleSubmitMulti = () => {
-		if (selectedVariantIds.length === 0 || alreadyAnswered) return;
-		onSubmitAnswer(selectedVariantIds);
-	};
-
-	const handleSubmitTyped = (e?: React.SyntheticEvent) => {
-		if (e) e.preventDefault();
-		const trimmed = typedInput.trim();
-		if (!trimmed || alreadyAnswered) return;
-		onSubmitAnswer(undefined, trimmed);
-	};
-
-	// Keyboard shortcuts for answering (1-8 to select variants, Enter to submit multi-answer)
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (alreadyAnswered) return;
-
-			// Do not intercept if user is typing in an input or textarea
-			const targetTag = (e.target as HTMLElement)?.tagName;
-			if (
-				targetTag === 'INPUT' ||
-				targetTag === 'TEXTAREA' ||
-				(e.target as HTMLElement)?.isContentEditable
-			) {
-				return;
-			}
-
-			if (isTyped) return;
-
-			let num: number | null = null;
-			if (e.key >= '1' && e.key <= '6') {
-				num = parseInt(e.key, 10);
-			} else if (/^Numpad[1-6]$/.test(e.code)) {
-				num = parseInt(e.code.replace('Numpad', ''), 10);
-			}
-
-			if (num !== null) {
-				const variantIndex = num - 1;
-				const targetVariant = question.variants?.[variantIndex];
-				if (targetVariant) {
-					e.preventDefault();
-					if (isMulti) {
-						setSelectedVariantIds((prev) =>
-							prev.includes(targetVariant.id)
-								? prev.filter((id) => id !== targetVariant.id)
-								: [...prev, targetVariant.id],
-						);
-					} else {
-						onSubmitAnswer([targetVariant.id]);
-					}
-				}
-				return;
-			}
-
-			if (e.key === 'Enter') {
-				if (isMulti && selectedVariantIds.length > 0) {
-					e.preventDefault();
-					onSubmitAnswer(selectedVariantIds);
-				}
-			}
-		};
-
-		window.addEventListener('keydown', handleKeyDown);
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, [
-		alreadyAnswered,
-		isTyped,
-		isMulti,
-		question.variants,
-		selectedVariantIds,
-		onSubmitAnswer,
-	]);
-
-	const variantCount = question.variants?.length || 0;
-	const gridVariantClass =
-		variantCount === 2
-			? styles.variantsGridCount2
-			: variantCount === 3
-				? styles.variantsGridCount3
-				: variantCount > 4
-					? styles.variantsGridColumnMobile
-					: '';
+	const isTyped = question.type === 'TYPE_ANSWER_V1' || isTypeV2;
+	const hasAnswerMask =
+		isTypeV2 && typeof question.answerMask === 'string' && question.answerMask.length > 0;
+	const hintText = QUESTION_HINT_BY_TYPE[question.type];
 
 	return (
 		<div className={styles.gameMainContent}>
 			{alreadyAnswered && <AntiCheatOverlay />}
 
-			{/* When already answered, questionContainer receives isBlurred (guaranteed blur on Android & iOS) */}
-			<div
-				className={`${styles.questionContainer} ${
-					alreadyAnswered ? styles.isBlurred : ''
-				}`}
-			>
-				{/* Top Section: Question Card (pinned to top on mobile) */}
+			<div className={`${styles.questionContainer} ${alreadyAnswered ? styles.isBlurred : ''}`}>
 				<div className={styles.questionHeaderCard}>
 					<h2 className={styles.questionText}>{question.text}</h2>
 
 					{question.media && (
 						<img
 							src={question.media}
-							alt="Question media"
+							alt="Медіа запитання"
 							className={styles.questionMediaImg}
 							onClick={() => handleOpenLightbox(question.media)}
 						/>
 					)}
 
-					{isMulti && (
-						<p className={styles.questionMultiHint}>
-							* Оберіть декілька правильних варіантів
-						</p>
-					)}
-
-					{isTypeV1 && (
-						<p className={styles.questionMultiHint}>
-							* Введіть вашу відповідь у поле нижче
-						</p>
-					)}
-
-					{isTypeV2 && (
-						<p className={styles.questionMultiHint}>
-							* Введіть слово (по буквах)
-						</p>
-					)}
+					{hintText && <p className={styles.questionMultiHint}>{hintText}</p>}
 				</div>
 
-				{/* Bottom Section: Answers & Actions (pinned to bottom on mobile) */}
 				{isTyped ? (
-					<form
-						className={styles.typedAnswerWrapper}
-						onSubmit={handleSubmitTyped}
-					>
-						<div className={styles.typedAnswerInputBox}>
-							<input
-								type="text"
-								disabled={alreadyAnswered}
-								autoFocus
-								className={styles.typedAnswerTextInput}
-								placeholder={
-									isTypeV2 ? 'Введіть слово...' : 'Введіть відповідь...'
-								}
-								value={typedInput}
-								onChange={(e) =>
-									setTypedInput(
-										isTypeV2 ? e.target.value.toUpperCase() : e.target.value,
-									)
-								}
-							/>
-							<button
-								type="submit"
-								disabled={alreadyAnswered || !typedInput.trim()}
-								className={styles.typedAnswerSubmitBtn}
-							>
-								<span>Відповісти</span>
-								<span>↵</span>
-							</button>
-						</div>
-
-						{/* V2 Letters Preview Boxes */}
-						{isTypeV2 && typedInput.length > 0 && (
-							<div className={styles.typedV2Boxes}>
-								{typedInput.split('').map((char, i) => (
-									<div
-										key={i}
-										className={`${styles.typedV2LetterBox} ${
-											char.trim() ? styles.isFilled : ''
-										}`}
-									>
-										{char}
-									</div>
-								))}
-							</div>
-						)}
-					</form>
+					hasAnswerMask ? (
+						<TypeAnswerV2Input
+							mask={question.answerMask!}
+							disabled={alreadyAnswered}
+							onSubmit={(assembledAnswer) => onSubmitAnswer(undefined, assembledAnswer)}
+						/>
+					) : (
+						<TypeAnswerV1Input
+							disabled={alreadyAnswered}
+							onSubmit={(typedAnswer) => onSubmitAnswer(undefined, typedAnswer)}
+						/>
+					)
 				) : (
-					<div className={styles.variantsSectionBottom}>
-						{/* Variants Grid */}
-						<div
-							className={`${styles.variantsGrid} ${gridVariantClass}`}
-						>
-							{question.variants.map((v, idx) => {
-								const colorIndex = idx % MAX_QUESTION_VARIANTS;
-								const isSelected = selectedVariantIds.includes(v.id);
-								const colorClass =
-									styles[
-										`variantColor${colorIndex}` as keyof typeof styles
-									] || '';
-
-								return (
-									<button
-										key={v.id}
-										type="button"
-										role={isMulti ? 'checkbox' : undefined}
-										aria-checked={isMulti ? isSelected : undefined}
-										disabled={alreadyAnswered}
-										className={`${styles.studentVariantBtn} ${colorClass} ${
-											isSelected ? styles.isSelected : ''
-										}`}
-										onClick={() => handleVariantClick(v.id)}
-									>
-										<div className={styles.variantBadgeCorner}>{idx + 1}</div>
-
-										{/* Multi-select checkbox indicator in the top-right corner */}
-										{isMulti && (
-											<div
-												className={`${styles.variantCheckboxCorner} ${
-													isSelected ? styles.variantCheckboxSelected : ''
-												}`}
-												aria-hidden="true"
-											>
-												{isSelected && (
-													<CheckIcon
-														size={16}
-														strokeWidth="3"
-														className={styles.variantCheckboxCheck}
-													/>
-												)}
-											</div>
-										)}
-
-										<span>{v.text || 'Варіант без тексту'}</span>
-									</button>
-								);
-							})}
-						</div>
-
-						{/* Multi-choice Submit Button (positioned below variants on both mobile and desktop) */}
-						{isMulti && !alreadyAnswered && (
-							<button
-								type="button"
-								disabled={selectedVariantIds.length === 0}
-								className={styles.multiSubmitBtn}
-								onClick={handleSubmitMulti}
-							>
-								Відправити відповідь{' '}
-								{selectedVariantIds.length > 0
-									? `(${selectedVariantIds.length})`
-									: ''}
-							</button>
-						)}
-					</div>
+					<StudentVariantsGrid
+						variants={question.variants || []}
+						isMulti={isMulti}
+						disabled={alreadyAnswered}
+						onSubmit={(variantIds) => onSubmitAnswer(variantIds)}
+					/>
 				)}
 			</div>
 

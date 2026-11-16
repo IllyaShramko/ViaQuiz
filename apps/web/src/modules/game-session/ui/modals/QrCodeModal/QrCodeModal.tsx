@@ -1,9 +1,11 @@
 import { QRCodeSVG } from 'qrcode.react';
-import { Modal } from '../../../../../shared';
+import { CloseIcon, Modal } from '../../../../../shared';
 import type { QrCodeModalProps } from './QrCodeModal.types';
 import styles from './QrCodeModal.module.css';
 
-export function QrCodeModal({ isOpen, onClose, joinUrl }: QrCodeModalProps) {
+export function QrCodeModal({ isOpen, onClose, joinUrl, joinCode }: QrCodeModalProps) {
+  const formattedCode = joinCode ? `${joinCode.slice(0, 3)} ${joinCode.slice(3)}` : null;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -11,19 +13,37 @@ export function QrCodeModal({ isOpen, onClose, joinUrl }: QrCodeModalProps) {
       size="unstyled"
       ariaLabel="QR-код для підключення"
     >
-      <div className={styles.container} onClick={onClose}>
-        <div className={styles.card} onClick={(event) => event.stopPropagation()}>
-          <div className={styles.whiteBox}>
-            <QRCodeSVG
-              value={joinUrl}
-              size={380}
-              level="Q"
-              className={styles.svg}
-            />
-          </div>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>Підключення за QR-кодом</h2>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={onClose}
+            aria-label="Закрити"
+          >
+            <CloseIcon size={18} />
+          </button>
         </div>
 
-        <p className={styles.hintText}>Щоб закрити вікно натисніть на фон</p>
+        <div className={styles.whiteBox}>
+          <QRCodeSVG
+            value={joinUrl}
+            size={340}
+            level="Q"
+            className={styles.svg}
+          />
+        </div>
+
+        <div className={styles.footer}>
+          <span className={styles.domain}>joinviaquiz.com</span>
+          {formattedCode && (
+            <>
+              <span className={styles.dot} aria-hidden="true">•</span>
+              <span className={styles.code}>PIN: {formattedCode}</span>
+            </>
+          )}
+        </div>
       </div>
     </Modal>
   );

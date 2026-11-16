@@ -35,7 +35,20 @@ export const GameSessionsRepository: GameSessionsRepositoryContract = {
 		return PRISMA_CLIENT.room.findUnique({
 			where: { uuid },
 			include: {
-				quiz: true,
+				quiz: {
+					include: {
+						_count: {
+							select: { questions: true },
+						},
+					},
+				},
+				host: {
+					select: {
+						id: true,
+						firstName: true,
+						lastName: true,
+					},
+				},
 				classroom: true,
 				course: true,
 				participants: true,

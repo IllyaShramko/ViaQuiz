@@ -24,6 +24,7 @@ export function FinalResultsHost({
 
 	// Show remaining participants after 1st place has been revealed or animation finished
 	const isListVisible = revealedPlaces.has(1) || phase === 'complete';
+	const isAnimationComplete = phase === 'complete';
 
 	return (
 		<div className={styles.container}>
@@ -38,18 +39,19 @@ export function FinalResultsHost({
 					roomUuid={roomUuid}
 				/>
 
-				{/* Quick skip action for impatient hosts */}
-				{phase !== 'complete' && (
-					<button
-						type="button"
-						className={styles.skipButton}
-						onClick={skipToEnd}
-						title="Показати всі результати одразу"
-					>
-						<span>Пропустити анімацію</span>
-						<span aria-hidden="true"><NextIcon size={12} /></span>
-					</button>
-				)}
+				{/* Keep button slot mounted so fading it out never causes container height jumps */}
+				<button
+					type="button"
+					className={`${styles.skipButton} ${isAnimationComplete ? styles.isHidden : ''}`}
+					onClick={skipToEnd}
+					disabled={isAnimationComplete}
+					aria-hidden={isAnimationComplete}
+					tabIndex={isAnimationComplete ? -1 : 0}
+					title="Показати всі результати одразу"
+				>
+					<span>Пропустити анімацію</span>
+					<span aria-hidden="true"><NextIcon size={12} /></span>
+				</button>
 
 				{/* Animated 3-step podium */}
 				<PodiumStage topThree={topThree} revealedPlaces={revealedPlaces} />

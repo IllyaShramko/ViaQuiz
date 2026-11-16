@@ -8,7 +8,7 @@ const COLORS = [
   '#2563eb', '#d97706', '#16a34a', '#db2777', '#7c3aed', '#0891b2'
 ];
 
-export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, questionType, onChange }) => {
+export function VariantEditor({ variants, questionType, onChange }: VariantEditorProps) {
   // Ensure we have at least 4 empty variants for new questions
   useEffect(() => {
     if (variants.length === 0) {
@@ -125,4 +125,4 @@ export const VariantEditor: React.FC<VariantEditorProps> = ({ variants, question
       )}
     </div>
   );
-};
+}
