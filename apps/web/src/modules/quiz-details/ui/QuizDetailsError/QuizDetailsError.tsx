@@ -1,5 +1,6 @@
+import { Button } from '../../../../shared';
 import type { QuizDetailsErrorProps } from './QuizDetailsError.types';
-import styles from '../QuizDetails.module.css';
+import styles from './QuizDetailsError.module.css';
 
 export function QuizDetailsError({
   onGoHome,
@@ -8,24 +9,16 @@ export function QuizDetailsError({
   message = 'Можливо, вона була видалена або у вас немає прав на її перегляд.',
 }: QuizDetailsErrorProps) {
   return (
-    <div className={styles['quiz-details-error']}>
-      <h3>{title}</h3>
-      <p>{message}</p>
-      <div className={styles['quiz-details-error__actions']}>
-        <button
-          type="button"
-          className="btn btn--primary"
-          onClick={onGoHome}
-        >
+    <div className={styles.errorCard} role="alert">
+      <h2 className={styles.title}>{title}</h2>
+      <p className={styles.message}>{message}</p>
+      <div className={styles.actions}>
+        <Button variant="primary" size="md" onClick={onGoHome}>
           Повернутися на головну
-        </button>
-        <button
-          type="button"
-          className="btn btn--secondary"
-          onClick={onRetry}
-        >
+        </Button>
+        <Button variant="secondary" size="md" onClick={onRetry}>
           Спробувати знову
-        </button>
+        </Button>
       </div>
     </div>
   );

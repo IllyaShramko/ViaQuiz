@@ -59,6 +59,7 @@
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   background: rgba(255, 255, 255, 0.05);
+  overflow-wrap: anywhere;
 }
 
 .typedValue.isCorrect {
@@ -107,6 +108,8 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .variantBadge {
@@ -130,6 +133,8 @@
   font-weight: 600;
   font-size: 1.05rem;
   color: #fff;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .correctHint {

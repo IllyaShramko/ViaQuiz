@@ -1,8 +1,11 @@
 .container {
 	position: relative;
 	flex: 1;
+	min-width: 0;
 	min-height: 0;
 	overflow-y: auto;
+	overflow-x: hidden;
+	overscroll-behavior-y: contain;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -19,6 +22,7 @@
 	flex-direction: column;
 	align-items: center;
 	width: 100%;
+	min-width: 0;
 	margin: auto 0;
 	background: var(--color-bg-elevated, #12121a);
 	border: 1px solid var(--color-border, #2a2a3a);

@@ -1,6 +1,7 @@
 /* Bottom Section: Variants & Actions */
 .variantsSectionBottom {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,6 +21,7 @@
 .variantsGrid {
   order: 1;
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -99,6 +101,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .variantBadgeCorner {
@@ -179,7 +182,7 @@
 
 @media (max-width: 768px) {
   .variantsSectionBottom {
-    margin-top: auto;
+    margin-top: 0;
     width: 100%;
     max-width: 100%;
     display: flex;
@@ -187,14 +190,13 @@
     align-items: stretch;
     gap: 0.5rem;
     flex-shrink: 0;
-    max-height: 65vh;
   }
 
   .multiSubmitBtn {
     order: 2;
     width: 100%;
     max-width: 100%;
-    margin-top: 0.35rem;
+    margin-top: 0.25rem;
     margin-bottom: 0;
     height: 44px;
     font-size: 0.95rem;
@@ -204,22 +206,24 @@
   .variantsGrid {
     order: 1;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.45rem, 1dvh, 0.65rem);
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     box-sizing: border-box;
   }
 
   .studentVariantBtn {
     width: 100%;
     max-width: 100%;
-    aspect-ratio: 1 / 1;
-    min-height: clamp(114px, 16.5vh, 158px);
-    max-height: clamp(148px, 23vh, 200px);
+    min-width: 0;
+    aspect-ratio: auto;
+    min-height: clamp(96px, 15dvh, 138px);
+    max-height: clamp(122px, 19dvh, 165px);
     padding: 1.5rem 0.75rem 0.75rem;
     border-radius: 10px;
-    font-size: clamp(1.17rem, 4vw, 1.3rem);
+    font-size: clamp(1.125rem, 4vw, 1.3rem);
     font-weight: 700;
     display: flex;
     flex-direction: column;
@@ -266,19 +270,19 @@
 
   .variantsGrid.variantsGridCount2 {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.45rem, 1dvh, 0.65rem);
     width: 100%;
     max-width: 100%;
   }
 
   .variantsGridCount2 .studentVariantBtn {
     aspect-ratio: 1 / 1;
-    min-height: clamp(114px, 16.5vh, 158px);
-    max-height: clamp(148px, 23vh, 200px);
+    min-height: clamp(104px, 16dvh, 150px);
+    max-height: clamp(138px, 22dvh, 185px);
     padding: 1.5rem 0.75rem 0.75rem;
     border-radius: 10px;
-    font-size: clamp(1.17rem, 4vw, 1.3rem);
+    font-size: clamp(1.125rem, 4vw, 1.3rem);
     font-weight: 700;
     display: flex;
     flex-direction: column;
@@ -294,7 +298,7 @@
     flex-direction: column;
     width: 100%;
     max-width: 100%;
-    gap: clamp(0.55rem, 1.4vh, 0.75rem);
+    gap: clamp(0.5rem, 1.2dvh, 0.7rem);
     box-sizing: border-box;
   }
 
@@ -302,11 +306,11 @@
     width: 100%;
     max-width: 100%;
     aspect-ratio: auto;
-    min-height: clamp(66px, 9.5vh, 84px);
+    min-height: clamp(58px, 8.8dvh, 78px);
     max-height: none;
     padding: 0.8rem 3.25rem 0.8rem 3.75rem;
     border-radius: 10px;
-    font-size: clamp(1.17rem, 4vw, 1.25rem);
+    font-size: clamp(1.125rem, 4vw, 1.25rem);
     font-weight: 700;
     flex-direction: row;
     justify-content: flex-start;
@@ -342,7 +346,7 @@
     flex-direction: column;
     width: 100%;
     max-width: 100%;
-    gap: clamp(0.45rem, 1.2vh, 0.65rem);
+    gap: clamp(0.45rem, 1dvh, 0.65rem);
     box-sizing: border-box;
   }
 
@@ -350,11 +354,11 @@
     width: 100%;
     max-width: 100%;
     aspect-ratio: auto;
-    min-height: clamp(52px, 7.5vh, 64px);
+    min-height: clamp(48px, 7dvh, 60px);
     max-height: none;
     padding: 0.65rem 3.25rem 0.65rem 3.5rem;
     border-radius: 10px;
-    font-size: clamp(1.17rem, 3.8vw, 1.25rem);
+    font-size: clamp(1.125rem, 3.8vw, 1.25rem);
     font-weight: 700;
     flex-direction: row;
     justify-content: flex-start;

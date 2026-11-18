@@ -1,0 +1,113 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.heroCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 22px;
+  border-radius: 12px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+}
+
+.heroTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.thumb {
+  width: 176px;
+  min-width: 176px;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+}
+
+.heroContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.metaBar {
+  display: flex;
+  gap: 24px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.launchBar {
+  height: 64px;
+  border-radius: 10px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+}
+
+.questionCard {
+  height: 140px;
+  border-radius: 12px;
+  background: var(--color-bg-elevated, #12121a);
+  border: 1px solid var(--color-border, #2a2a3a);
+}
+
+.shimmer {
+  background: linear-gradient(
+    110deg,
+    var(--color-bg-surface, #1a1a26) 30%,
+    var(--color-bg-hover, #22222e) 50%,
+    var(--color-bg-surface, #1a1a26) 70%
+  );
+  background-size: 300% 100%;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+.line {
+  border-radius: 6px;
+}
+
+.lineTitle {
+  width: 48%;
+  height: 24px;
+}
+
+.lineDesc {
+  width: 82%;
+  height: 15px;
+}
+
+.lineMeta {
+  width: 96px;
+  height: 26px;
+  border-radius: 6px;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .heroTop {
+    flex-direction: column;
+  }
+
+  .thumb {
+    width: 100%;
+    min-width: 0;
+  }
+}

@@ -4,7 +4,7 @@ import {
   BinIcon,
   CalendarIcon,
   ClockIcon,
-  EnterIcon,
+  EditIcon,
   LogoIcon,
   OneAnswerIcon,
   PublicIcon,
@@ -151,7 +151,7 @@ export function DraftCard({
                     onOpen(draft.uuid);
                   }}
                 >
-                  <EnterIcon size={14} />
+                  <EditIcon size={14} aria-hidden="true" />
                   <span>Редагувати</span>
                 </button>
 

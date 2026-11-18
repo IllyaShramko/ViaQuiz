@@ -1,0 +1,24 @@
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  width: fit-content;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #9090a8);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--transition-fast, 150ms ease-in-out);
+}
+
+.backButton:hover {
+  color: var(--color-text-primary, #f0f0f5);
+}
+
+.backButton:focus-visible {
+  outline: 2px solid var(--color-border-focus, #863bff);
+  outline-offset: 2px;
+  border-radius: 6px;
+}

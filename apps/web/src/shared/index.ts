@@ -75,6 +75,8 @@ export {
   type SearchInputProps,
   ProtectedRoute,
   PublicRoute,
+  ICONS,
+  type IconName,
   AiIcon,
   ArrowIcon,
   BinIcon,
@@ -116,6 +118,7 @@ export {
   ViewEyeOffIcon,
   ChevronDownIcon,
   LogoutIcon,
+  EditIcon,
   type IconProps,
 } from './ui';
 export {

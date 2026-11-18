@@ -4,6 +4,7 @@ import { useAuth } from '../../../modules/auth';
 import {
 	useGetRoomByUuidQuery,
 	useGameSession,
+	useMobileGameViewport,
 	HostLobby,
 	HostControlsBar,
 	QuestionHostView,
@@ -17,6 +18,8 @@ import sessionStyles from '../../../modules/game-session/ui/GameSession.module.c
 import styles from './GameHostPage.module.css';
 
 export function GameHostPage() {
+	useMobileGameViewport();
+
 	const { roomUuid } = useParams<{ roomUuid: string }>();
 	const navigate = useNavigate();
 	const { user, isLoading: isAuthLoading } = useAuth();

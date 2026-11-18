@@ -1,5 +1,6 @@
+import { ArrowLeftIcon } from '../../../../shared';
 import type { QuizBackButtonProps } from './QuizBackButton.types';
-import styles from '../QuizDetails.module.css';
+import styles from './QuizBackButton.module.css';
 
 export function QuizBackButton({
   onBack,
@@ -8,20 +9,10 @@ export function QuizBackButton({
   return (
     <button
       type="button"
-      className={styles['quiz-details-back-btn']}
+      className={styles.backButton}
       onClick={onBack}
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <line x1="19" y1="12" x2="5" y2="12" />
-        <polyline points="12 19 5 12 12 5" />
-      </svg>
+      <ArrowLeftIcon size={16} aria-hidden="true" />
       <span>{label}</span>
     </button>
   );

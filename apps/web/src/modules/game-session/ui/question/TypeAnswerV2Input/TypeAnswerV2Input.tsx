@@ -22,22 +22,46 @@ function TypeAnswerV2InputInner({
 	const [values, setValues] = useState<string[]>(() =>
 		Array.from({ length: parsed.inputCount }, () => ''),
 	);
+	const valuesRef = useRef<string[]>(
+		Array.from({ length: parsed.inputCount }, () => ''),
+	);
 	const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
-	const isComposingRef = useRef(false);
+	const composingSlotRef = useRef<number | null>(null);
+	const backspaceHandledRef = useRef(false);
 
 	useEffect(() => {
 		if (!disabled && parsed.inputCount > 0) {
 			requestAnimationFrame(() => {
-				inputRefs.current[0]?.focus();
+				inputRefs.current[0]?.focus({ preventScroll: true });
 			});
 		}
 	}, [parsed.inputCount, disabled]);
 
+	const commitValues = (next: string[]) => {
+		valuesRef.current = next;
+		setValues(next);
+	};
+
+	const syncDomValues = (next: string[]) => {
+		for (let i = 0; i < next.length; i++) {
+			const el = inputRefs.current[i];
+			if (el && el.value !== (next[i] ?? '')) {
+				el.value = next[i] ?? '';
+			}
+		}
+	};
+
 	const focusSlot = (slotIndex: number) => {
 		const target = inputRefs.current[slotIndex];
-		if (target) {
-			target.focus();
-			target.select();
+		if (!target) return;
+		target.focus({ preventScroll: true });
+		const len = target.value.length;
+		if (len > 0) {
+			try {
+				target.setSelectionRange(len, len);
+			} catch {
+				// Ignore selection errors on unsupported input modes
+			}
 		}
 	};
 
@@ -46,51 +70,80 @@ function TypeAnswerV2InputInner({
 
 	const submitCurrentAnswer = () => {
 		if (disabled || !isComplete) return;
-		const assembled = assembleTypeAnswerV2Answer(mask, values).trim();
+		const assembled = assembleTypeAnswerV2Answer(mask, valuesRef.current).trim();
 		if (!assembled) return;
 		onSubmit(assembled);
+	};
+
+	const handleBackspaceAt = (slotIndex: number) => {
+		const currentValues = valuesRef.current;
+		const current = currentValues[slotIndex] ?? '';
+		if (current) {
+			const next = [...currentValues];
+			next[slotIndex] = '';
+			const el = inputRefs.current[slotIndex];
+			if (el) el.value = '';
+			commitValues(next);
+			return;
+		}
+		if (slotIndex > 0) {
+			const prevIndex = slotIndex - 1;
+			const next = [...currentValues];
+			next[prevIndex] = '';
+			const prevEl = inputRefs.current[prevIndex];
+			// Clear target DOM value before focusing so iOS does not flash/delete stale text
+			if (prevEl) prevEl.value = '';
+			commitValues(next);
+			focusSlot(prevIndex);
+		}
 	};
 
 	const handleChange = (slotIndex: number, rawValue: string) => {
 		if (disabled) return;
 
-		if (isComposingRef.current) {
-			setValues((prev) => {
-				const next = [...prev];
-				next[slotIndex] = rawValue;
-				return next;
-			});
+		if (composingSlotRef.current === slotIndex) {
+			const next = [...valuesRef.current];
+			next[slotIndex] = rawValue;
+			commitValues(next);
 			return;
 		}
 
 		if (rawValue === '') {
-			setValues((prev) => {
-				const next = [...prev];
+			const next = [...valuesRef.current];
+			if (next[slotIndex] !== '') {
 				next[slotIndex] = '';
-				return next;
-			});
+				commitValues(next);
+			}
 			return;
 		}
 
-		const prevChar = values[slotIndex] ?? '';
+		const currentValues = valuesRef.current;
+		const prevChar = currentValues[slotIndex] ?? '';
 		let candidate = rawValue;
-		if (prevChar && rawValue.length === 2 && rawValue.startsWith(prevChar)) {
-			candidate = rawValue.slice(1);
+		if (prevChar && rawValue.length === 2) {
+			if (rawValue.startsWith(prevChar)) {
+				candidate = rawValue.slice(1);
+			} else if (rawValue.endsWith(prevChar)) {
+				candidate = rawValue.slice(0, 1);
+			}
 		}
 
 		if (candidate.length > 1) {
 			const { nextValues, nextFocusIndex } = applyTypeAnswerV2Paste(
 				mask,
-				values,
+				currentValues,
 				slotIndex,
 				candidate,
 			);
-			setValues(nextValues);
+			syncDomValues(nextValues);
+			commitValues(nextValues);
 			focusSlot(nextFocusIndex);
 			return;
 		}
 
 		if (candidate === ' ') {
+			const el = inputRefs.current[slotIndex];
+			if (el) el.value = prevChar;
 			const nextWordStart = parsed.nextWordStartByInputIndex[slotIndex] ?? -1;
 			if (nextWordStart !== -1) {
 				focusSlot(nextWordStart);
@@ -99,14 +152,16 @@ function TypeAnswerV2InputInner({
 		}
 
 		if (isTypeAnswerV2Bracket(candidate)) {
+			const el = inputRefs.current[slotIndex];
+			if (el) el.value = prevChar;
 			return;
 		}
 
-		setValues((prev) => {
-			const next = [...prev];
-			next[slotIndex] = candidate;
-			return next;
-		});
+		const next = [...currentValues];
+		next[slotIndex] = candidate;
+		const currentEl = inputRefs.current[slotIndex];
+		if (currentEl) currentEl.value = candidate;
+		commitValues(next);
 
 		if (slotIndex + 1 < parsed.inputCount) {
 			focusSlot(slotIndex + 1);
@@ -114,20 +169,38 @@ function TypeAnswerV2InputInner({
 	};
 
 	const handleCompositionEnd = (slotIndex: number, composedValue: string) => {
-		isComposingRef.current = false;
+		if (composingSlotRef.current === slotIndex) {
+			composingSlotRef.current = null;
+		}
 		const chars = Array.from(composedValue).filter(
 			(ch) => ch !== ' ' && !isTypeAnswerV2Bracket(ch),
 		);
 		const lastChar = chars[chars.length - 1] ?? '';
 
-		setValues((prev) => {
-			const next = [...prev];
-			next[slotIndex] = lastChar;
-			return next;
-		});
+		const next = [...valuesRef.current];
+		next[slotIndex] = lastChar;
+		const el = inputRefs.current[slotIndex];
+		if (el) el.value = lastChar;
+		commitValues(next);
 
 		if (lastChar && slotIndex + 1 < parsed.inputCount) {
 			requestAnimationFrame(() => focusSlot(slotIndex + 1));
+		}
+	};
+
+	const handleBeforeInput = (
+		slotIndex: number,
+		e: React.InputEvent<HTMLInputElement>,
+	) => {
+		if (disabled) return;
+		const inputType = (e.nativeEvent as InputEvent).inputType;
+		if (inputType === 'deleteContentBackward') {
+			e.preventDefault();
+			if (backspaceHandledRef.current) {
+				backspaceHandledRef.current = false;
+				return;
+			}
+			handleBackspaceAt(slotIndex);
 		}
 	};
 
@@ -143,7 +216,7 @@ function TypeAnswerV2InputInner({
 			if (
 				e.nativeEvent.isComposing ||
 				e.keyCode === 229 ||
-				isComposingRef.current
+				composingSlotRef.current === slotIndex
 			) {
 				return;
 			}
@@ -179,23 +252,20 @@ function TypeAnswerV2InputInner({
 		}
 
 		if (e.key === 'Backspace') {
-			const current = values[slotIndex] ?? '';
-			if (current) {
-				e.preventDefault();
-				setValues((prev) => {
-					const next = [...prev];
-					next[slotIndex] = '';
-					return next;
-				});
-			} else if (slotIndex > 0) {
-				e.preventDefault();
-				setValues((prev) => {
-					const next = [...prev];
-					next[slotIndex - 1] = '';
-					return next;
-				});
-				focusSlot(slotIndex - 1);
+			// Let active IME composition delete its composing buffer first
+			if (
+				e.nativeEvent.isComposing ||
+				e.keyCode === 229 ||
+				composingSlotRef.current === slotIndex
+			) {
+				return;
 			}
+			e.preventDefault();
+			backspaceHandledRef.current = true;
+			window.setTimeout(() => {
+				backspaceHandledRef.current = false;
+			}, 0);
+			handleBackspaceAt(slotIndex);
 		}
 	};
 
@@ -210,11 +280,12 @@ function TypeAnswerV2InputInner({
 		e.preventDefault();
 		const { nextValues, nextFocusIndex } = applyTypeAnswerV2Paste(
 			mask,
-			values,
+			valuesRef.current,
 			slotIndex,
 			pastedText,
 		);
-		setValues(nextValues);
+		syncDomValues(nextValues);
+		commitValues(nextValues);
 		focusSlot(nextFocusIndex);
 	};
 
@@ -255,9 +326,15 @@ function TypeAnswerV2InputInner({
 									className={`${styles.letterInput} ${
 										values[token.inputIndex] ? styles.isFilled : ''
 									}`}
+									onBeforeInput={(e) => handleBeforeInput(token.inputIndex, e)}
 									onChange={(e) => handleChange(token.inputIndex, e.target.value)}
+									onBlur={() => {
+										if (composingSlotRef.current === token.inputIndex) {
+											composingSlotRef.current = null;
+										}
+									}}
 									onCompositionStart={() => {
-										isComposingRef.current = true;
+										composingSlotRef.current = token.inputIndex;
 									}}
 									onCompositionEnd={(e) =>
 										handleCompositionEnd(token.inputIndex, e.currentTarget.value)

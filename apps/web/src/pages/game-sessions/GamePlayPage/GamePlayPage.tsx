@@ -4,6 +4,7 @@ import { useAuth } from '../../../modules/auth';
 import {
 	useGetRoomByUuidQuery,
 	useGameSession,
+	useMobileGameViewport,
 	StudentLobby,
 	QuestionStudentView,
 	ReviewStudentView,
@@ -19,6 +20,8 @@ import sessionStyles from '../../../modules/game-session/ui/GameSession.module.c
 import styles from './GamePlayPage.module.css';
 
 export function GamePlayPage() {
+	useMobileGameViewport();
+
 	const { roomUuid } = useParams<{ roomUuid: string }>();
 	const navigate = useNavigate();
 	const { user, isLoading: isAuthLoading } = useAuth();
@@ -110,6 +113,11 @@ export function GamePlayPage() {
 			}
 		}
 	}, [isRoomLoading, isFinished, room, roomUuid, navigate]);
+
+	// Reset residual page scroll left over from mobile keyboard transitions (e.g. /join)
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, [status, currentQuestionIndex]);
 
 	// Cleanup token when participant is kicked
 	useEffect(() => {

@@ -29,10 +29,16 @@
   flex-wrap: wrap;
   gap: 10px;
   width: 100%;
-  max-height: calc(100vh - 260px);
+  max-height: calc(100dvh - 260px);
   overflow-y: auto;
   overflow-x: hidden;
   align-content: flex-start;
-  padding: 4px 4px 35px 4px;
-  margin-bottom: -35px;
+  padding: 4px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    max-height: none;
+    overflow-y: visible;
+  }
 }

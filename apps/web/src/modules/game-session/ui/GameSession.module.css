@@ -12,6 +12,7 @@
   flex-direction: column;
   position: relative;
   overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font-family, 'Inter', sans-serif);
   background-image:
     radial-gradient(circle at 15% 20%, rgba(134, 59, 255, 0.05) 0%, transparent 40%),
@@ -84,16 +85,27 @@
 
 @media (max-width: 768px) {
   .gameRoot {
+    position: fixed;
+    top: var(--game-viewport-top, 0px);
+    left: 0;
+    width: 100%;
     height: 100dvh;
-    min-height: 100dvh;
-    max-height: 100dvh;
+    height: var(--game-viewport-height, 100dvh);
+    min-height: 0;
+    max-height: var(--game-viewport-height, 100dvh);
     overflow: hidden;
+    overscroll-behavior: none;
   }
 
   .gameMainContent {
     padding: 0.75rem;
     flex: 1;
+    min-width: 0;
     min-height: 0;
+    justify-content: center;
+    justify-content: safe center;
     overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
   }
 }

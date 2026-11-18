@@ -1,4 +1,4 @@
-import type { PublishedQuizSortBy, SortOrder } from '@viaquiz/shared-types';
+import type { PublishedQuizSortBy, SortOrder, VariantType } from '@viaquiz/shared-types';
 
 export interface QuizAuthor {
   id: number;
@@ -16,7 +16,9 @@ export interface Keyword {
 
 export interface QuestionVariant {
   id: number;
-  text: string;
+  text: string | null;
+  type?: VariantType;
+  media?: string | null;
   isCorrect?: boolean;
   order: number;
 }

@@ -1,4 +1,5 @@
 export * from './api/gameSessionApi';
+export * from './hooks';
 export * from './socket/socketClient';
 export * from './socket/useGameSession';
 export * from './utils/shuffle';

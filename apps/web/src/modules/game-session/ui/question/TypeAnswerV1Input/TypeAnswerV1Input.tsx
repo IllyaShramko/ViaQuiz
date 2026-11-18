@@ -31,6 +31,14 @@ export function TypeAnswerV1Input({
 		syncTextareaHeight();
 	}, [typedInput, syncTextareaHeight]);
 
+	useEffect(() => {
+		if (!disabled) {
+			requestAnimationFrame(() => {
+				textareaRef.current?.focus({ preventScroll: true });
+			});
+		}
+	}, [disabled]);
+
 	const handleSubmit = (e?: React.SyntheticEvent) => {
 		if (e) e.preventDefault();
 		const trimmed = typedInput.trim();
@@ -54,7 +62,6 @@ export function TypeAnswerV1Input({
 					ref={textareaRef}
 					rows={1}
 					disabled={disabled}
-					autoFocus
 					maxLength={QUESTION_LIMITS.MAX_VARIANT_TEXT_LENGTH}
 					className={styles.textInput}
 					placeholder="Введіть відповідь..."
